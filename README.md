@@ -34,7 +34,7 @@ Die KI läuft direkt im Browser und benötigt einen **eigenen Anthropic-API-Key*
 
 1. In der App unten rechts **„KI-Assistent“** öffnen.
 2. **Einstellungen** aufklappen → **Anthropic API-Key** eintragen
-   (Key erstellen unter **console.anthropic.com** → *API Keys*).
+   (Key erstellen unter **platform.claude.com** → *Settings → API keys*).
    Der Statusbalken oben im Panel wechselt dann von *„Noch nicht aktiviert“* auf **„KI aktiv“**.
 3. Optional das **Modell** aus der Liste wählen. Standard: `claude-haiku-4-5-20251001`
    (schnell/günstig). Alternativen: `claude-sonnet-5`, `claude-opus-5`.
