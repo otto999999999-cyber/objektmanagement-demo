@@ -4209,7 +4209,7 @@ window.addEventListener("beforeunload",()=>{ if(S.insp) persistInsp(); });
   .ai-cfg summary{cursor:pointer;font-weight:700;color:#4F46E5;list-style:none}
   .ai-cfg summary::-webkit-details-marker{display:none}
   .ai-cfg label{display:block;font-weight:600;color:#525C6E;margin:8px 0 3px}
-  .ai-cfg input{width:100%;border:1px solid #C9D1DF;border-radius:8px;padding:7px 9px;font-size:12.5px;outline:none}
+  .ai-cfg input,.ai-cfg select{width:100%;border:1px solid #C9D1DF;border-radius:8px;padding:7px 9px;font-size:12.5px;outline:none;background:#fff;font-family:inherit}
   .ai-cfg .hint{color:#8A93A6;margin-top:6px;line-height:1.45}
   .ai-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#EDF0F6}
   .ai-b{max-width:88%;padding:9px 12px;border-radius:14px;font-size:13.5px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
@@ -4235,13 +4235,20 @@ window.addEventListener("beforeunload",()=>{ if(S.insp) persistInsp(); });
     <span class="t">KI-Assistent</span>
     <button class="x" onclick="AIClose()">×</button>
   </div>
+  <div id="aiStatus" style="display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:12px;font-weight:600;border-bottom:1px solid rgba(0,0,0,.08)"></div>
   <details class="ai-cfg" id="aiCfg">
     <summary>Einstellungen (API-Key)</summary>
     <label>Anthropic API-Key</label>
-    <input id="aiKey" type="password" placeholder="sk-ant-..." autocomplete="off">
+    <input id="aiKey" type="password" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
     <label>Modell</label>
-    <input id="aiModel" type="text" placeholder="claude-haiku-4-5-20251001">
-    <div class="hint">Der Key wird <b>nur in diesem Browser</b> gespeichert und niemals ins Repository geschrieben. Alternative Modelle: <code>claude-sonnet-5</code>, <code>claude-opus-5</code>.</div>
+    <select id="aiModel">
+      <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 – schnell &amp; günstig (Standard)</option>
+      <option value="claude-sonnet-5">Claude Sonnet 5 – ausgewogen</option>
+      <option value="claude-opus-5">Claude Opus 5 – stärkste Antworten</option>
+    </select>
+    <div class="hint">Der Key wird <b>nur in diesem Browser</b> gespeichert (localStorage) und niemals ins Repository geschrieben. Er bleibt nach dem Neuladen erhalten – einmal eintragen genügt.
+      <button type="button" id="aiKeyClear" style="margin-top:8px;display:block;background:none;border:1px solid currentColor;border-radius:6px;padding:4px 8px;font:inherit;font-size:11px;cursor:pointer;opacity:.75">Key aus diesem Browser löschen</button>
+    </div>
   </details>
   <div class="ai-msgs" id="aiMsgs"></div>
   <div class="ai-quick">
@@ -4264,14 +4271,30 @@ window.addEventListener("beforeunload",()=>{ if(S.insp) persistInsp(); });
   function el(id){ return document.getElementById(id); }
   function esc(s){ return (s==null?"":String(s)).replace(/[&<>]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[c];}); }
 
+  function setKey(v){ try{ v?localStorage.setItem(LSK,v):localStorage.removeItem(LSK); }catch(e){} status(); }
+  function status(){
+    var s=el("aiStatus"); if(!s) return;
+    var k=gk(), mName=(el("aiModel")&&el("aiModel").selectedOptions[0]?el("aiModel").selectedOptions[0].text.split(" – ")[0]:gm());
+    if(k){ s.style.background="#e8f7ee"; s.style.color="#15653a"; s.innerHTML='<span style="width:8px;height:8px;border-radius:50%;background:#1a9e5b;display:inline-block"></span>KI aktiv · '+esc(mName); }
+    else { s.style.background="#fdf3e3"; s.style.color="#8a5a10"; s.innerHTML='<span style="width:8px;height:8px;border-radius:50%;background:#e0a030;display:inline-block"></span>Noch nicht aktiviert – API-Key unter „Einstellungen" eintragen'; }
+  }
   window.AIOpen=function(){ el("aiPanel").classList.add("open"); el("aiFab").style.display="none";
-    var k=el("aiKey"); if(k&&!k.value) k.value=gk(); var m=el("aiModel"); if(m&&!m.value) m.value=gm();
+    var k=el("aiKey"); if(k&&!k.value) k.value=gk(); var m=el("aiModel"); if(m) m.value=gm();
     if(!gk()){ el("aiCfg").open=true; }
+    status();
     if(!conv.length){ push("sys","Hallo! Ich bin dein KI-Assistent für dieses Objektmanagement-Portal. Ich kann den Bestand zusammenfassen, Aufgaben priorisieren und Schreiben an Dienstleister entwerfen. Wähle unten eine Aktion oder stell eine Frage."); render(); }
     setTimeout(function(){ el("aiText") && el("aiText").focus(); },50);
   };
   window.AIClose=function(){ el("aiPanel").classList.remove("open"); el("aiFab").style.display="inline-flex"; };
   window.AIQuick=function(t){ el("aiText").value=t; AISend(); };
+
+  document.addEventListener("DOMContentLoaded",function(){
+    var k=el("aiKey"), m=el("aiModel"), c=el("aiKeyClear");
+    if(k){ k.value=gk(); k.addEventListener("input",function(){ setKey(k.value.trim()); }); }
+    if(m){ m.value=gm(); m.addEventListener("change",function(){ try{localStorage.setItem(LSM,m.value);}catch(e){} status(); }); }
+    if(c){ c.addEventListener("click",function(){ if(k) k.value=""; setKey(""); el("aiCfg").open=true; }); }
+    status();
+  });
 
   function push(role,content){ conv.push({role:role,content:content}); }
   function render(){
@@ -4305,8 +4328,8 @@ window.addEventListener("beforeunload",()=>{ if(S.insp) persistInsp(); });
     var ta=el("aiText"); var text=(ta.value||"").trim(); if(!text) return;
     var key=(el("aiKey").value||gk()).trim();
     var model=(el("aiModel").value||gm()).trim()||DEF_MODEL;
-    try{ localStorage.setItem(LSK,key); localStorage.setItem(LSM,model); }catch(e){}
-    if(!key){ el("aiCfg").open=true; push("assistant","Bitte trage oben unter „Einstellungen“ deinen Anthropic API-Key ein. Er bleibt nur in deinem Browser."); render(); return; }
+    setKey(key); try{ localStorage.setItem(LSM,model); }catch(e){}
+    if(!key){ el("aiCfg").open=true; push("assistant","Bitte trage oben unter „Einstellungen“ deinen Anthropic API-Key ein. Er bleibt nur in deinem Browser und wird nach dem Eintragen dauerhaft gespeichert."); render(); return; }
     ta.value=""; push("user",text); render(); setBusy(true);
     var context=await buildContext();
     var sys="Du bist der KI-Assistent eines Objektmanagement-Portals (Hausverwaltung). "+
@@ -4319,7 +4342,13 @@ window.addEventListener("beforeunload",()=>{ if(S.insp) persistInsp(); });
         body:JSON.stringify({ model:model, max_tokens:1000, system:sys, messages:conv.filter(function(m){return m.role==="user"||m.role==="assistant";}).map(function(m){return {role:m.role,content:m.content};}) })
       });
       var data=await res.json();
-      if(data && data.error){ push("assistant","Fehler von der API: "+(data.error.message||JSON.stringify(data.error))+"\n\nTipp: Modellname prüfen (Einstellungen) oder Key kontrollieren."); }
+      if(data && data.error){
+        var tip = res.status===401 ? "Der API-Key wird nicht akzeptiert – bitte unter „Einstellungen“ prüfen (vollständig kopiert? Key noch aktiv?)."
+                : res.status===400 ? "Meist ein ungültiger Modellname – wähle unter „Einstellungen“ ein Modell aus der Liste."
+                : res.status===429 ? "Rate-Limit oder Guthaben aufgebraucht – kurz warten bzw. Guthaben im Anthropic-Konto prüfen."
+                : "Tipp: Modell und Key unter „Einstellungen“ prüfen.";
+        push("assistant","Fehler von der API ("+res.status+"): "+(data.error.message||JSON.stringify(data.error))+"\n\n"+tip);
+      }
       else { var txt=((data&&data.content)||[]).filter(function(b){return b.type==="text";}).map(function(b){return b.text;}).join("\n").trim()||"(keine Antwort erhalten)"; push("assistant",txt); }
     }catch(e){ push("assistant","Verbindungsfehler: "+(e&&e.message?e.message:e)+"\n(Bei GitHub Pages bitte online sein; der Browser ruft die Anthropic-API direkt auf.)"); }
     setBusy(false); render();
