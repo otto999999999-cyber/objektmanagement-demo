@@ -660,6 +660,16 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     padding:11px 18px;border-radius:11px;font-size:13.5px;font-weight:500;box-shadow:var(--shadow-lg);z-index:140;animation:up .25s}
   @keyframes up{from{transform:translateX(-50%) translateY(14px);opacity:0}to{transform:translateX(-50%);opacity:1}}
 
+  /* ---- Verbindungsanzeige & Offline-Warteschlange ---- */
+  .net-ind{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.10);
+    color:#F4F2EC;font:600 11.5px Inter,Arial,sans-serif;padding:5px 10px;border-radius:999px;cursor:pointer;white-space:nowrap}
+  .net-ind .d{width:7px;height:7px;border-radius:50%;background:#2FBF71;flex:0 0 7px}
+  .net-ind.off{background:rgba(224,160,48,.22);border-color:rgba(224,160,48,.6)}
+  .net-ind.off .d{background:#E0A030}
+  .net-ind.warte{background:rgba(224,160,48,.22);border-color:rgba(224,160,48,.6)}
+  .chip.warte{background:#FDF3E3;color:#8A5A10}
+  .chip.warte::before{background:#E0A030}
+
   /* ---- QR-Etiketten für Zählerplätze ---- */
   .etiketten{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:14px}
   .etikett{border:1px dashed #9AA3B4;border-radius:8px;padding:10px 11px;background:#fff;display:flex;gap:11px;align-items:flex-start;break-inside:avoid}
@@ -698,6 +708,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         </div>
       </div>
       <div class="save-ind" id="saveInd"><span class="dot"></span><span id="saveTxt">Gespeichert</span></div>
+      <button class="net-ind" id="netInd" onclick="offPanel()" title="Verbindungsstatus" style="display:none"></button>
       <div id="userBox" style="display:none;align-items:center;gap:10px">
         <span id="userMail" style="font-size:12.5px;color:rgba(255,255,255,.8);white-space:nowrap"></span>
         <button id="searchBtn" class="menu-btn" onclick="openSearch()" title="Suche" aria-label="Suche"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
@@ -1171,7 +1182,7 @@ async function loadAlerts(){
     if(canArea("objekte")){ const an=await DB.allAnlagen(); a.wartung=an.filter(x=>wartStatus(x).level==="overdue").length; }
     if(canArea("aufzuege")){ const az=await DB.listAufzuege(); a.aufzug=az.filter(x=>liftWart(x).level==="overdue"||liftTuev(x).level==="overdue").length; }
     if(canArea("objekte")){
-      const zz=await DB.allZaehler(), aa=await DB.allAblesungen(), per=abPeriode();
+      const zz=await DB.allZaehler(), aa=(await DB.allAblesungen()).concat(offAll()), per=abPeriode();
       a.zaehler=zz.filter(z=>!aa.some(x=>x.zaehlerId===z.id && (x.datum||"").slice(0,4)===per && x.status==="abgelesen")).length;
     }
   }catch(e){}
@@ -1190,7 +1201,8 @@ async function openHouse(id){
   S.hidx=insps.map(it=>({id:it.id,date:it.date,inspector:it.inspector,updatedAt:it.updatedAt,finalized:!!it.finalizedAt,counts:countCond(it)}));
   S.anlagen=await DB.listAnlagen(id);
   S.zaehler=await DB.listZaehler(id);
-  S.ablesungen=(await DB.allAblesungen()).filter(a=>a.houseId===id);
+  S.ablesungen=(await DB.allAblesungen()).filter(a=>a.houseId===id).concat(offFor(id));
+  netRefresh();
   render();
 }
 async function newInspection(){
@@ -1454,7 +1466,7 @@ async function fillDashboard(){
       an.forEach(a=>{ if(wartStatus(a).level==="overdue"){ const id=a.houseId; (attn[id]=attn[id]||{defects:0,wartOver:0}).wartOver++; } });
       S.houseAttn=attn;
       if(S.view==="home") renderObjList();
-      const zz=await DB.allZaehler(), aa=await DB.allAblesungen(), per=abPeriode();
+      const zz=await DB.allZaehler(), aa=(await DB.allAblesungen()).concat(offAll()), per=abPeriode();
       const cur=z=>aa.filter(x=>x.zaehlerId===z.id&&(x.datum||"").slice(0,4)===per)
         .sort((x,y)=>(y.datum||"").localeCompare(x.datum||""))[0]||null;
       d.zGesamt=zz.length;
@@ -1859,7 +1871,7 @@ function houseZaehlerHTML(){
     return `<div class="def card" style="border-left-color:var(--${lvl==="overdue"?"bad":lvl==="soon"?"mid":"good"})">
       <div class="body">
         <div class="area">${zMediumIcon(z.medium)} ${esc(z.bezeichnung||z.nummer||"(ohne Bezeichnung)")}
-          <span class="chip na" style="font-weight:600">${esc(z.art)}</span> ${statusChip} ${eichChip}
+          <span class="chip na" style="font-weight:600">${esc(z.art)}</span> ${statusChip} ${(cur&&cur.pending)?`<span class="chip warte">wartet auf Übertragung</span>`:""} ${eichChip}
           ${z.fernauslesbar?`<span class="chip good">fernauslesbar</span>`:""}
           ${(z.faktor&&z.faktor!==1)?`<span class="chip mid">Wandler ×${esc(String(z.faktor))}</span>`:""}</div>
         <div class="kv"><b>Zählernummer:</b> ${esc(z.nummer||"–")} &nbsp;·&nbsp; <b>Medium:</b> ${esc(z.medium)}${z.stellen?` &nbsp;·&nbsp; <b>Zählwerk:</b> ${esc(String(z.stellen))} Stellen`:""}</div>
@@ -2011,10 +2023,18 @@ async function saveAblesungForm(zid){
     ableser:document.getElementById("abAbleser").value.trim(),
     quelle:document.getElementById("abQuelle").value,
     status, note:document.getElementById("abNote").value.trim() };
-  try{ await DB.saveAblesung(a); }catch(e){ showError("Ablesung konnte nicht gespeichert werden", e); return; }
-  (S.ablesungen=S.ablesungen||[]).push(a);
-  closeModal();
-  toast(status==="abgelesen"?"Ablesung gespeichert.":`Als „${status}" vermerkt – erscheint in der offenen Liste.`);
+  let wartend=false;
+  if(!istOnline()){
+    offPush(a); wartend=true;                     // kein Netz: im Gerät zwischenspeichern
+  } else {
+    try{ await DB.saveAblesung(a); }
+    catch(e){ offPush(a); wartend=true; }          // Übertragung gescheitert: ebenfalls zwischenspeichern
+  }
+  (S.ablesungen=S.ablesungen||[]).push(wartend?Object.assign({},a,{pending:true}):a);
+  closeModal(); netRefresh();
+  toast(wartend
+    ? "Im Gerät gespeichert – wird übertragen, sobald wieder Netz da ist."
+    : (status==="abgelesen"?"Ablesung gespeichert.":`Als „${status}" vermerkt – erscheint in der offenen Liste.`));
   renderHouse();
 }
 function openZHist(zid){
@@ -2034,7 +2054,7 @@ function openZHist(zid){
       const bad=a.status!=="abgelesen";
       return `<div class="col-row" style="align-items:flex-start">
         <div style="flex:1">
-          <div style="font-weight:600;font-size:13.5px">${esc(fmtShort(a.datum))} · ${bad?`<span style="color:var(--bad)">${esc(a.status)}</span>`:`${zNum(a.stand)} ${esc(zEinheit(z))}`}</div>
+          <div style="font-weight:600;font-size:13.5px">${esc(fmtShort(a.datum))} · ${bad?`<span style="color:var(--bad)">${esc(a.status)}</span>`:`${zNum(a.stand)} ${esc(zEinheit(z))}`}${a.pending?` <span class="chip warte">wartet</span>`:""}</div>
           <div style="font-size:12px;color:var(--muted)">${esc(a.ableser||"–")} · ${esc(a.quelle)}${esc(verbrauch)}${a.note?` · ${esc(a.note)}`:""}</div>
         </div>
         <button class="btn sm danger" onclick="delAblesung('${a.id}','${zid}')">${I.trash}</button>
@@ -2049,7 +2069,9 @@ function openZHist(zid){
 }
 function delAblesung(id,zid){
   confirmModal("Ablesung löschen?","Der Eintrag wird dauerhaft aus der Historie entfernt.",async()=>{
-    await DB.deleteAblesung(id);
+    const q=offQueue();
+    if(q.some(a=>a.id===id)) offWrite(q.filter(a=>a.id!==id));   // wartender Eintrag: aus der Warteschlange
+    else await DB.deleteAblesung(id);
     S.ablesungen=(S.ablesungen||[]).filter(a=>a.id!==id);
     closeModal(); renderHouse();
     setTimeout(()=>openZHist(zid),80);
@@ -2095,8 +2117,9 @@ async function openAblesung(){
   view.innerHTML=`<div class="crumb"><a onclick="goHome()">Objekte</a><span class="sep">/</span>Zählerablesung</div>
     <div class="page-head"><div><h2>Zählerablesung</h2><div class="lead">Lade Daten…</div></div></div>`;
   S._zAll=await DB.allZaehler();
-  S._aAll=await DB.allAblesungen();
+  S._aAll=(await DB.allAblesungen()).concat(offAll());
   S.zFilter=S.zFilter||"offen";
+  netRefresh();
   renderAblesung();
 }
 function renderAblesung(){
@@ -2126,7 +2149,7 @@ function renderAblesung(){
       : x.e.level==="none"?`<span class="chip na">Eichfrist offen</span>`:"";
     return `<div class="def card" style="border-left-color:var(--${!x.c?"mid":x.c.status==="abgelesen"?"good":"bad"})">
       <div class="body">
-        <div class="area">${zMediumIcon(z.medium)} ${esc(z.bezeichnung||z.nummer||"(ohne Bezeichnung)")} ${chip} ${eichChip}
+        <div class="area">${zMediumIcon(z.medium)} ${esc(z.bezeichnung||z.nummer||"(ohne Bezeichnung)")} ${chip} ${(x.c&&x.c.pending)?`<span class="chip warte">wartet auf Übertragung</span>`:""} ${eichChip}
           ${z.fernauslesbar?`<span class="chip good">fernauslesbar</span>`:""}</div>
         <div class="kv"><b>Objekt:</b> ${esc(x.h.name)}${x.h.unit?` (WE ${esc(x.h.unit.replace(/^WE\s*/i,''))})`:""} &nbsp;·&nbsp; <b>Nr.:</b> ${esc(z.nummer||"–")}</div>
         <div class="kv"><b>Standort:</b> ${ort?esc(ort):`<span style="color:var(--bad)">nicht erfasst</span>`}</div>
@@ -2207,6 +2230,102 @@ function renderEtiketten(){
       <div class="etiketten">${cards}</div>`
     : `<div class="empty card" style="border-style:dashed">${I.grid}<h3>Keine Zähler erfasst</h3><p>Lege zuerst Zähler an, dann lassen sich Etiketten drucken.</p></div>`}`;
 }
+
+/* ===================== Offline-Betrieb =====================
+   Im Keller gibt es keinen Empfang. Ablesungen werden deshalb
+   lokal im Gerät zwischengespeichert und übertragen, sobald
+   wieder Netz da ist – automatisch oder per Knopfdruck.
+   =========================================================== */
+const OFF_KEY="om_offline_ablesungen";
+function offQueue(){
+  try{ const r=localStorage.getItem(OFF_KEY); const a=r?JSON.parse(r):[]; return Array.isArray(a)?a:[]; }
+  catch(e){ return []; }
+}
+function offWrite(list){
+  try{ localStorage.setItem(OFF_KEY, JSON.stringify(list)); }catch(e){ console.error(e); }
+  netRefresh();
+}
+function offPush(a){ const q=offQueue(); q.push(Object.assign({},a,{pending:true})); offWrite(q); }
+function offFor(houseId){ return offQueue().filter(a=>a.houseId===houseId).map(a=>Object.assign({},a,{pending:true})); }
+function offAll(){ return offQueue().map(a=>Object.assign({},a,{pending:true})); }
+function offCount(){ return offQueue().length; }
+function istOnline(){ return navigator.onLine!==false; }
+
+function netRefresh(){
+  const el=document.getElementById("netInd"); if(!el) return;
+  const n=offCount(), on=istOnline();
+  el.style.display = (!on || n>0) ? "inline-flex" : "none";
+  el.className = "net-ind" + (!on ? " off" : (n>0 ? " warte" : ""));
+  el.innerHTML = `<span class="d"></span>${!on?"Offline":"Online"}${n>0?` · ${n} wartet`:""}`;
+  el.title = !on
+    ? "Keine Verbindung – Ablesungen werden im Gerät gespeichert und später übertragen."
+    : (n>0 ? "Es liegen noch nicht übertragene Ablesungen vor." : "Verbunden");
+}
+
+async function offSync(still){
+  const q=offQueue();
+  if(!q.length){ if(!still) toast("Es wartet nichts auf Übertragung."); return 0; }
+  if(!istOnline()){ if(!still) toast("Keine Verbindung – Übertragung später erneut versuchen."); return 0; }
+  let ok=0; const rest=[];
+  for(const a of q){
+    try{ const {pending, ...rein}=a; await DB.saveAblesung(rein); ok++; }
+    catch(e){ console.error(e); rest.push(a); }
+  }
+  offWrite(rest);
+  if(ok && !still) toast(ok===1?"1 Ablesung übertragen.":`${ok} Ablesungen übertragen.`);
+  if(S.houseId && S.view==="house"){ await openHouse(S.houseId); }
+  else if(S.view==="ablesung"){ await openAblesung(); }
+  else netRefresh();
+  return ok;
+}
+
+function offPanel(){
+  const q=offQueue(), on=istOnline();
+  const zAll=(S._zAll&&S._zAll.length)?S._zAll:(S.zaehler||[]);
+  const nam=id=>{ const z=zAll.find(x=>x.id===id); return z? (z.bezeichnung||z.nummer||id) : id; };
+  const liste = q.length
+    ? `<div style="max-height:260px;overflow:auto;margin-top:6px">`+q.map(a=>`<div class="col-row" style="align-items:flex-start">
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:13px">${esc(nam(a.zaehlerId))}</div>
+          <div style="font-size:12px;color:var(--muted)">${esc(fmtShort(a.datum))} · ${a.status==="abgelesen"?esc(zNum(a.stand)):esc(a.status)}${a.ableser?` · ${esc(a.ableser)}`:""}</div>
+        </div></div>`).join("")+`</div>`
+    : `<p class="m">Alles übertragen – es wartet nichts.</p>`;
+  modal(`<h3>Verbindung &amp; Übertragung</h3>
+    <div class="hint">${on?I.check:I.info}<div>
+      <b>${on?"Verbunden":"Keine Verbindung"}.</b> ${on
+        ? "Neue Ablesungen werden direkt übertragen."
+        : "Ablesungen werden im Gerät gespeichert und automatisch übertragen, sobald wieder Netz da ist. Du kannst währenddessen normal weiterarbeiten."}
+      <br>Die App selbst läuft auch ohne Netz – sie wurde beim ersten Aufruf im Gerät abgelegt.
+    </div></div>
+    <div class="field"><label>Wartet auf Übertragung: ${q.length}</label>${liste}</div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">Schließen</button>
+      ${q.length?`<button class="btn danger" onclick="offVerwerfen()">Verwerfen</button>`:""}
+      ${q.length?`<button class="btn primary" onclick="closeModal();offSync()">${I.upload} Jetzt übertragen</button>`:""}
+    </div>`);
+}
+function offVerwerfen(){
+  confirmModal("Wartende Ablesungen verwerfen?","Die noch nicht übertragenen Ablesungen werden aus dem Gerät gelöscht. Das lässt sich nicht rückgängig machen.",async()=>{
+    offWrite([]);
+    if(S.houseId && S.view==="house") await openHouse(S.houseId);
+    else if(S.view==="ablesung") await openAblesung();
+    toast("Warteschlange geleert.");
+  });
+}
+
+/* Service Worker: legt die App im Gerät ab, damit sie ohne Netz startet */
+function offRegisterSW(){
+  if(!("serviceWorker" in navigator)) return;
+  if(location.protocol!=="https:" && location.hostname!=="localhost" && location.hostname!=="127.0.0.1") return;
+  navigator.serviceWorker.register("sw.js").catch(e=>console.warn("Offline-Modus nicht verfügbar:", e&&e.message));
+  let ersterWechsel=true;
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{
+    if(ersterWechsel){ ersterWechsel=false; return; }
+    toast("Neue Version geladen – bitte Seite neu laden.");
+  });
+}
+window.addEventListener("online", ()=>{ netRefresh(); toast("Verbindung wieder da – übertrage…"); offSync(true).then(n=>{ if(n) toast(n===1?"1 Ablesung übertragen.":`${n} Ablesungen übertragen.`); }); });
+window.addEventListener("offline", ()=>{ netRefresh(); toast("Keine Verbindung – Ablesungen werden im Gerät gespeichert."); });
 
 /* ---------- Direkteinstieg per QR-Code (#z=…) ---------- */
 async function zOpenDeepLink(zid){
@@ -4776,7 +4895,10 @@ async function onAuth(session){
   document.getElementById("userMail").textContent=S.userEmail;
   await loadPerm();
   await goHome();
-  zCheckHash();   // Direkteinstieg per QR-Code (#z=…)
+  netRefresh();
+  offRegisterSW();               // App im Gerät ablegen, damit sie ohne Netz startet
+  if(istOnline() && offCount()) offSync(true);   // Nachzügler aus der letzten Begehung übertragen
+  zCheckHash();                  // Direkteinstieg per QR-Code (#z=…)
 }
 
 (async function init(){

@@ -94,6 +94,18 @@ Modul für die jährliche Ablesung der Allgemein- und Unterzähler zur Betriebsk
 - **CSV-Export** für die Betriebskostenabrechnung, mit Vorperiode, aktuellem Stand und
   berechnetem Verbrauch (Semikolon als Trennzeichen, für Excel vorbereitet)
 
+**Offline-Betrieb** – Zähler stehen im Keller, und dort ist kein Empfang:
+
+- Die App wird beim ersten Aufruf **im Gerät abgelegt** (Service Worker, `sw.js`) und startet danach
+  auch ohne Verbindung. Das gilt auch für den Einstieg über einen QR-Code.
+- Ablesungen, die ohne Netz erfasst werden, landen in einer **Warteschlange im Gerät** und werden
+  **automatisch übertragen**, sobald wieder Verbindung besteht – oder auf Knopfdruck.
+- Oben in der Kopfzeile zeigt eine Anzeige *Offline* bzw. *n wartet*; ein Klick darauf öffnet die
+  Liste der wartenden Ablesungen mit den Schaltflächen **Jetzt übertragen** und **Verwerfen**.
+- Wartende Einträge sind im Objekt und in der Ableseliste mit *wartet auf Übertragung* markiert –
+  man sieht also jederzeit, was noch nicht in der Zentrale angekommen ist.
+- Die Warteschlange übersteht das Schließen der App und einen Neustart des Geräts.
+
 Über **Menü → Benutzer & Bereiche** lässt sich der Bereich *Objekte* gezielt für einen
 Ablesedienstleister freischalten – dann liest dieser direkt in die Plattform ein, statt auf Papier.
 
@@ -102,7 +114,9 @@ Ablesedienstleister freischalten – dann liest dieser direkt in die Plattform e
 ## 4. Hinweise
 
 - **Reine Demo:** Eingaben/Änderungen sind **nicht dauerhaft** – nach dem Neuladen der Seite
-  stehen wieder die ursprünglichen Testdaten bereit.
+  stehen wieder die ursprünglichen Testdaten bereit. Ausnahme: offline erfasste Ablesungen bleiben
+  bewusst in der Warteschlange im Gerät, damit sich der Offline-Ablauf zeigen lässt. Über
+  **Verwerfen** in der Verbindungsanzeige lässt sich die Warteschlange leeren.
 - **Datenschutz:** Alle Namen, Straßen, Orte und Firmen sind fiktiv; es besteht kein Bezug zu
   realen Personen oder Unternehmen.
 - **Rechte-Demo:** Unter **Menü → Benutzer & Bereiche** sind drei Beispielkonten hinterlegt
