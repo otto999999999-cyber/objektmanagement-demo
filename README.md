@@ -76,6 +76,18 @@ Modul für die jährliche Ablesung der Allgemein- und Unterzähler zur Betriebsk
 - **Eichfrist-Warnung** – Orientierung: elektronische Stromzähler 8 Jahre, Ferraris-Zähler 16,
   Wasser- und Wärmezähler 6 Jahre
 
+**QR-Etiketten für den Zählerplatz** (Reiter *Zähler & Ablesung* → *QR-Etiketten*):
+
+- Druckbogen mit einem Etikett je Zähler: QR-Code, Bezeichnung, Zählernummer, Objekt, Standort
+  und die Kennung im Klartext als Notfallweg zum Abtippen
+- Der Code enthält die Adresse der App mit der Zähler-Kennung (`…/#z=<id>`). Handy-Kamera drauf,
+  antippen – die App öffnet **direkt die Ablesemaske dieses Zählers**, mit Standort und Vorjahreswert.
+  Kein Suchen in einer Liste, keine Verwechslung zwischen mehreren Zählern im selben Schrank.
+- Die Codes werden **im Browser erzeugt** (eingebettete QR-Bibliothek, MIT-Lizenz) – kein externer
+  Dienst, keine Internetverbindung nötig, keine Daten verlassen den Rechner.
+- Anbringen: neben den Zähler, **nicht auf** Zählwerk, Typenschild oder Plombe. Etiketten laminieren
+  oder überkleben – Keller sind feucht.
+
 **Objektübergreifend** (Menü → *Zählerablesung*):
 
 - Periodenauswahl und Filter *Offen / Problemfälle / Erledigt / Eichfristen / Alle*
