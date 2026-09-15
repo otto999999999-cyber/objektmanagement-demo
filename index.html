@@ -169,6 +169,33 @@
       {id:"k6", name:"Muster Versicherung AG", gewerk:"Versicherung", person:"Ansprechpartner Versicherung", phone:"030 11 22 33", email:"gewerbe@musterversicherung.example", address:"", note:"Police GV-88 44 21"}
     ],
 
+    zaehler: [
+      {id:"z1", house_id:"h1", nummer:"1 EHZ 0012345", medium:"Strom", art:"Hauptzähler", bezeichnung:"Allgemeinstrom Treppenhaus", aufgang:"Aufgang A", etage:"Keller", raum:"Hausanschlussraum", platz:"Zählerschrank 1, Feld 2", faktor:1, stellen:6, eich_bis:"2029-12-31", msb:"Netz Musterstadt GmbH", fernauslesbar:false, lat:52.512, lng:13.485, note:"Schlüssel Nr. 4 (Hausmeister)", status:"aktiv", created_at:NOW},
+      {id:"z2", house_id:"h1", nummer:"UZ-44 118", medium:"Strom", art:"Unterzähler", bezeichnung:"Außenbeleuchtung / Hofstrom", aufgang:"Aufgang A", etage:"Keller", raum:"Hausanschlussraum", platz:"Zählerschrank 1, Feld 5", faktor:1, stellen:5, eich_bis:"2027-06-30", msb:"", fernauslesbar:false, lat:null, lng:null, note:"speist auch Müllhaus-Licht", status:"aktiv", created_at:NOW},
+      {id:"z3", house_id:"h1", nummer:"UZ-44 212", medium:"Strom", art:"Unterzähler", bezeichnung:"Tiefgarage – Licht & Tor", aufgang:"Tiefgarage", etage:"UG", raum:"TG-Technikraum", platz:"Verteilung TG, Feld 1", faktor:40, stellen:5, eich_bis:"2026-11-30", msb:"", fernauslesbar:false, lat:null, lng:null, note:"Wandlermessung – Faktor 40 beachten!", status:"aktiv", created_at:NOW},
+      {id:"z4", house_id:"h1", nummer:"WZ-1180 44", medium:"Wasser (kalt)", art:"Unterzähler", bezeichnung:"Gartenwasser / Außenzapfstelle", aufgang:"Aufgang A", etage:"Keller", raum:"Kellergang", platz:"hinter Tür 'Lager', links", faktor:1, stellen:5, eich_bis:"2027-12-31", msb:"", fernauslesbar:false, lat:null, lng:null, note:"", status:"aktiv", created_at:NOW},
+      {id:"z5", house_id:"h4", nummer:"1 EHZ 0098765", medium:"Strom", art:"Hauptzähler", bezeichnung:"Allgemeinstrom", aufgang:"Aufgang 20", etage:"Keller", raum:"Hausanschlussraum", platz:"Zählerschrank links, Feld 1", faktor:1, stellen:6, eich_bis:"2031-03-31", msb:"Netz Musterstadt GmbH", fernauslesbar:true, lat:null, lng:null, note:"moderne Messeinrichtung – Werte kommen vom MSB", status:"aktiv", created_at:NOW},
+      {id:"z6", house_id:"h4", nummer:"UZ-77 003", medium:"Strom", art:"Unterzähler", bezeichnung:"Aufzug Aufgang 26", aufgang:"Aufgang 26", etage:"Keller", raum:"Aufzugsmaschinenraum", platz:"Verteilung rechts", faktor:1, stellen:6, eich_bis:"2026-10-31", msb:"", fernauslesbar:false, lat:null, lng:null, note:"", status:"aktiv", created_at:NOW},
+      {id:"z7", house_id:"h3", nummer:"1 EHZ 0204411", medium:"Strom", art:"Hauptzähler", bezeichnung:"Allgemeinstrom Gewerbe", aufgang:"Hauptzugang", etage:"EG", raum:"Technikraum hinter Ladenzeile", platz:"Schrank A, Feld 3", faktor:1, stellen:6, eich_bis:"2030-09-30", msb:"Netz Beispielheim AG", fernauslesbar:false, lat:null, lng:null, note:"Zugang nur über Ladeninhaber", status:"aktiv", created_at:NOW},
+      {id:"z8", house_id:"h3", nummer:"WZ-5522 09", medium:"Wasser (kalt)", art:"Hauptzähler", bezeichnung:"Hauswasserzähler", aufgang:"Hauptzugang", etage:"UG", raum:"Wasserübergaberaum", platz:"Wand rechts", faktor:1, stellen:5, eich_bis:"2026-12-31", msb:"Wasserwerk Beispielheim", fernauslesbar:false, lat:null, lng:null, note:"", status:"aktiv", created_at:NOW},
+      {id:"z9", house_id:"h2", nummer:"1 EHZ 0335577", medium:"Strom", art:"Hauptzähler", bezeichnung:"Allgemeinstrom", aufgang:"", etage:"", raum:"", platz:"", faktor:1, stellen:6, eich_bis:"", msb:"", fernauslesbar:false, lat:null, lng:null, note:"Standort noch nicht erfasst – letztes Jahr nicht gefunden", status:"aktiv", created_at:NOW},
+      {id:"z10", house_id:"h5", nummer:"1 EHZ 0410022", medium:"Strom", art:"Hauptzähler", bezeichnung:"Allgemeinstrom Ladenlokal", aufgang:"Hauptzugang", etage:"EG", raum:"Flur hinter Eingang", platz:"Zählerkasten neben Sicherungskasten", faktor:1, stellen:6, eich_bis:"2028-05-31", msb:"Stadtwerke Seedorf", fernauslesbar:false, lat:null, lng:null, note:"", status:"aktiv", created_at:NOW}
+    ],
+
+    ablesungen: [
+      {id:"a1", zaehler_id:"z1", house_id:"h1", datum:monthsAgo(12), stand:184320, ableser:"Ablesedienst Beispiel", quelle:"vor Ort", status:"abgelesen", note:"", created_at:NOW},
+      {id:"a2", zaehler_id:"z1", house_id:"h1", datum:daysAgo(9),   stand:191450, ableser:"Hausmeister 1", quelle:"vor Ort", status:"abgelesen", note:"", created_at:NOW},
+      {id:"a3", zaehler_id:"z2", house_id:"h1", datum:monthsAgo(12), stand:29140, ableser:"Ablesedienst Beispiel", quelle:"vor Ort", status:"abgelesen", note:"", created_at:NOW},
+      {id:"a4", zaehler_id:"z3", house_id:"h1", datum:monthsAgo(12), stand:7712, ableser:"Ablesedienst Beispiel", quelle:"vor Ort", status:"abgelesen", note:"Wandlerfaktor 40", created_at:NOW},
+      {id:"a5", zaehler_id:"z4", house_id:"h1", datum:monthsAgo(12), stand:412, ableser:"Ablesedienst Beispiel", quelle:"vor Ort", status:"abgelesen", note:"", created_at:NOW},
+      {id:"a6", zaehler_id:"z5", house_id:"h4", datum:monthsAgo(12), stand:96440, ableser:"Netz Musterstadt GmbH", quelle:"Messstellenbetreiber", status:"abgelesen", note:"Stichtagswert aus MSB-Datei", created_at:NOW},
+      {id:"a7", zaehler_id:"z6", house_id:"h4", datum:monthsAgo(12), stand:52310, ableser:"Ablesedienst Beispiel", quelle:"vor Ort", status:"abgelesen", note:"", created_at:NOW},
+      {id:"a8", zaehler_id:"z7", house_id:"h3", datum:monthsAgo(12), stand:220870, ableser:"Ablesedienst Beispiel", quelle:"vor Ort", status:"abgelesen", note:"", created_at:NOW},
+      {id:"a9", zaehler_id:"z8", house_id:"h3", datum:monthsAgo(12), stand:3184, ableser:"Ablesedienst Beispiel", quelle:"vor Ort", status:"abgelesen", note:"", created_at:NOW},
+      {id:"a10", zaehler_id:"z9", house_id:"h2", datum:monthsAgo(12), stand:null, ableser:"Ablesedienst Beispiel", quelle:"vor Ort", status:"nicht gefunden", note:"Zähler im Keller nicht auffindbar, kein Ansprechpartner vor Ort", created_at:NOW},
+      {id:"a11", zaehler_id:"z10", house_id:"h5", datum:monthsAgo(12), stand:64180, ableser:"Ablesedienst Beispiel", quelle:"vor Ort", status:"abgelesen", note:"", created_at:NOW}
+    ],
+
     app_users: [
       {email:"admin@demo.de",       objekte:true,  reinigung:true,  aufzuege:true,  sanierung:true,  tickets:true,  admin:true},
       {email:"hausmeister@demo.de", objekte:true,  reinigung:false, aufzuege:true,  sanierung:false, tickets:true,  admin:false},
@@ -775,6 +802,54 @@ const DB = {
     const { error } = await sb.from('anlagen').delete().eq('id',id);
     if(error) console.error(error);
   },
+  /* ---- Zähler (Stammsatz) ---- */
+  async listZaehler(houseId){
+    const { data, error } = await sb.from('zaehler').select('*').eq('house_id',houseId);
+    if(error){ console.error(error); return []; }
+    return (data||[]).map(normZaehler);
+  },
+  async allZaehler(){
+    const { data, error } = await sb.from('zaehler').select('*');
+    if(error){ console.error(error); return []; }
+    return (data||[]).map(normZaehler);
+  },
+  async saveZaehler(z){
+    const row={ id:z.id, house_id:z.houseId, nummer:z.nummer||null, medium:z.medium||null, art:z.art||null,
+      bezeichnung:z.bezeichnung||null, aufgang:z.aufgang||null, etage:z.etage||null, raum:z.raum||null,
+      platz:z.platz||null, faktor:z.faktor||1, stellen:z.stellen||null, eich_bis:z.eichBis||null,
+      msb:z.msb||null, fernauslesbar:!!z.fernauslesbar, lat:z.lat==null?null:z.lat, lng:z.lng==null?null:z.lng,
+      note:z.note||null, status:z.status||"aktiv", updated_at:new Date().toISOString() };
+    const { error } = await sb.from('zaehler').upsert(row);
+    if(error){ console.error(error); throw error; }
+  },
+  async deleteZaehler(id){
+    let r = await sb.from('ablesungen').delete().eq('zaehler_id',id);
+    if(r && r.error) console.error(r.error);
+    const { error } = await sb.from('zaehler').delete().eq('id',id);
+    if(error) console.error(error);
+  },
+  /* ---- Ablesungen ---- */
+  async listAblesungen(zaehlerId){
+    const { data, error } = await sb.from('ablesungen').select('*').eq('zaehler_id',zaehlerId);
+    if(error){ console.error(error); return []; }
+    return (data||[]).map(normAblesung).sort((a,b)=>(b.datum||"").localeCompare(a.datum||""));
+  },
+  async allAblesungen(){
+    const { data, error } = await sb.from('ablesungen').select('*');
+    if(error){ console.error(error); return []; }
+    return (data||[]).map(normAblesung);
+  },
+  async saveAblesung(a){
+    const row={ id:a.id, zaehler_id:a.zaehlerId, house_id:a.houseId||null, datum:a.datum||null,
+      stand:(a.stand===""||a.stand==null)?null:Number(a.stand), ableser:a.ableser||null,
+      quelle:a.quelle||null, status:a.status||null, note:a.note||null, created_at:new Date().toISOString() };
+    const { error } = await sb.from('ablesungen').upsert(row);
+    if(error){ console.error(error); throw error; }
+  },
+  async deleteAblesung(id){
+    const { error } = await sb.from('ablesungen').delete().eq('id',id);
+    if(error) console.error(error);
+  },
   /* ---- Wartungs-Historie ---- */
   async listWartungLog(anlageId){
     const { data, error } = await sb.from('wartung_log').select('*').eq('anlage_id',anlageId).order('date',{ascending:false});
@@ -868,6 +943,20 @@ function normAnlage(d){
   if(!d) return null;
   return { id:d.id, houseId:d.house_id, name:d.name||"", interval:d.interval_months||0,
     lastDate:d.last_date||"", firm:d.firm||"", note:d.note||"", art:d.art||"" };
+}
+function normZaehler(d){
+  if(!d) return null;
+  return { id:d.id, houseId:d.house_id, nummer:d.nummer||"", medium:d.medium||"Strom", art:d.art||"Hauptzähler",
+    bezeichnung:d.bezeichnung||"", aufgang:d.aufgang||"", etage:d.etage||"", raum:d.raum||"", platz:d.platz||"",
+    faktor:Number(d.faktor||1)||1, stellen:d.stellen==null?null:Number(d.stellen), eichBis:d.eich_bis||"",
+    msb:d.msb||"", fernauslesbar:!!d.fernauslesbar, lat:d.lat==null?null:Number(d.lat), lng:d.lng==null?null:Number(d.lng),
+    note:d.note||"", status:d.status||"aktiv" };
+}
+function normAblesung(d){
+  if(!d) return null;
+  return { id:d.id, zaehlerId:d.zaehler_id, houseId:d.house_id||"", datum:d.datum||"",
+    stand:(d.stand==null?null:Number(d.stand)), ableser:d.ableser||"", quelle:d.quelle||"vor Ort",
+    status:d.status||"abgelesen", note:d.note||"" };
 }
 function normNachweis(n){
   if(!n) return null;
@@ -1046,12 +1135,16 @@ function countCond(insp){
 async function goHome(){ S.view="home"; S.houses=await DB.listHouses(); render(); }
 async function doLogout(){ try{ await sb.auth.signOut(); }catch(e){} location.reload(); }
 async function loadAlerts(){
-  const a={tickets:0,meldungen:0,wartung:0,aufzug:0,total:0};
+  const a={tickets:0,meldungen:0,wartung:0,aufzug:0,zaehler:0,total:0};
   try{
     if(canArea("tickets")){ const t=await DB.listTickets(); a.tickets=t.filter(tkOverdue).length; }
     if(canArea("objekte")||canArea("aufzuege")){ const l=await DB.listMeldungenLog(); a.meldungen=l.filter(logOverdue).length; }
     if(canArea("objekte")){ const an=await DB.allAnlagen(); a.wartung=an.filter(x=>wartStatus(x).level==="overdue").length; }
     if(canArea("aufzuege")){ const az=await DB.listAufzuege(); a.aufzug=az.filter(x=>liftWart(x).level==="overdue"||liftTuev(x).level==="overdue").length; }
+    if(canArea("objekte")){
+      const zz=await DB.allZaehler(), aa=await DB.allAblesungen(), per=abPeriode();
+      a.zaehler=zz.filter(z=>!aa.some(x=>x.zaehlerId===z.id && (x.datum||"").slice(0,4)===per && x.status==="abgelesen")).length;
+    }
   }catch(e){}
   a.total=a.tickets+a.meldungen+a.wartung+a.aufzug;
   S.alerts=a; refreshMenuBadge();
@@ -1067,6 +1160,8 @@ async function openHouse(id){
   const insps=await DB.listInspections(id);   // bereits nach Datum absteigend
   S.hidx=insps.map(it=>({id:it.id,date:it.date,inspector:it.inspector,updatedAt:it.updatedAt,finalized:!!it.finalizedAt,counts:countCond(it)}));
   S.anlagen=await DB.listAnlagen(id);
+  S.zaehler=await DB.listZaehler(id);
+  S.ablesungen=(await DB.allAblesungen()).filter(a=>a.houseId===id);
   render();
 }
 async function newInspection(){
@@ -1133,6 +1228,7 @@ function render(){
   if(S.view==="meldungen") return openMeldungen();
   if(S.view==="tickets") return openTickets();
   if(S.view==="kontakte") return renderKontakte();
+  if(S.view==="ablesung") return renderAblesung();
 }
 function icon(p){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`; }
 const I = {
@@ -1307,6 +1403,7 @@ function renderDashCards(d){
   if(canArea("reinigung")) cards.push(dashCard(I.broom,"Reinigung heute",d.rToday??0, d.rLaufend?`${d.rLaufend} laufend`:"keine laufend", d.rLaufend?"accent-mid":"", "openReinigung()"));
   if(canArea("sanierung")) cards.push(dashCard(I.hammer,"Sanierungen laufend",d.sLauf??0, d.sLauf?"in Bearbeitung":"keine laufend", "", "openSanierung()"));
   if(canArea("objekte")||canArea("aufzuege")) cards.push(dashCard(I.bell,"Meldungen überfällig",d.mlOver??0, `${d.mlOpen||0} offen gesamt`, d.mlOver?"accent-bad":"", "openMeldungen()"));
+  if(canArea("objekte")) cards.push(dashCard(I.grid,"Zähler abzulesen",d.zOffen??0, `${d.zGesamt||0} Zähler · <span class="${d.zProblem?"dc-bad":""}">${d.zProblem||0} Problemfälle</span>`, d.zProblem?"accent-bad":(d.zOffen?"accent-mid":""), "openAblesung()"));
   return cards.join("");
 }
 async function fillDashboard(){
@@ -1327,6 +1424,12 @@ async function fillDashboard(){
       an.forEach(a=>{ if(wartStatus(a).level==="overdue"){ const id=a.houseId; (attn[id]=attn[id]||{defects:0,wartOver:0}).wartOver++; } });
       S.houseAttn=attn;
       if(S.view==="home") renderObjList();
+      const zz=await DB.allZaehler(), aa=await DB.allAblesungen(), per=abPeriode();
+      const cur=z=>aa.filter(x=>x.zaehlerId===z.id&&(x.datum||"").slice(0,4)===per)
+        .sort((x,y)=>(y.datum||"").localeCompare(x.datum||""))[0]||null;
+      d.zGesamt=zz.length;
+      d.zOffen=zz.filter(z=>!cur(z)).length;
+      d.zProblem=zz.filter(z=>{ const c=cur(z); return c && c.status!=="abgelesen"; }).length;
     }
     if(canArea("aufzuege")){
       const az=await DB.listAufzuege();
@@ -1366,13 +1469,21 @@ function renderHouse(){
   const soon=(S.anlagen||[]).filter(a=>wartStatus(a).level==="soon").length;
   const wartBadge = overdue?`<span class="chip bad" style="margin-left:7px">${overdue} überfällig</span>`:(soon?`<span class="chip mid" style="margin-left:7px">${soon} bald</span>`:"");
 
+  const zList=S.zaehler||[];
+  const zOffen=zList.filter(z=>!zPeriodeEintrag(z.id,abPeriode())).length;
+  const zBadge = zOffen?`<span class="chip mid" style="margin-left:7px">${zOffen} offen</span>`:"";
+
   const tabs=`<div class="tabs">
     <button class="tab ${tab==='begehungen'?'on':''}" onclick="setHouseTab('begehungen')">${I.book} Begehungen <span class="tabn">${items.length}</span></button>
     <button class="tab ${tab==='wartung'?'on':''}" onclick="setHouseTab('wartung')">${I.wrench} Technik &amp; Wartung <span class="tabn">${(S.anlagen||[]).length}</span>${wartBadge}</button>
+    <button class="tab ${tab==='zaehler'?'on':''}" onclick="setHouseTab('zaehler')">${I.grid} Zähler &amp; Ablesung <span class="tabn">${zList.length}</span>${zBadge}</button>
   </div>`;
 
   let content, toolbar;
-  if(tab==="wartung"){
+  if(tab==="zaehler"){
+    toolbar=`<button class="btn" onclick="openStammblatt()">${I.book} Stammblatt</button>${zList.length?`<button class="btn" onclick="exportZaehlerCSV('house')">${I.download} CSV</button>`:""}<button class="btn primary" onclick="addZaehler()">${I.plus} Zähler anlegen</button>`;
+    content=houseZaehlerHTML();
+  } else if(tab==="wartung"){
     toolbar=`<button class="btn" onclick="openStammblatt()">${I.book} Stammblatt</button><button class="btn" onclick="openDokumente()">${I.file} Dokumente</button><button class="btn" onclick="exportObjektakte()">${I.pdf} Objektakte</button><button class="btn primary" onclick="addAnlage()">${I.plus} Anlage hinzufügen</button>`;
     content=houseWartungHTML();
   } else {
@@ -1629,6 +1740,394 @@ function renderWartList(){
   box.innerHTML = rows.length? rows.map(wartCard).join("") : `<div class="empty card" style="border-style:dashed">${I.wrench}<h3>Keine Einträge</h3><p>Für diese Art ist nichts erfasst.</p></div>`;
 }
 function openHouseWart(id){ S.houseTab="wartung"; openHouse(id); }
+
+/* ===================== Zähler & Ablesung ===================== */
+const MEDIEN=["Strom","Wasser (kalt)","Wasser (warm)","Wärme","Gas"];
+const ZAEHLER_ART=["Hauptzähler","Unterzähler"];
+const ABLESE_STATUS=["abgelesen","nicht gefunden","kein Zugang","defekt","ausgebaut"];
+const ABLESE_QUELLE=["vor Ort","Messstellenbetreiber","Portal / Rechnung","Schätzung"];
+/* Eichgültigkeitsdauer als Orientierung: Strom elektronisch 8 J., Ferraris 16 J., Wasser/Wärme 6 J. */
+
+function zMediumIcon(m){ return m&&m.indexOf("Wasser")===0 ? "💧" : m==="Wärme" ? "🔥" : m==="Gas" ? "🟠" : "⚡"; }
+function zStandort(z){
+  const p=[z.aufgang,z.etage,z.raum,z.platz].map(x=>(x||"").trim()).filter(Boolean);
+  return p.length? p.join(" · ") : "";
+}
+function eichStatus(z){
+  if(!z.eichBis) return {level:"none", label:"Eichfrist nicht erfasst", days:null};
+  const d=daysUntil(z.eichBis);
+  if(d<0)   return {level:"overdue", label:"Eichfrist abgelaufen", days:d};
+  if(d<=180)return {level:"soon",    label:"Eichfrist läuft aus",  days:d};
+  return {level:"ok", label:"geeicht", days:d};
+}
+function abPeriode(){ return S.zPeriode || String(new Date().getFullYear()); }
+function zLetzte(zid, bisPeriode){
+  const list=(S.ablesungen||[]).filter(a=>a.zaehlerId===zid && a.stand!=null)
+    .sort((a,b)=>(b.datum||"").localeCompare(a.datum||""));
+  if(bisPeriode) return list.find(a=>(a.datum||"").slice(0,4)<bisPeriode)||null;
+  return list[0]||null;
+}
+function zPeriodeEintrag(zid, per){
+  return (S.ablesungen||[]).filter(a=>a.zaehlerId===zid && (a.datum||"").slice(0,4)===per)
+    .sort((a,b)=>(b.datum||"").localeCompare(a.datum||""))[0]||null;
+}
+/* Plausibilitätsprüfung: fängt Zahlendreher, Rücklauf und Zählerüberlauf ab */
+function zPlausi(z, neuStand, neuDatum){
+  if(neuStand==null||neuStand==="") return null;
+  const neu=Number(neuStand);
+  if(!isFinite(neu)) return {level:"bad", msg:"Der Zählerstand ist keine gültige Zahl."};
+  if(neu<0) return {level:"bad", msg:"Ein negativer Zählerstand ist nicht möglich."};
+  if(z.stellen && String(Math.floor(neu)).length > z.stellen)
+    return {level:"bad", msg:`Der Wert hat mehr Stellen (${String(Math.floor(neu)).length}) als das Zählwerk (${z.stellen}). Bitte Eingabe prüfen.`};
+  const prev=zLetzte(z.id);
+  if(!prev) return null;
+  if(neu < prev.stand){
+    return {level:"bad", msg:`Rücklauf: Der neue Stand (${zNum(neu)}) liegt unter dem letzten Stand vom ${fmtShort(prev.datum)} (${zNum(prev.stand)}). Zählerwechsel, Überlauf oder Zahlendreher?`};
+  }
+  const tage=Math.max(1, Math.round((new Date(neuDatum+"T00:00:00")-new Date(prev.datum+"T00:00:00"))/86400000));
+  const proTag=(neu-prev.stand)/tage;
+  const vor=zLetzte(z.id, (prev.datum||"").slice(0,4));
+  if(vor && vor.stand!=null){
+    const tageV=Math.max(1, Math.round((new Date(prev.datum+"T00:00:00")-new Date(vor.datum+"T00:00:00"))/86400000));
+    const proTagV=(prev.stand-vor.stand)/tageV;
+    if(proTagV>0 && proTag > proTagV*3)
+      return {level:"warn", msg:`Auffällig hoher Verbrauch: ${zNum(Math.round(proTag*365))} pro Jahr gegenüber ${zNum(Math.round(proTagV*365))} in der Vorperiode. Bitte gegenprüfen.`};
+    if(proTagV>0 && proTag < proTagV*0.25)
+      return {level:"warn", msg:`Auffällig niedriger Verbrauch: ${zNum(Math.round(proTag*365))} pro Jahr gegenüber ${zNum(Math.round(proTagV*365))} in der Vorperiode. Bitte gegenprüfen.`};
+  }
+  return {level:"ok", msg:`Verbrauch seit ${fmtShort(prev.datum)}: ${zNum(Math.round((neu-prev.stand)*(z.faktor||1)))} ${zEinheit(z)} in ${tage} Tagen.`};
+}
+function zNum(n){ return (n==null||n==="")?"–":Number(n).toLocaleString("de-DE"); }
+function zEinheit(z){ return z.medium==="Strom"?"kWh":(z.medium&&z.medium.indexOf("Wasser")===0)?"m³":z.medium==="Wärme"?"kWh":z.medium==="Gas"?"m³":""; }
+
+/* ---------- Objekt-Tab „Zähler" ---------- */
+function houseZaehlerHTML(){
+  const per=abPeriode();
+  const list=(S.zaehler||[]).slice().sort((a,b)=>
+    (a.art===b.art?0:(a.art==="Hauptzähler"?-1:1)) || (a.bezeichnung||"").localeCompare(b.bezeichnung||""));
+  if(!list.length){
+    return `<div class="empty card" style="border-style:dashed">${I.grid}<h3>Noch keine Zähler erfasst</h3>
+      <p>Lege je Liegenschaft die Allgemein- und Unterzähler an: Zählernummer, Standort im Gebäude und Eichfrist.
+      Danach kann vor Ort abgelesen werden, ohne den Zähler zu suchen.</p>
+      <div style="margin-top:18px"><button class="btn primary" onclick="addZaehler()">${I.plus} Zähler anlegen</button></div></div>`;
+  }
+  const offen=list.filter(z=>!zPeriodeEintrag(z.id,per)).length;
+  const head=`<div class="hint">${I.info}<div>Ableseperiode <b>${esc(per)}</b> · <b>${list.length-offen}</b> von <b>${list.length}</b> Zählern erfasst${offen?` · <b>${offen}</b> offen`:" · vollständig"}.</div></div>`;
+  const rows=list.map(z=>{
+    const e=eichStatus(z);
+    const cur=zPeriodeEintrag(z.id,per);
+    const prev=zLetzte(z.id, per);
+    const lvl = cur ? (cur.status==="abgelesen"?"ok":"overdue") : "soon";
+    const statusChip = cur
+      ? (cur.status==="abgelesen"
+          ? `<span class="chip good">${esc(per)}: ${zNum(cur.stand)} ${esc(zEinheit(z))}</span>`
+          : `<span class="chip bad">${esc(per)}: ${esc(cur.status)}</span>`)
+      : `<span class="chip mid">${esc(per)}: noch offen</span>`;
+    const eichChip = e.level==="none" ? `<span class="chip na">Eichfrist offen</span>`
+      : `<span class="chip ${wartClass(e.level)}">${esc(e.label)}${e.days!=null&&e.level!=="ok"?` · ${e.days<0?Math.abs(e.days)+" T":"in "+e.days+" T"}`:""}</span>`;
+    const ort=zStandort(z);
+    return `<div class="def card" style="border-left-color:var(--${lvl==="overdue"?"bad":lvl==="soon"?"mid":"good"})">
+      <div class="body">
+        <div class="area">${zMediumIcon(z.medium)} ${esc(z.bezeichnung||z.nummer||"(ohne Bezeichnung)")}
+          <span class="chip na" style="font-weight:600">${esc(z.art)}</span> ${statusChip} ${eichChip}
+          ${z.fernauslesbar?`<span class="chip good">fernauslesbar</span>`:""}
+          ${(z.faktor&&z.faktor!==1)?`<span class="chip mid">Wandler ×${esc(String(z.faktor))}</span>`:""}</div>
+        <div class="kv"><b>Zählernummer:</b> ${esc(z.nummer||"–")} &nbsp;·&nbsp; <b>Medium:</b> ${esc(z.medium)}${z.stellen?` &nbsp;·&nbsp; <b>Zählwerk:</b> ${esc(String(z.stellen))} Stellen`:""}</div>
+        <div class="kv"><b>Standort:</b> ${ort?esc(ort):`<span style="color:var(--bad)">nicht erfasst – bitte bei der nächsten Begehung aufnehmen</span>`}${(z.lat!=null&&z.lng!=null)?` &nbsp;·&nbsp; ${I.mapPin?"":""}<a href="https://www.openstreetmap.org/?mlat=${z.lat}&mlon=${z.lng}#map=19/${z.lat}/${z.lng}" target="_blank" rel="noopener">Gebäude auf Karte</a>`:""}</div>
+        <div class="kv"><b>Vorperiode:</b> ${prev?`${esc(fmtShort(prev.datum))} · ${zNum(prev.stand)} ${esc(zEinheit(z))}`:"–"}${z.msb?` &nbsp;·&nbsp; <b>Messstellenbetreiber:</b> ${esc(z.msb)}`:""}${z.eichBis?` &nbsp;·&nbsp; <b>Eichfrist bis:</b> ${esc(fmtShort(z.eichBis))}`:""}</div>
+        ${z.note?`<div class="kv" style="color:var(--muted)">${esc(z.note)}</div>`:""}
+        <div style="display:flex;gap:7px;margin-top:9px;flex-wrap:wrap">
+          <button class="btn sm primary" onclick="ableseModal('${z.id}')">${I.pen} Ablesen</button>
+          <button class="btn sm" onclick="openZHist('${z.id}')">${I.book} Historie</button>
+          <button class="btn sm" onclick="addZaehler('${z.id}')">${I.edit} Bearbeiten</button>
+          <button class="btn sm danger" onclick="delZaehler('${z.id}')">${I.trash}</button>
+        </div>
+      </div></div>`;
+  }).join("");
+  return head+rows;
+}
+
+/* ---------- Zähler-Stammsatz ---------- */
+function addZaehler(id){
+  const z = id? (S.zaehler||[]).find(x=>x.id===id) : null;
+  const sel=(opts,val)=>opts.map(o=>`<option value="${esc(o)}" ${val===o?"selected":""}>${esc(o)}</option>`).join("");
+  modal(`<h3>${z?"Zähler bearbeiten":"Zähler anlegen"}</h3>
+    <div class="field"><label>Zählernummer</label><input id="zNr" placeholder="z. B. 1 EHZ 0012345" value="${z?esc(z.nummer):""}"></div>
+    <div class="field"><label>Bezeichnung</label><input id="zBez" placeholder="z. B. Allgemeinstrom Treppenhaus" value="${z?esc(z.bezeichnung):""}"></div>
+    <div class="field"><label>Medium</label><select id="zMed">${sel(MEDIEN, z?z.medium:"Strom")}</select></div>
+    <div class="field"><label>Art</label><select id="zArt">${sel(ZAEHLER_ART, z?z.art:"Hauptzähler")}</select></div>
+    <div class="hint" style="margin:10px 0">${I.info}<div><b>Standort im Gebäude</b> – das ist die Angabe, die das Suchen beendet. GPS hilft hier nicht: im Keller gibt es keinen Empfang.</div></div>
+    <div class="field"><label>Aufgang / Gebäudeteil</label><input id="zAufgang" placeholder="z. B. Aufgang A, Tiefgarage" value="${z?esc(z.aufgang):""}"></div>
+    <div class="field"><label>Etage</label><input id="zEtage" placeholder="z. B. Keller, UG, EG" value="${z?esc(z.etage):""}"></div>
+    <div class="field"><label>Raum</label><input id="zRaum" placeholder="z. B. Hausanschlussraum" value="${z?esc(z.raum):""}"></div>
+    <div class="field"><label>Zählerplatz</label><input id="zPlatz" placeholder="z. B. Zählerschrank 1, Feld 2" value="${z?esc(z.platz):""}"></div>
+    <div class="field"><label>Zählwerk (Stellen vor dem Komma)</label><input id="zStellen" type="number" min="1" max="9" placeholder="z. B. 6" value="${z&&z.stellen?esc(String(z.stellen)):""}"></div>
+    <div class="field"><label>Wandlerfaktor</label><input id="zFaktor" type="number" min="1" step="1" value="${z?esc(String(z.faktor||1)):"1"}"><div class="hint" style="margin-top:6px">${I.info}<div>Nur bei Wandlermessung ungleich 1 – sonst wird später um genau diesen Faktor falsch abgerechnet.</div></div></div>
+    <div class="field"><label>Eichfrist läuft ab am</label><input id="zEich" type="date" value="${z?esc(z.eichBis):""}"><div class="hint" style="margin-top:6px">${I.info}<div>Orientierung: elektronische Stromzähler 8 Jahre, Ferraris-Zähler 16, Wasser- und Wärmezähler 6 Jahre.</div></div></div>
+    <div class="field"><label>Messstellenbetreiber (optional)</label><input id="zMsb" placeholder="z. B. Netz Musterstadt GmbH" value="${z?esc(z.msb):""}"></div>
+    <div class="field"><label><input type="checkbox" id="zFern" ${z&&z.fernauslesbar?"checked":""}> fernauslesbar – Werte kommen vom Messstellenbetreiber</label></div>
+    <div class="field"><label>GPS des Gebäudezugangs (optional)</label>
+      <input id="zGeo" placeholder="noch nicht erfasst" value="${(z&&z.lat!=null&&z.lng!=null)?esc(z.lat.toFixed(6)+", "+z.lng.toFixed(6)):""}" readonly>
+      <div style="margin-top:6px;display:flex;gap:7px;flex-wrap:wrap">
+        <button type="button" class="btn sm" onclick="zGeoErfassen()">${I.mapPin} Position übernehmen</button>
+        <button type="button" class="btn sm ghost" onclick="document.getElementById('zGeo').value=''">Löschen</button>
+      </div>
+      <div class="hint" style="margin-top:6px">${I.info}<div>Sinnvoll draußen am Hauseingang – für verstreute Bestände und Hinterhäuser. Im Keller liefert GPS keinen brauchbaren Wert.</div></div></div>
+    <div class="field"><label>Bemerkung (optional)</label><input id="zNote" placeholder="z. B. Schlüssel Nr. 4, Zugang über Hausmeister" value="${z?esc(z.note):""}"></div>
+    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Abbrechen</button>
+    <button class="btn primary" onclick="saveZaehlerForm('${z?z.id:""}')">${z?"Speichern":"Anlegen"}</button></div>`);
+  setTimeout(()=>document.getElementById("zNr")?.focus(),50);
+}
+function zGeoErfassen(){
+  const f=document.getElementById("zGeo"); if(!f) return;
+  if(!navigator.geolocation){ toast("Dieses Gerät liefert keine Position."); return; }
+  f.value="Position wird ermittelt…";
+  navigator.geolocation.getCurrentPosition(
+    p=>{ f.value=p.coords.latitude.toFixed(6)+", "+p.coords.longitude.toFixed(6);
+         toast("Position übernommen (Genauigkeit ca. "+Math.round(p.coords.accuracy)+" m)."); },
+    e=>{ f.value=""; toast("Position nicht verfügbar"+(e&&e.message?": "+e.message:" – im Keller normal.")); },
+    {enableHighAccuracy:true, timeout:10000, maximumAge:0});
+}
+async function saveZaehlerForm(id){
+  const nr=document.getElementById("zNr").value.trim();
+  const bez=document.getElementById("zBez").value.trim();
+  if(!nr && !bez){ toast("Bitte Zählernummer oder Bezeichnung angeben."); return; }
+  const geo=(document.getElementById("zGeo").value||"").split(",").map(s=>parseFloat(s.trim()));
+  const hasGeo = geo.length===2 && isFinite(geo[0]) && isFinite(geo[1]);
+  const z={ id:id||uid(), houseId:S.houseId, nummer:nr, bezeichnung:bez,
+    medium:document.getElementById("zMed").value,
+    art:document.getElementById("zArt").value,
+    aufgang:document.getElementById("zAufgang").value.trim(),
+    etage:document.getElementById("zEtage").value.trim(),
+    raum:document.getElementById("zRaum").value.trim(),
+    platz:document.getElementById("zPlatz").value.trim(),
+    stellen:parseInt(document.getElementById("zStellen").value,10)||null,
+    faktor:parseFloat(document.getElementById("zFaktor").value)||1,
+    eichBis:document.getElementById("zEich").value||"",
+    msb:document.getElementById("zMsb").value.trim(),
+    fernauslesbar:document.getElementById("zFern").checked,
+    lat:hasGeo?geo[0]:null, lng:hasGeo?geo[1]:null,
+    note:document.getElementById("zNote").value.trim(), status:"aktiv" };
+  try{ await DB.saveZaehler(z); }catch(e){ showError("Zähler konnte nicht gespeichert werden", e); return; }
+  const pos=(S.zaehler||[]).findIndex(x=>x.id===z.id);
+  if(pos>=0) S.zaehler[pos]=z; else (S.zaehler=S.zaehler||[]).push(z);
+  closeModal(); renderHouse();
+}
+function delZaehler(id){
+  confirmModal("Zähler löschen?","Der Zähler wird mit allen Ablesungen dauerhaft aus diesem Objekt entfernt.",async()=>{
+    await DB.deleteZaehler(id);
+    S.zaehler=(S.zaehler||[]).filter(x=>x.id!==id);
+    S.ablesungen=(S.ablesungen||[]).filter(a=>a.zaehlerId!==id);
+    renderHouse();
+  });
+}
+
+/* ---------- Ablesung ---------- */
+function ableseModal(zid){
+  const z=(S.zaehler||[]).find(x=>x.id===zid); if(!z) return;
+  const prev=zLetzte(zid);
+  const ort=zStandort(z);
+  const sel=(opts,val)=>opts.map(o=>`<option value="${esc(o)}" ${val===o?"selected":""}>${esc(o)}</option>`).join("");
+  modal(`<h3>Ablesung – ${esc(z.bezeichnung||z.nummer)}</h3>
+    <p class="m">${esc(z.medium)} · ${esc(z.art)} · Nr. ${esc(z.nummer||"–")}${(z.faktor&&z.faktor!==1)?` · <b>Wandlerfaktor ×${esc(String(z.faktor))}</b>`:""}</p>
+    ${ort?`<div class="hint">${I.mapPin}<div><b>Standort:</b> ${esc(ort)}${z.note?`<br>${esc(z.note)}`:""}</div></div>`:""}
+    <div class="field"><label>Status</label><select id="abStatus" onchange="zToggleStand()">${sel(ABLESE_STATUS,"abgelesen")}</select></div>
+    <div class="field" id="abStandBox"><label>Zählerstand${zEinheit(z)?` (${esc(zEinheit(z))})`:""}</label>
+      <input id="abStand" type="number" step="0.001" inputmode="decimal" placeholder="${prev?"letzter Stand: "+zNum(prev.stand):"Zählerstand"}" oninput="zPruefeStand('${zid}')">
+      <div id="abPruef" style="margin-top:8px"></div></div>
+    <div class="field"><label>Ablesedatum</label><input id="abDatum" type="date" value="${todayISO()}" onchange="zPruefeStand('${zid}')"></div>
+    <div class="field"><label>Abgelesen von</label><input id="abAbleser" placeholder="Name oder Firma" value="${esc(S.userEmail||"")}"></div>
+    <div class="field"><label>Quelle</label><select id="abQuelle">${sel(ABLESE_QUELLE, z.fernauslesbar?"Messstellenbetreiber":"vor Ort")}</select></div>
+    <div class="field"><label>Bemerkung (optional)</label><input id="abNote" placeholder="z. B. Zähler verschmutzt, Plombe beschädigt"></div>
+    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Abbrechen</button>
+    <button class="btn primary" onclick="saveAblesungForm('${zid}')">Speichern</button></div>`);
+  setTimeout(()=>document.getElementById("abStand")?.focus(),50);
+}
+function zToggleStand(){
+  const st=document.getElementById("abStatus").value;
+  const box=document.getElementById("abStandBox");
+  if(box) box.style.display = (st==="abgelesen") ? "" : "none";
+}
+function zPruefeStand(zid){
+  const z=(S.zaehler||[]).find(x=>x.id===zid); if(!z) return;
+  const box=document.getElementById("abPruef"); if(!box) return;
+  const v=document.getElementById("abStand").value;
+  const d=document.getElementById("abDatum").value||todayISO();
+  if(v===""){ box.innerHTML=""; return; }
+  const r=zPlausi(z, v, d);
+  if(!r){ box.innerHTML=""; return; }
+  const col = r.level==="bad"?"var(--bad)":r.level==="warn"?"var(--mid)":"var(--good)";
+  box.innerHTML=`<div style="border-left:3px solid ${col};padding:7px 10px;background:rgba(0,0,0,.03);border-radius:6px;font-size:12.5px;line-height:1.45">${esc(r.msg)}</div>`;
+}
+async function saveAblesungForm(zid){
+  const z=(S.zaehler||[]).find(x=>x.id===zid); if(!z) return;
+  const status=document.getElementById("abStatus").value;
+  const datum=document.getElementById("abDatum").value||todayISO();
+  const standRaw=document.getElementById("abStand").value;
+  if(status==="abgelesen" && standRaw===""){ toast("Bitte einen Zählerstand eingeben – oder den Status ändern."); return; }
+  if(status==="abgelesen"){
+    const r=zPlausi(z, standRaw, datum);
+    if(r && r.level==="bad" && !S._zForce){
+      S._zForce=true;
+      document.getElementById("abPruef").innerHTML=
+        `<div style="border-left:3px solid var(--bad);padding:7px 10px;background:rgba(0,0,0,.03);border-radius:6px;font-size:12.5px;line-height:1.45">
+          ${esc(r.msg)}<br><b>Noch einmal auf „Speichern" klicken, um den Wert trotzdem zu übernehmen.</b></div>`;
+      return;
+    }
+  }
+  S._zForce=false;
+  const a={ id:uid(), zaehlerId:zid, houseId:z.houseId, datum,
+    stand: status==="abgelesen"? Number(standRaw) : null,
+    ableser:document.getElementById("abAbleser").value.trim(),
+    quelle:document.getElementById("abQuelle").value,
+    status, note:document.getElementById("abNote").value.trim() };
+  try{ await DB.saveAblesung(a); }catch(e){ showError("Ablesung konnte nicht gespeichert werden", e); return; }
+  (S.ablesungen=S.ablesungen||[]).push(a);
+  closeModal();
+  toast(status==="abgelesen"?"Ablesung gespeichert.":`Als „${status}" vermerkt – erscheint in der offenen Liste.`);
+  renderHouse();
+}
+function openZHist(zid){
+  const z=(S.zaehler||[]).find(x=>x.id===zid); if(!z) return;
+  const list=(S.ablesungen||[]).filter(a=>a.zaehlerId===zid)
+    .sort((a,b)=>(b.datum||"").localeCompare(a.datum||""));
+  let rows;
+  if(!list.length){ rows=`<p class="m">Für diesen Zähler ist noch keine Ablesung erfasst.</p>`; }
+  else {
+    rows=`<div>`+list.map((a,i)=>{
+      const nxt=list.slice(i+1).find(x=>x.stand!=null);
+      let verbrauch="";
+      if(a.stand!=null && nxt && nxt.stand!=null){
+        const tage=Math.max(1,Math.round((new Date(a.datum+"T00:00:00")-new Date(nxt.datum+"T00:00:00"))/86400000));
+        verbrauch=` · Verbrauch ${zNum(Math.round((a.stand-nxt.stand)*(z.faktor||1)))} ${zEinheit(z)} in ${tage} T`;
+      }
+      const bad=a.status!=="abgelesen";
+      return `<div class="col-row" style="align-items:flex-start">
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:13.5px">${esc(fmtShort(a.datum))} · ${bad?`<span style="color:var(--bad)">${esc(a.status)}</span>`:`${zNum(a.stand)} ${esc(zEinheit(z))}`}</div>
+          <div style="font-size:12px;color:var(--muted)">${esc(a.ableser||"–")} · ${esc(a.quelle)}${esc(verbrauch)}${a.note?` · ${esc(a.note)}`:""}</div>
+        </div>
+        <button class="btn sm danger" onclick="delAblesung('${a.id}','${zid}')">${I.trash}</button>
+      </div>`;
+    }).join("")+`</div>`;
+  }
+  modal(`<h3>Historie – ${esc(z.bezeichnung||z.nummer)}</h3>
+    <p class="m">Nr. ${esc(z.nummer||"–")}${zStandort(z)?` · ${esc(zStandort(z))}`:""}</p>
+    ${rows}
+    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Schließen</button>
+    <button class="btn primary" onclick="closeModal();ableseModal('${zid}')">${I.pen} Neue Ablesung</button></div>`);
+}
+function delAblesung(id,zid){
+  confirmModal("Ablesung löschen?","Der Eintrag wird dauerhaft aus der Historie entfernt.",async()=>{
+    await DB.deleteAblesung(id);
+    S.ablesungen=(S.ablesungen||[]).filter(a=>a.id!==id);
+    closeModal(); renderHouse();
+    setTimeout(()=>openZHist(zid),80);
+  });
+}
+
+/* ---------- CSV-Export für die Betriebskostenabrechnung ---------- */
+function zCsvCell(v){ const s=(v==null?"":String(v)); return /[";\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; }
+function zDownload(name, text){
+  const blob=new Blob(["﻿"+text],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500);
+}
+function exportZaehlerCSV(scope){
+  const per=abPeriode();
+  const houses={}; (S.houses||[]).forEach(h=>houses[h.id]=h);
+  const zs = scope==="all" ? (S._zAll||[]) : (S.zaehler||[]);
+  const abs = scope==="all" ? (S._aAll||[]) : (S.ablesungen||[]);
+  const last=(zid,bis)=>abs.filter(a=>a.zaehlerId===zid&&a.stand!=null&&(!bis||(a.datum||"").slice(0,4)<bis))
+    .sort((a,b)=>(b.datum||"").localeCompare(a.datum||""))[0]||null;
+  const cur=(zid)=>abs.filter(a=>a.zaehlerId===zid&&(a.datum||"").slice(0,4)===per)
+    .sort((a,b)=>(b.datum||"").localeCompare(a.datum||""))[0]||null;
+  const head=["Objekt","Wirtschaftseinheit","Zaehlernummer","Bezeichnung","Medium","Art","Standort","Wandlerfaktor",
+    "Stand Vorperiode","Datum Vorperiode","Stand "+per,"Datum "+per,"Status","Verbrauch","Einheit","Ableser","Quelle","Bemerkung"];
+  const lines=[head.join(";")];
+  zs.forEach(z=>{
+    const h=houses[z.houseId]||{name:"",unit:""};
+    const v=last(z.id,per), c=cur(z.id);
+    const verbrauch=(v&&c&&c.stand!=null)? Math.round((c.stand-v.stand)*(z.faktor||1)) : "";
+    lines.push([h.name,h.unit,z.nummer,z.bezeichnung,z.medium,z.art,zStandort(z),z.faktor,
+      v?v.stand:"", v?v.datum:"", (c&&c.stand!=null)?c.stand:"", c?c.datum:"", c?c.status:"offen",
+      verbrauch, zEinheit(z), c?c.ableser:"", c?c.quelle:"", c?c.note:""].map(zCsvCell).join(";"));
+  });
+  zDownload(`Zaehlerstaende_${per}${scope==="all"?"_alle_Objekte":""}.csv`, lines.join("\r\n"));
+  toast("CSV erstellt – Trennzeichen Semikolon, für Excel vorbereitet.");
+}
+
+/* ---------- Objektübergreifende Ableseliste ---------- */
+async function openAblesung(){
+  if(!canArea("objekte")) return goHome();
+  S.view="ablesung";
+  view.innerHTML=`<div class="crumb"><a onclick="goHome()">Objekte</a><span class="sep">/</span>Zählerablesung</div>
+    <div class="page-head"><div><h2>Zählerablesung</h2><div class="lead">Lade Daten…</div></div></div>`;
+  S._zAll=await DB.allZaehler();
+  S._aAll=await DB.allAblesungen();
+  S.zFilter=S.zFilter||"offen";
+  renderAblesung();
+}
+function renderAblesung(){
+  const per=abPeriode();
+  const houses={}; (S.houses||[]).forEach(h=>houses[h.id]=h);
+  const abs=S._aAll||[];
+  const curOf=zid=>abs.filter(a=>a.zaehlerId===zid&&(a.datum||"").slice(0,4)===per)
+    .sort((a,b)=>(b.datum||"").localeCompare(a.datum||""))[0]||null;
+  const all=(S._zAll||[]).filter(z=>houses[z.houseId]).map(z=>({z, h:houses[z.houseId], c:curOf(z.id), e:eichStatus(z)}));
+  const offen=all.filter(x=>!x.c);
+  const problem=all.filter(x=>x.c&&x.c.status!=="abgelesen");
+  const fertig=all.filter(x=>x.c&&x.c.status==="abgelesen");
+  const eichAlarm=all.filter(x=>x.e.level==="overdue"||x.e.level==="soon");
+  const f=S.zFilter||"offen";
+  let rows = f==="offen"?offen : f==="problem"?problem : f==="fertig"?fertig : f==="eich"?eichAlarm : all;
+  rows=rows.slice().sort((a,b)=>(a.h.name||"").localeCompare(b.h.name||"")||(a.z.bezeichnung||"").localeCompare(b.z.bezeichnung||""));
+  const jahre=[...new Set(abs.map(a=>(a.datum||"").slice(0,4)).filter(Boolean))].sort().reverse();
+  if(jahre.indexOf(String(new Date().getFullYear()))<0) jahre.unshift(String(new Date().getFullYear()));
+  const tabBtn=(k,label,n)=>`<button class="tab ${f===k?'on':''}" onclick="S.zFilter='${k}';renderAblesung()">${label} <span class="tabn">${n}</span></button>`;
+  const body = rows.length ? rows.map(x=>{
+    const z=x.z, ort=zStandort(z);
+    const chip = !x.c ? `<span class="chip mid">noch offen</span>`
+      : x.c.status==="abgelesen" ? `<span class="chip good">${zNum(x.c.stand)} ${esc(zEinheit(z))} · ${esc(fmtShort(x.c.datum))}</span>`
+      : `<span class="chip bad">${esc(x.c.status)} · ${esc(fmtShort(x.c.datum))}</span>`;
+    const eichChip = x.e.level==="overdue"?`<span class="chip bad">Eichfrist abgelaufen</span>`
+      : x.e.level==="soon"?`<span class="chip mid">Eichfrist läuft aus</span>`
+      : x.e.level==="none"?`<span class="chip na">Eichfrist offen</span>`:"";
+    return `<div class="def card" style="border-left-color:var(--${!x.c?"mid":x.c.status==="abgelesen"?"good":"bad"})">
+      <div class="body">
+        <div class="area">${zMediumIcon(z.medium)} ${esc(z.bezeichnung||z.nummer||"(ohne Bezeichnung)")} ${chip} ${eichChip}
+          ${z.fernauslesbar?`<span class="chip good">fernauslesbar</span>`:""}</div>
+        <div class="kv"><b>Objekt:</b> ${esc(x.h.name)}${x.h.unit?` (WE ${esc(x.h.unit.replace(/^WE\s*/i,''))})`:""} &nbsp;·&nbsp; <b>Nr.:</b> ${esc(z.nummer||"–")}</div>
+        <div class="kv"><b>Standort:</b> ${ort?esc(ort):`<span style="color:var(--bad)">nicht erfasst</span>`}</div>
+        ${x.c&&x.c.note?`<div class="kv" style="color:var(--muted)">${esc(x.c.note)}</div>`:""}
+        <div style="margin-top:8px"><button class="btn sm" onclick="openHouseZaehler('${x.h.id}')">Zum Objekt</button></div>
+      </div></div>`;
+  }).join("") : `<div class="empty card" style="border-style:dashed">${I.check}<h3>Nichts in dieser Ansicht</h3><p>Für die Periode ${esc(per)} gibt es hier keine Einträge.</p></div>`;
+  view.innerHTML=`<div class="crumb"><a onclick="goHome()">Objekte</a><span class="sep">/</span>Zählerablesung</div>
+    <div class="page-head">
+      <div><h2>Zählerablesung</h2><div class="lead">Alle Allgemein- und Unterzähler aller Objekte für die Betriebskostenabrechnung – offene Ablesungen zuerst.</div></div>
+      <div class="toolbar">
+        <select class="objsort" onchange="S.zPeriode=this.value;renderAblesung()">${jahre.map(j=>`<option value="${esc(j)}" ${per===j?"selected":""}>Periode ${esc(j)}</option>`).join("")}</select>
+        <button class="btn" onclick="exportZaehlerCSV('all')">${I.download} CSV für die Abrechnung</button>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat" style="border-left:4px solid var(--mid)"><div class="num" style="color:var(--mid)">${offen.length}</div><div class="lbl">noch abzulesen</div></div>
+      <div class="stat bad"><div class="num">${problem.length}</div><div class="lbl">nicht gefunden / kein Zugang / defekt</div></div>
+      <div class="stat"><div class="num">${fertig.length}</div><div class="lbl">erledigt</div></div>
+      <div class="stat"><div class="num">${eichAlarm.length}</div><div class="lbl">Eichfrist abgelaufen oder bald</div></div>
+    </div>
+    <div class="tabs">
+      ${tabBtn("offen","Offen",offen.length)}
+      ${tabBtn("problem","Problemfälle",problem.length)}
+      ${tabBtn("fertig","Erledigt",fertig.length)}
+      ${tabBtn("eich","Eichfristen",eichAlarm.length)}
+      ${tabBtn("alle","Alle Zähler",all.length)}
+    </div>
+    ${body}`;
+}
+function openHouseZaehler(id){ S.houseTab="zaehler"; openHouse(id); }
 
 const GEWERKE=["Heizung / Sanitär","Elektro","Aufzug","Dach / Spengler","Maler","Schlosser / Metallbau","Garten / Grünpflege","Reinigung","Schädlingsbekämpfung","Brandschutz","Trinkwasser / Hygiene","Schornsteinfeger","Hausmeister","Versicherung","Behörde / Amt","Sonstige"];
 function normKontakt(d){ return { id:d.id, name:d.name||"", gewerk:d.gewerk||"", person:d.person||"", phone:d.phone||"", email:d.email||"", address:d.address||"", note:d.note||"" }; }
@@ -3346,6 +3845,7 @@ async function openMenu(){
   if(canArea("objekte")){
     rows+=row("Mängelübersicht",I.alert,"openDefects()",cur==="defects");
     rows+=row("Wartungsübersicht",I.wrench,"openWartung()",cur==="wartung",cnt(al.wartung));
+    rows+=row("Zählerablesung",I.grid,"openAblesung()",cur==="ablesung",cnt(al.zaehler));
   }
   if(canArea("tickets")) rows+=row("Tickets",I.ticket,"openTickets()",cur==="tickets",cnt(al.tickets));
   if(canArea("reinigung")) rows+=row("Hausdienstleister",I.broom,"openReinigung()",cur==="reinigung"||cur==="reinigungObj");
@@ -4159,7 +4659,7 @@ async function loadPerm(){
 }
 function canArea(a){ const p=S.perm||{}; return p.admin || !!p[a]; }
 function allowedView(v){
-  if(["house","editor","viewer","compare","defects","wartung","stammblatt","dokumente"].includes(v)) return canArea("objekte");
+  if(["house","editor","viewer","compare","defects","wartung","stammblatt","dokumente","ablesung"].includes(v)) return canArea("objekte");
   if(["reinigung","reinigungObj"].includes(v)) return canArea("reinigung");
   if(["aufzuege","aufzug"].includes(v)) return canArea("aufzuege");
   if(v==="sanierung") return canArea("sanierung");
@@ -4255,6 +4755,7 @@ window.addEventListener("beforeunload",()=>{ if(S.insp) persistInsp(); });
     <button onclick="AIQuick('Erstelle eine kurze Zusammenfassung des Portfoliozustands für den Eigentümer: offene Tickets, überfällige Prüfpflichten/Wartungen, laufende Sanierungen. Gegliedert und knapp.')">Eigentümer-Zusammenfassung</button>
     <button onclick="AIQuick('Priorisiere die wichtigsten offenen Aufgaben über alle Objekte hinweg als nummerierte To-do-Liste mit kurzer Begründung.')">Aufgaben priorisieren</button>
     <button onclick="AIQuick('Entwirf eine sachliche E-Mail an die zuständige Firma zum dringendsten offenen Mangel (mit Betreff).')">E-Mail an Dienstleister</button>
+    <button onclick="AIQuick('Welche Zähler sind für die laufende Ableseperiode noch offen oder als Problemfall vermerkt? Gruppiere nach Objekt und nenne jeweils den hinterlegten Standort, damit der Ablesedienst sie findet.')">Offene Ablesungen</button>
   </div>
   <div class="ai-in">
     <textarea id="aiText" placeholder="Frage zum Objektbestand stellen…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();AISend();}"></textarea>
@@ -4319,6 +4820,15 @@ window.addEventListener("beforeunload",()=>{ if(S.insp) persistInsp(); });
       lines.push("SANIERUNGEN: "+san.map(function(s){return s.title+" ["+(hn[s.houseId]||"")+", "+s.status+"]";}).join("; "));
       var ml=await DB.listMeldungenLog();
       lines.push("MELDUNGEN: "+ml.map(function(m){return m.subject+" ["+m.status+", Frist "+(m.dueDate||"-")+"]";}).join("; "));
+      var zz=await DB.allZaehler(), aa=await DB.allAblesungen(), per=String(new Date().getFullYear());
+      var zTxt=zz.map(function(z){
+        var c=aa.filter(function(x){return x.zaehlerId===z.id && (x.datum||"").slice(0,4)===per;})
+               .sort(function(a,b){return (b.datum||"").localeCompare(a.datum||"");})[0];
+        var st=c? (c.status==="abgelesen"? ("abgelesen "+c.stand) : c.status) : "offen";
+        return (z.bezeichnung||z.nummer)+" @ "+(hn[z.houseId]||"")+" ["+z.art+", "+z.medium+", "+st
+             + (zStandort(z)? (", Standort: "+zStandort(z)) : ", Standort nicht erfasst")+"]";
+      });
+      lines.push("ZÄHLER / ABLESUNG "+per+" ("+zz.length+"): "+(zTxt.join("; ")||"keine"));
     }catch(e){ lines.push("(Kontext teilweise nicht verfügbar)"); }
     return lines.join("\n");
   }
