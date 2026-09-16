@@ -171,7 +171,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       {id:"k3", name:"Aufzugservice Beispiel", gewerk:"Aufzug", person:"Technik-Hotline", phone:"0800 54 83 22", email:"service@aufzugservice.example", address:"", note:"Wartung + Störung"},
       {id:"k4", name:"Glanzhell Gebäudereinigung", gewerk:"Reinigung", person:"Ansprechpartner Reinigung", phone:"030 55 44 33", email:"buero@glanzhell.example", address:"", note:""},
       {id:"k5", name:"Dachprofi Beispiel", gewerk:"Dach / Spengler", person:"Ansprechpartner Dach", phone:"030 22 33 44", email:"kontakt@dachprofi.example", address:"", note:""},
-      {id:"k6", name:"Muster Versicherung AG", gewerk:"Versicherung", person:"Ansprechpartner Versicherung", phone:"030 11 22 33", email:"gewerbe@musterversicherung.example", address:"", note:"Police GV-88 44 21"}
+      {id:"k6", name:"Muster Versicherung AG", gewerk:"Versicherung", person:"Ansprechpartner Versicherung", phone:"030 11 22 33", email:"gewerbe@musterversicherung.example", address:"", note:"Police GV-88 44 21"},
+      {id:"k7", name:"Netz Musterstadt GmbH", gewerk:"Sonstige", person:"Messstellenbetrieb", phone:"030 77 66 55", email:"messstellenbetrieb@netz-musterstadt.example", address:"", note:"Messstellenbetreiber Strom – Zählerwechsel, Eichfristen"},
+      {id:"k8", name:"Ablesedienst Beispiel", gewerk:"Sonstige", person:"Auftragsannahme", phone:"030 33 22 11", email:"auftrag@ablesedienst-beispiel.example", address:"", note:"Jährliche Zählerablesung für die Betriebskostenabrechnung"},
+      {id:"k9", name:"Baustein & Fliese GmbH", gewerk:"Maler", person:"Bauleitung", phone:"030 44 55 66", email:"bauleitung@baustein-fliese.example", address:"", note:"Wohnungssanierungen, Bad und Fliesen"}
     ],
 
     zaehler: [
@@ -669,6 +672,20 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   .net-ind.warte{background:rgba(224,160,48,.22);border-color:rgba(224,160,48,.6)}
   .chip.warte{background:#FDF3E3;color:#8A5A10}
   .chip.warte::before{background:#E0A030}
+
+  /* ---- Erfassungsbogen für die Ersterfassung vor Ort ---- */
+  .erf-kopf{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:14px 0 10px}
+  .erf-kopf div{border:1px solid #9AA3B4;border-radius:6px;padding:6px 9px;font-size:11px;color:#4A5266;min-height:40px}
+  .erf-kopf div b{display:block;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:#6B7280;margin-bottom:3px}
+  .erf-tab{width:100%;border-collapse:collapse;font-size:10.5px;table-layout:fixed}
+  .erf-tab th,.erf-tab td{border:1px solid #9AA3B4;padding:4px 5px;vertical-align:top;word-break:break-word}
+  .erf-tab th{background:#EEF1F7;font-size:9.5px;text-transform:uppercase;letter-spacing:.03em;text-align:left;color:#3A4254}
+  .erf-tab td.leer{height:26px}
+  .erf-tab .stand{background:#FCFCFD;min-width:64px}
+  .erf-tab .klein{font-size:9.5px;color:#4A5266}
+  .erf-neu td{height:30px;background:#FBFCFE}
+  .erf-fuss{margin-top:10px;font-size:10.5px;color:#4A5266;line-height:1.5}
+  @media print{ .erf-tab{font-size:9.5px} .erf-tab tr{page-break-inside:avoid} }
 
   /* ---- QR-Etiketten für Zählerplätze ---- */
   .etiketten{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:14px}
@@ -1271,6 +1288,7 @@ function render(){
   if(S.view==="kontakte") return renderKontakte();
   if(S.view==="ablesung") return renderAblesung();
   if(S.view==="etiketten") return renderEtiketten();
+  if(S.view==="erfassung") return renderErfassung();
 }
 function icon(p){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`; }
 const I = {
@@ -1523,7 +1541,7 @@ function renderHouse(){
 
   let content, toolbar;
   if(tab==="zaehler"){
-    toolbar=`<button class="btn" onclick="openStammblatt()">${I.book} Stammblatt</button>${zList.length?`<button class="btn" onclick="openEtiketten()">${I.grid} QR-Etiketten</button><button class="btn" onclick="exportZaehlerCSV('house')">${I.download} CSV</button>`:""}<button class="btn primary" onclick="addZaehler()">${I.plus} Zähler anlegen</button>`;
+    toolbar=`<button class="btn" onclick="openStammblatt()">${I.book} Stammblatt</button>${zList.length?`<button class="btn" onclick="mailAbleseauftrag('house')">${I.mail} Ableseauftrag</button><button class="btn" onclick="openEtiketten()">${I.grid} QR-Etiketten</button>`:""}<button class="btn" onclick="openErfassung()">${I.clip} Erfassungsbogen</button>${zList.length?`<button class="btn" onclick="exportZaehlerCSV('house')">${I.download} CSV</button>`:""}<button class="btn primary" onclick="addZaehler()">${I.plus} Zähler anlegen</button>`;
     content=houseZaehlerHTML();
   } else if(tab==="wartung"){
     toolbar=`<button class="btn" onclick="openStammblatt()">${I.book} Stammblatt</button><button class="btn" onclick="openDokumente()">${I.file} Dokumente</button><button class="btn" onclick="exportObjektakte()">${I.pdf} Objektakte</button><button class="btn primary" onclick="addAnlage()">${I.plus} Anlage hinzufügen</button>`;
@@ -1599,6 +1617,7 @@ function houseWartungHTML(){
         ${a.note?`<div class="kv" style="color:var(--muted)">${esc(a.note)}</div>`:""}
         <div style="display:flex;gap:7px;margin-top:9px;flex-wrap:wrap">
           <button class="btn sm" onclick="wartungDone('${a.id}')">${I.done} Wartung heute erledigt</button>
+          <button class="btn sm" onclick="mailAnlage('${a.id}')">${I.mail} Firma anschreiben</button>
           <button class="btn sm" onclick="openWartHist('${a.id}')">${I.book} Historie</button>
           <button class="btn sm" onclick="addAnlage('${a.id}')">${I.edit} Bearbeiten</button>
           <button class="btn sm danger" onclick="delAnlage('${a.id}')">${I.trash}</button>
@@ -1771,7 +1790,9 @@ function wartCard(x){
       <div class="area">${esc(a.name)} ${a.art?`<span class="chip na" style="font-weight:600">${esc(a.art)}</span>`:""} ${due}</div>
       <div class="kv"><b>Objekt:</b> ${esc(x.house.name)}${x.house.unit?` (WE ${esc(x.house.unit.replace(/^WE\s*/i,''))})`:""}</div>
       <div class="kv"><b>Intervall:</b> ${a.interval?`alle ${a.interval} Mon.`:"–"} &nbsp;·&nbsp; <b>Letzte:</b> ${a.lastDate?esc(fmtShort(a.lastDate)):"–"} &nbsp;·&nbsp; <b>Nächste:</b> ${s.next?esc(fmtShort(s.next)):"–"}${a.firm?` &nbsp;·&nbsp; <b>Firma:</b> ${esc(a.firm)}`:""}</div>
-      <div style="margin-top:8px"><button class="btn sm" onclick="openHouseWart('${x.house.id}')">Zum Objekt</button></div>
+      <div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap">
+        <button class="btn sm" onclick="mailAnlage('${a.id}','${x.house.id}')">${I.mail} Firma anschreiben</button>
+        <button class="btn sm" onclick="openHouseWart('${x.house.id}')">Zum Objekt</button></div>
     </div></div>`;
 }
 function renderWartList(){
@@ -1880,6 +1901,7 @@ function houseZaehlerHTML(){
         ${z.note?`<div class="kv" style="color:var(--muted)">${esc(z.note)}</div>`:""}
         <div style="display:flex;gap:7px;margin-top:9px;flex-wrap:wrap">
           <button class="btn sm primary" onclick="ableseModal('${z.id}')">${I.pen} Ablesen</button>
+          <button class="btn sm" onclick="mailZaehler('${z.id}')">${I.mail} Firma anschreiben</button>
           <button class="btn sm" onclick="openZHist('${z.id}')">${I.book} Historie</button>
           <button class="btn sm" onclick="addZaehler('${z.id}')">${I.edit} Bearbeiten</button>
           <button class="btn sm danger" onclick="delZaehler('${z.id}')">${I.trash}</button>
@@ -2154,7 +2176,9 @@ function renderAblesung(){
         <div class="kv"><b>Objekt:</b> ${esc(x.h.name)}${x.h.unit?` (WE ${esc(x.h.unit.replace(/^WE\s*/i,''))})`:""} &nbsp;·&nbsp; <b>Nr.:</b> ${esc(z.nummer||"–")}</div>
         <div class="kv"><b>Standort:</b> ${ort?esc(ort):`<span style="color:var(--bad)">nicht erfasst</span>`}</div>
         ${x.c&&x.c.note?`<div class="kv" style="color:var(--muted)">${esc(x.c.note)}</div>`:""}
-        <div style="margin-top:8px"><button class="btn sm" onclick="openHouseZaehler('${x.h.id}')">Zum Objekt</button></div>
+        <div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap">
+          <button class="btn sm" onclick="mailZaehler('${z.id}')">${I.mail} Firma anschreiben</button>
+          <button class="btn sm" onclick="openHouseZaehler('${x.h.id}')">Zum Objekt</button></div>
       </div></div>`;
   }).join("") : `<div class="empty card" style="border-style:dashed">${I.check}<h3>Nichts in dieser Ansicht</h3><p>Für die Periode ${esc(per)} gibt es hier keine Einträge.</p></div>`;
   view.innerHTML=`<div class="crumb"><a onclick="goHome()">Objekte</a><span class="sep">/</span>Zählerablesung</div>
@@ -2162,6 +2186,7 @@ function renderAblesung(){
       <div><h2>Zählerablesung</h2><div class="lead">Alle Allgemein- und Unterzähler aller Objekte für die Betriebskostenabrechnung – offene Ablesungen zuerst.</div></div>
       <div class="toolbar">
         <select class="objsort" onchange="S.zPeriode=this.value;renderAblesung()">${jahre.map(j=>`<option value="${esc(j)}" ${per===j?"selected":""}>Periode ${esc(j)}</option>`).join("")}</select>
+        <button class="btn" onclick="mailAbleseauftrag('all')">${I.mail} Ableseauftrag senden</button>
         <button class="btn" onclick="exportZaehlerCSV('all')">${I.download} CSV für die Abrechnung</button>
       </div>
     </div>
@@ -2327,6 +2352,78 @@ function offRegisterSW(){
 window.addEventListener("online", ()=>{ netRefresh(); toast("Verbindung wieder da – übertrage…"); offSync(true).then(n=>{ if(n) toast(n===1?"1 Ablesung übertragen.":`${n} Ablesungen übertragen.`); }); });
 window.addEventListener("offline", ()=>{ netRefresh(); toast("Keine Verbindung – Ablesungen werden im Gerät gespeichert."); });
 
+/* ---------- Erfassungsbogen für die Ersterfassung vor Ort ---------- */
+function openErfassung(){ S.view="erfassung"; renderErfassung(); }
+function renderErfassung(){
+  const o=(S.houses||[]).find(x=>x.id===S.houseId);
+  if(!o) return goHome();
+  const per=abPeriode();
+  const list=(S.zaehler||[]).slice().sort((a,b)=>
+    (a.art===b.art?0:(a.art==="Hauptzähler"?-1:1)) || (a.bezeichnung||"").localeCompare(b.bezeichnung||""));
+  const leerzeilen = Math.max(6, 14-list.length);
+
+  const kopf=`<tr>
+    <th style="width:3%">#</th>
+    <th style="width:20%">Bezeichnung / Zählernummer</th>
+    <th style="width:11%">Medium / Art</th>
+    <th style="width:26%">Standort: Aufgang · Etage · Raum · Zählerplatz</th>
+    <th style="width:7%">Zählwerk / Faktor</th>
+    <th style="width:8%">Eichfrist</th>
+    <th style="width:9%">Vorjahr</th>
+    <th style="width:9%">Stand ${esc(per)}</th>
+    <th style="width:7%">gefunden</th>
+  </tr>`;
+
+  const bekannt=list.map((z,i)=>{
+    const v=zLetzte(z.id, per);
+    return `<tr>
+      <td>${i+1}</td>
+      <td><b>${esc(z.bezeichnung||"—")}</b><div class="klein">${esc(z.nummer||"ohne Nummer")}</div></td>
+      <td class="klein">${esc(z.medium)}<br>${esc(z.art)}</td>
+      <td class="klein">${zStandort(z)?esc(zStandort(z)):"<i>nicht erfasst – bitte eintragen</i>"}</td>
+      <td class="klein">${z.stellen?esc(String(z.stellen))+" St.":"—"}${(z.faktor&&z.faktor!==1)?`<br><b>×${esc(String(z.faktor))}</b>`:""}</td>
+      <td class="klein">${z.eichBis?esc(fmtShort(z.eichBis)):"—"}</td>
+      <td class="klein">${v?`${zNum(v.stand)}<br>${esc(fmtShort(v.datum))}`:"—"}</td>
+      <td class="stand"></td>
+      <td class="klein">ja ☐<br>nein ☐</td>
+    </tr>`;
+  }).join("");
+
+  const neu=Array.from({length:leerzeilen},(_,i)=>`<tr class="erf-neu">
+      <td>${list.length+i+1}</td><td></td><td></td><td></td><td></td><td></td><td></td><td class="stand"></td><td class="klein">neu ☐</td>
+    </tr>`).join("");
+
+  view.innerHTML=`<div class="crumb"><a onclick="goHome()">Objekte</a><span class="sep">/</span><a onclick="openHouseZaehler('${o.id}')">${esc(o.name)}</a><span class="sep">/</span>Erfassungsbogen</div>
+    <div class="page-head no-print">
+      <div><h2>Erfassungsbogen Zähler · ${esc(o.name)}</h2>
+        <div class="lead">Zum Ausdrucken und Mitnehmen bei der ersten Begehung: bekannte Zähler zum Prüfen und Ablesen, freie Zeilen für neu gefundene.</div></div>
+      <div class="toolbar">
+        <button class="btn" onclick="openHouseZaehler('${o.id}')">${I.back} Zurück</button>
+        <button class="btn primary" onclick="window.print()">${I.file} Drucken</button>
+      </div>
+    </div>
+    <div class="hint no-print">${I.info}<div>Der Bogen ist der Papier-Rückfallweg für die <b>Ersterfassung</b> – den Teil, den keine Software abnimmt.
+      Danach werden die Angaben einmal in die App übertragen, die Zählerplätze mit QR-Etiketten beklebt, und ab der nächsten Runde läuft alles digital.</div></div>
+    <h2 style="margin:0 0 2px">Erfassungsbogen Zähler</h2>
+    <div style="font-size:12px;color:#4A5266;margin-bottom:4px">${esc(o.name)}${o.unit?` · WE ${esc(o.unit.replace(/^WE\s*/i,''))}`:""}${o.address?` · ${esc(o.address)}`:""} · Ableseperiode ${esc(per)}</div>
+    <div class="erf-kopf">
+      <div><b>Aufgenommen von</b></div>
+      <div><b>Datum</b></div>
+      <div><b>Uhrzeit von / bis</b></div>
+      <div><b>Schlüssel / Zugang über</b></div>
+    </div>
+    <table class="erf-tab"><thead>${kopf}</thead><tbody>${bekannt}${neu}</tbody></table>
+    <div class="erf-fuss">
+      <b>Hinweise für die Aufnahme:</b>
+      Standort so genau notieren, dass ein Fremder den Zähler findet – Aufgang, Etage, Raum, dann Schrank und Feld.
+      Bei <b>Wandlermessung</b> den Faktor vom Typenschild übernehmen (steht meist als „×40" o. ä. am Zähler oder im Schrank) – fehlt er, wird später um genau diesen Faktor falsch abgerechnet.
+      <b>Zählwerk</b> = Anzahl der Stellen vor dem Komma. <b>Eichfrist</b> steht auf der Eichmarke bzw. dem Typenschild.
+      Von jedem neu gefundenen Zähler ein <b>Foto vom Zähler und vom Weg dorthin</b> machen.
+      Nicht gefundene Zähler ankreuzen und kurz notieren, wo gesucht wurde.
+      <div style="margin-top:14px">Unterschrift Aufnehmer: ______________________________</div>
+    </div>`;
+}
+
 /* ---------- Direkteinstieg per QR-Code (#z=…) ---------- */
 async function zOpenDeepLink(zid){
   try{
@@ -2369,7 +2466,7 @@ function renderKontakte(){
         <div class="doc-name">${esc(k.name||"(ohne Namen)")}</div>
         <div class="doc-meta">${k.gewerk?`<span class="chip na">${esc(k.gewerk)}</span>`:""}${k.person?`<span>${esc(k.person)}</span>`:""}${k.phone?`<span>${esc(k.phone)}</span>`:""}${k.email?`<a href="mailto:${esc(k.email)}" class="doc-link">${esc(k.email)}</a>`:""}</div>
       </div>
-      <div class="doc-act"><button class="btn sm" onclick="addKontakt('${k.id}')">${I.edit}</button><button class="icon-btn" onclick="delKontakt('${k.id}')" title="Löschen">${I.trash}</button></div>
+      <div class="doc-act">${k.email?`<button class="btn sm" onclick="mailKontakt('${k.id}')">${I.mail} Schreiben</button>`:""}<button class="btn sm" onclick="addKontakt('${k.id}')">${I.edit}</button><button class="icon-btn" onclick="delKontakt('${k.id}')" title="Löschen">${I.trash}</button></div>
     </div>`).join("")
     : `<div class="empty card" style="border-style:dashed">${I.key}<h3>${total?"Keine Treffer":"Adressbuch ist leer"}</h3><p>${total?"Für diesen Filter wurde nichts gefunden.":"Lege Handwerker, Dienstleister, Versicherungen und Ämter zentral an – sie lassen sich dann in Tickets, Anlagen und Aufzügen mit einem Klick einsetzen."}</p>${total?"":`<button class="btn primary" style="margin-top:6px" onclick="addKontakt()">${I.plus} Kontakt anlegen</button>`}</div>`;
   const gewOpts=`<option value="">Alle Gewerke</option>`+GEWERKE.filter(g=>used.includes(g)).map(g=>`<option value="${esc(g)}" ${gf===g?"selected":""}>${esc(g)}</option>`).join("");
@@ -2998,6 +3095,7 @@ function manageDienstleister(){
   const rows=list.length? list.map(d=>`<div class="col-row">
       <div style="flex:1"><div style="font-weight:600;font-size:13.5px">${esc(d.name)}</div>
       <div style="font-size:12px;color:var(--muted)">${esc(d.gewerk||"")}${d.contact?" · "+esc(d.contact):""}</div></div>
+      <button class="btn sm" onclick="mailDienstleister('${d.id}')">${I.mail} Anschreiben</button>
       <button class="icon-btn" onclick="delDienstleister('${d.id}')">${I.trash}</button></div>`).join("")
     : `<p class="m" style="margin:0 0 8px">Noch keine Dienstleister erfasst.</p>`;
   modal(`<h3>Dienstleister verwalten</h3><p class="m">Firmen, die in den Nachweisen ausgewählt werden können (Reinigung, Winterdienst, Gartenpflege …).</p>
@@ -3476,7 +3574,8 @@ function drawSanierung(){
           <div class="kv"><b>Zeitraum:</b> ${zeit} &nbsp;·&nbsp; ${kosten}</div>
           ${s.note?`<div class="kv" style="color:var(--muted)">${esc(s.note)}</div>`:""}
           <div class="seg" style="margin-top:9px">${SAN_STATUS.map(x=>`<button data-v="${x}" class="${s.status===x?'on':''}" onclick="setSanStatus('${s.id}','${x}')">${x}</button>`).join("")}
-            <button class="btn sm" style="margin-left:auto" onclick="addSanierung('${s.id}')">${I.edit}</button>
+            <button class="btn sm" style="margin-left:auto" onclick="mailSanierung('${s.id}')">${I.mail} Firma anschreiben</button>
+            <button class="btn sm" onclick="addSanierung('${s.id}')">${I.edit}</button>
             <button class="btn sm danger" onclick="delSanierung('${s.id}')">${I.trash}</button></div>
         </div></div>`;
     }).join("");
@@ -3632,6 +3731,155 @@ function mailDefectGroup(houseId){
     track:true, kind:"maengel", houseId:h.id,
     hint:"Tipp: Vorher als PDF exportieren und die Datei in der E-Mail anhängen." });
 }
+/* ---- Empfänger aus dem Adressbuch auflösen ---- */
+async function firmMailAdresse(name){
+  if(!name) return "";
+  if(!S.kontakte){ try{ S.kontakte=await DB.listKontakte(); }catch(e){ S.kontakte=[]; } }
+  const n=name.trim().toLowerCase();
+  const k=(S.kontakte||[]).find(x=>(x.name||"").trim().toLowerCase()===n)
+       || (S.kontakte||[]).find(x=>(x.name||"").toLowerCase().includes(n));
+  return (k&&k.email)||"";
+}
+function objZeile(h){ return h? `${h.name}${h.unit?" (WE "+h.unit.replace(/^WE\s*/i,"")+")":""}${h.address?", "+h.address:""}` : ""; }
+const MAIL_GRUSS="Mit freundlichen Grüßen";
+
+/* ---- Wartung / Prüfpflicht: Termin anfragen ---- */
+async function mailAnlage(id, houseId){
+  const a=(S.anlagen||[]).find(x=>x.id===id)
+       || ((S._wart||[]).map(x=>x.a).find(x=>x.id===id));
+  if(!a){ toast("Anlage nicht gefunden."); return; }
+  const h=(S.houses||[]).find(x=>x.id===(houseId||a.houseId));
+  const s=wartStatus(a);
+  const lage = s.level==="overdue" ? `Die Fälligkeit war am ${fmtShort(s.next)} und ist damit seit ${Math.abs(s.days)} Tagen überschritten.`
+    : s.level==="soon" ? `Die nächste Fälligkeit ist am ${fmtShort(s.next)}, also in ${s.days} Tagen.`
+    : s.next ? `Die nächste Fälligkeit ist am ${fmtShort(s.next)}.` : `Ein Intervall ist bei uns nicht hinterlegt.`;
+  const body=`Sehr geehrte Damen und Herren,\n\nfür das Objekt ${objZeile(h)} bitten wir um einen Termin für folgende Leistung:\n\n`
+    +`Anlage/Prüfung: ${a.name}\n`
+    +(a.art?`Art: ${a.art}\n`:"")
+    +(a.interval?`Intervall: alle ${a.interval} Monate\n`:"")
+    +(a.lastDate?`Letzte Durchführung: ${fmtShort(a.lastDate)}\n`:"Letzte Durchführung: bei uns nicht dokumentiert\n")
+    +(a.note?`Hinweis: ${a.note}\n`:"")
+    +`\n${lage}\n\nWir bitten um einen Terminvorschlag und – falls erforderlich – ein Angebot. Den Zugang stimmen wir gern mit unserem Hausmeister ab.\n\n${MAIL_GRUSS}`;
+  composeMail({ to: await firmMailAdresse(a.firm), subject:`${a.name} – Terminanfrage ${h?h.name:""}`, body,
+    track:true, kind:"wartung", houseId:h?h.id:"",
+    hint:a.firm?undefined:"Tipp: Hinterlege die Fachfirma bei der Anlage, dann ist der Empfänger vorausgefüllt." });
+}
+
+/* ---- Zähler: Störung, Zählerwechsel, Eichfrist ---- */
+async function mailZaehler(zid){
+  const z=(S.zaehler||[]).find(x=>x.id===zid)
+       || ((S._zAll||[]).find(x=>x.id===zid));
+  if(!z){ toast("Zähler nicht gefunden."); return; }
+  const h=(S.houses||[]).find(x=>x.id===z.houseId);
+  const e=eichStatus(z);
+  const letzte=(S.ablesungen||S._aAll||[]).filter(a=>a.zaehlerId===z.id)
+    .sort((a,b)=>(b.datum||"").localeCompare(a.datum||""))[0];
+  const problem = letzte && letzte.status!=="abgelesen" ? letzte.status : "";
+  let betreff, anliegen;
+  if(e.level==="overdue"){
+    betreff=`Eichfrist abgelaufen – Zähler ${z.nummer||z.bezeichnung}`;
+    anliegen=`die Eichfrist des unten genannten Zählers ist am ${fmtShort(z.eichBis)} abgelaufen. Wir bitten um Austausch bzw. Nacheichung und um Mitteilung des Zählerstands zum Wechselzeitpunkt.`;
+  } else if(e.level==="soon"){
+    betreff=`Eichfrist läuft aus – Zähler ${z.nummer||z.bezeichnung}`;
+    anliegen=`die Eichfrist des unten genannten Zählers läuft am ${fmtShort(z.eichBis)} ab. Wir bitten um rechtzeitige Terminierung des Austauschs.`;
+  } else if(problem==="defekt"){
+    betreff=`Zählerstörung – ${z.nummer||z.bezeichnung}`;
+    anliegen=`der unten genannte Zähler wurde bei der Ablesung als defekt festgestellt. Wir bitten um Prüfung und gegebenenfalls Austausch.`;
+  } else if(problem){
+    betreff=`Zugang zum Zähler ${z.nummer||z.bezeichnung}`;
+    anliegen=`der unten genannte Zähler konnte bei der Ablesung nicht erfasst werden (Vermerk: ${problem}). Wir bitten um Unterstützung beim Zugang bzw. um Mitteilung des aktuellen Zählerstands.`;
+  } else {
+    betreff=`Anfrage zum Zähler ${z.nummer||z.bezeichnung}`;
+    anliegen=`wir haben eine Rückfrage zum unten genannten Zähler.`;
+  }
+  const body=`Sehr geehrte Damen und Herren,\n\n${anliegen}\n\n`
+    +`Objekt: ${objZeile(h)}\n`
+    +`Zählernummer: ${z.nummer||"—"}\n`
+    +`Bezeichnung: ${z.bezeichnung||"—"}\n`
+    +`Medium / Art: ${z.medium} / ${z.art}\n`
+    +(zStandort(z)?`Standort: ${zStandort(z)}\n`:"")
+    +(z.eichBis?`Eichfrist bis: ${fmtShort(z.eichBis)}\n`:"")
+    +((z.faktor&&z.faktor!==1)?`Wandlerfaktor: ×${z.faktor}\n`:"")
+    +(letzte?`Letzte Erfassung: ${fmtShort(letzte.datum)} – ${letzte.status==="abgelesen"?zNum(letzte.stand)+" "+zEinheit(z):letzte.status}\n`:"")
+    +`\nWir bitten um Rückmeldung mit Terminvorschlag.\n\n${MAIL_GRUSS}`;
+  composeMail({ to: await firmMailAdresse(z.msb), subject:betreff, body,
+    track:true, kind:"zaehler", houseId:z.houseId,
+    hint:z.msb?undefined:"Tipp: Hinterlege den Messstellenbetreiber beim Zähler, dann ist der Empfänger vorausgefüllt." });
+}
+
+/* ---- Ableseauftrag an den Dienstleister ---- */
+async function mailAbleseauftrag(scope){
+  const per=abPeriode();
+  const houses={}; (S.houses||[]).forEach(h=>houses[h.id]=h);
+  const zs = scope==="all" ? (S._zAll||[]) : (S.zaehler||[]);
+  const abs = scope==="all" ? (S._aAll||[]) : (S.ablesungen||[]);
+  const offen=zs.filter(z=>!abs.some(a=>a.zaehlerId===z.id && (a.datum||"").slice(0,4)===per && a.status==="abgelesen"));
+  if(!offen.length){ toast("Für diese Periode ist nichts offen."); return; }
+  const gruppen={};
+  offen.forEach(z=>{ (gruppen[z.houseId]=gruppen[z.houseId]||[]).push(z); });
+  const text=Object.keys(gruppen).map(hid=>{
+    const h=houses[hid];
+    const zeilen=gruppen[hid].map((z,i)=>
+      `   ${i+1}. ${z.bezeichnung||"(ohne Bezeichnung)"} – Nr. ${z.nummer||"—"} (${z.medium}, ${z.art})`
+      +(zStandort(z)?`\n      Standort: ${zStandort(z)}`:`\n      Standort: nicht erfasst – bitte vor Ort aufnehmen`)
+      +((z.faktor&&z.faktor!==1)?`\n      Achtung: Wandlermessung, Faktor ×${z.faktor}`:"")
+      +(z.note?`\n      Hinweis: ${z.note}`:"")
+    ).join("\n");
+    return `${objZeile(h)}\n${zeilen}`;
+  }).join("\n\n");
+  const body=`Sehr geehrte Damen und Herren,\n\nfür die Betriebskostenabrechnung ${per} bitten wir um Ablesung der folgenden Zähler. Der Standort ist jeweils angegeben, soweit er uns bekannt ist.\n\n${text}\n\n`
+    +`Bitte notieren Sie zu jedem Zähler den Stand und das Ablesedatum. Zähler, die nicht auffindbar sind oder zu denen kein Zugang besteht, bitte ausdrücklich als solche vermerken statt wegzulassen – wir klären diese Fälle dann gesondert.\n\n`
+    +`Für Rückfragen stehen wir zur Verfügung.\n\n${MAIL_GRUSS}`;
+  // Empfänger aus der letzten Periode ableiten: wer hat zuletzt abgelesen?
+  const zaehl={};
+  abs.filter(a=>a.quelle==="vor Ort" && a.ableser && (a.datum||"").slice(0,4)<per)
+     .forEach(a=>{ zaehl[a.ableser]=(zaehl[a.ableser]||0)+1; });
+  const haeufigster=Object.keys(zaehl).sort((x,y)=>zaehl[y]-zaehl[x])[0]||"";
+  composeMail({ to: await firmMailAdresse(haeufigster), subject:`Ableseauftrag ${per}${scope==="all"?"":" – "+(houses[S.houseId]?houses[S.houseId].name:"")} (${offen.length} Zähler)`, body,
+    track:true, kind:"ablesung", houseId:scope==="all"?"":S.houseId,
+    hint:"Tipp: Alternativ kann der Dienstleister einen eigenen Zugang bekommen und die Werte direkt eintragen – Menü → Benutzer & Bereiche." });
+}
+
+/* ---- Sanierung: Firma anschreiben ---- */
+async function mailSanierung(id){
+  const s=(S.sanierungen||[]).find(x=>x.id===id); if(!s){ toast("Sanierung nicht gefunden."); return; }
+  const h=(S.houses||[]).find(x=>x.id===s.houseId);
+  const body=`Sehr geehrte Damen und Herren,\n\nzu folgender Maßnahme bitten wir um Rückmeldung:\n\n`
+    +`Objekt: ${objZeile(h)}\n`
+    +(s.wohnung?`Einheit: ${s.wohnung}\n`:"")
+    +`Maßnahme: ${s.title}\n`
+    +`Status: ${s.status}\n`
+    +(s.start?`Geplanter Beginn: ${fmtShort(s.start)}\n`:"")
+    +(s.endPlanned?`Geplantes Ende: ${fmtShort(s.endPlanned)}\n`:"")
+    +(s.note?`Hinweis: ${s.note}\n`:"")
+    +`\n${s.status==="geplant"?"Wir bitten um ein Angebot und einen Terminvorschlag.":"Wir bitten um einen kurzen Sachstand und die Einschätzung zum Fertigstellungstermin."}\n\n${MAIL_GRUSS}`;
+  composeMail({ to: await firmMailAdresse(s.firm), subject:`${s.title} – ${h?h.name:""}${s.wohnung?" / "+s.wohnung:""}`, body,
+    track:true, kind:"sanierung", houseId:s.houseId,
+    hint:s.firm?undefined:"Tipp: Hinterlege die ausführende Firma bei der Maßnahme, dann ist der Empfänger vorausgefüllt." });
+}
+
+/* ---- Hausdienstleister: Beanstandung ---- */
+async function mailDienstleister(id){
+  const d=(S.dienstleister||[]).find(x=>x.id===id); if(!d){ toast("Dienstleister nicht gefunden."); return; }
+  const h=(S.houses||[]).find(x=>x.id===S.houseId);
+  const body=`Sehr geehrte Damen und Herren,\n\nzu Ihrer Leistung im Objekt ${objZeile(h)} haben wir eine Rückmeldung:\n\n`
+    +`Gewerk: ${d.gewerk||"—"}\n`
+    +(d.note?`Leistungsumfang laut unserer Erfassung: ${d.note}\n`:"")
+    +`\n[Bitte hier die Feststellung eintragen – z. B. Turnus nicht eingehalten, Bereich ausgelassen, Qualität beanstandet]\n\n`
+    +`Wir bitten um Stellungnahme und kurzfristige Nacharbeit.\n\n${MAIL_GRUSS}`;
+  composeMail({ to: await firmMailAdresse(d.name), subject:`Rückmeldung zur Leistung – ${d.gewerk||d.name}${h?" / "+h.name:""}`, body,
+    track:true, kind:"dienstleister", houseId:S.houseId||"",
+    hint:"Der Text enthält eine Stelle in eckigen Klammern – bitte vor dem Senden ersetzen." });
+}
+
+/* ---- Adressbuch: direkt schreiben ---- */
+function mailKontakt(id){
+  const k=(S.kontakte||[]).find(x=>x.id===id); if(!k) return;
+  const body=`Sehr geehrte Damen und Herren,\n\n\n\n${MAIL_GRUSS}`;
+  composeMail({ to:k.email||"", subject:"", body,
+    hint:k.email?undefined:"Für diesen Kontakt ist keine E-Mail hinterlegt – bitte eintragen." });
+}
+
 function mailAufzug(){
   const a=S.aufzug; if(!a) return;
   const h=S.houses.find(x=>x.id===a.houseId);
@@ -3885,7 +4133,10 @@ function drawMeldungen(){
   } else {
     const cards=list.map(l=>{
       const over=logOverdue(l);
-      const kindLbl = l.kind==="aufzug"? "Aufzug-Störung" : "Mängelmeldung";
+      const KIND_LBL={ aufzug:"Aufzug-Störung", maengel:"Mängelmeldung", ticket:"Ticket",
+        wartung:"Wartung / Prüfpflicht", zaehler:"Zähler", ablesung:"Ableseauftrag",
+        sanierung:"Sanierung", dienstleister:"Hausdienstleister" };
+      const kindLbl = KIND_LBL[l.kind] || "Mängelmeldung";
       const ref = l.kind==="aufzug"? (byAz[l.aufzugId]?byAz[l.aufzugId].name:"Aufzug") : (byHouse[l.houseId]?byHouse[l.houseId].name:"Objekt");
       const statusChip = l.status==="erledigt"?`<span class="chip good">erledigt</span>`:(over?`<span class="chip bad">Rückmeldung überfällig</span>`:`<span class="chip mid">offen</span>`);
       const fristTxt = l.dueDate? `Frist ${esc(fmtShort(l.dueDate))}${l.status==="offen"?` (${daysUntil(l.dueDate)<0?Math.abs(daysUntil(l.dueDate))+" T überschritten":"in "+daysUntil(l.dueDate)+" T"})`:""}` : "keine Frist gesetzt";
@@ -4879,7 +5130,7 @@ async function loadPerm(){
 }
 function canArea(a){ const p=S.perm||{}; return p.admin || !!p[a]; }
 function allowedView(v){
-  if(["house","editor","viewer","compare","defects","wartung","stammblatt","dokumente","ablesung","etiketten"].includes(v)) return canArea("objekte");
+  if(["house","editor","viewer","compare","defects","wartung","stammblatt","dokumente","ablesung","etiketten","erfassung"].includes(v)) return canArea("objekte");
   if(["reinigung","reinigungObj"].includes(v)) return canArea("reinigung");
   if(["aufzuege","aufzug"].includes(v)) return canArea("aufzuege");
   if(v==="sanierung") return canArea("sanierung");

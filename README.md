@@ -76,6 +76,15 @@ Modul für die jährliche Ablesung der Allgemein- und Unterzähler zur Betriebsk
 - **Eichfrist-Warnung** – Orientierung: elektronische Stromzähler 8 Jahre, Ferraris-Zähler 16,
   Wasser- und Wärmezähler 6 Jahre
 
+**Erfassungsbogen** (Reiter *Zähler & Ablesung* → *Erfassungsbogen*) – der Papierweg für die
+**Ersterfassung**, den Teil, den keine Software abnimmt:
+
+- Druckbogen je Objekt mit Kopffeldern (Aufnehmer, Datum, Uhrzeit, Schlüssel/Zugang)
+- Bereits bekannte Zähler vorgedruckt zum Prüfen und Ablesen, mit Vorjahreswert, Zählwerk,
+  Wandlerfaktor, Eichfrist und Ankreuzfeld *gefunden ja/nein*
+- Freie Zeilen für neu gefundene Zähler
+- Hinweise zur Aufnahme im Fußbereich (Standort, Wandlerfaktor, Zählwerk, Eichmarke, Fotos)
+
 **QR-Etiketten für den Zählerplatz** (Reiter *Zähler & Ablesung* → *QR-Etiketten*):
 
 - Druckbogen mit einem Etikett je Zähler: QR-Code, Bezeichnung, Zählernummer, Objekt, Standort
@@ -111,7 +120,31 @@ Ablesedienstleister freischalten – dann liest dieser direkt in die Plattform e
 
 ---
 
-## 4. Hinweise
+## 4. „Firma anschreiben" — überall dort, wo eine Firma zuständig ist
+
+Aus jedem Vorgang lässt sich direkt eine E-Mail an die zuständige Firma erzeugen. Der Text wird
+aus den Daten des Vorgangs vorbefüllt, der **Empfänger automatisch aus dem Adressbuch** aufgelöst,
+und der Vorgang landet auf Wunsch in der Meldungs-Überwachung.
+
+| Bereich | Anlass |
+|---|---|
+| Mängelübersicht | Mängel aus einer Begehung melden |
+| Tickets | Mangel an die zuständige Firma |
+| Aufzüge | Störungsmeldung an die Wartungsfirma |
+| **Technik & Wartung** | Terminanfrage für Wartung oder gesetzliche Prüfung, inkl. Fälligkeitslage |
+| **Zähler** | Zählerwechsel bei abgelaufener Eichfrist, Störung, fehlender Zugang |
+| **Zählerablesung** | Ableseauftrag mit allen offenen Zählern und ihren Standorten |
+| **Wohnungssanierungen** | Angebot anfordern oder Sachstand abfragen |
+| **Hausdienstleister** | Rückmeldung oder Beanstandung zur Leistung |
+| **Adressbuch** | direkte E-Mail an einen Kontakt |
+
+Der Empfänger wird über den Firmennamen im Adressbuch gesucht — beim Ableseauftrag zusätzlich
+darüber, wer in der Vorperiode tatsächlich abgelesen hat. Ist nichts hinterlegt, bleibt das Feld
+leer und ein Hinweis nennt die Stelle, an der die Adresse ergänzt werden sollte.
+
+---
+
+## 5. Hinweise
 
 - **Reine Demo:** Eingaben/Änderungen sind **nicht dauerhaft** – nach dem Neuladen der Seite
   stehen wieder die ursprünglichen Testdaten bereit. Ausnahme: offline erfasste Ablesungen bleiben
@@ -125,7 +158,7 @@ Ablesedienstleister freischalten – dann liest dieser direkt in die Plattform e
 
 ---
 
-## 5. Vom Demo zum echten Portal
+## 6. Vom Demo zum echten Portal
 
 Diese Demo nutzt eine eingebettete Testdatenschicht anstelle eines Servers. Für den
 produktiven Mehrbenutzerbetrieb (Login + zentrale Datenbank in Frankfurt, bereichsbasierte
