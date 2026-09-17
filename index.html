@@ -77,7 +77,13 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
           {id:uid(), cells:{area:"Hauseingang / Haustür", cond:"mittel", note:"Türschließer zu schnell.", act:"Schließer justieren.", prio:"niedrig"}, images:[]},
           {id:uid(), cells:{area:"Kellerräume", cond:"gut", note:"", act:"", prio:"keine"}, images:[]}
         ]},
-      {id:"i2", house_id:"h1", date:daysAgo(120), inspector:"A. Muster", firm:"Muster Hausverwaltung", weather:"bewölkt", rows:[]},
+      {id:"i2", house_id:"h1", date:daysAgo(120), inspector:"A. Muster", firm:"Muster Hausverwaltung", weather:"bewölkt",
+        rows:[
+          {id:uid(), cells:{area:"Dach & Dachrinnen", cond:"mittel", note:"Dachrinne über Aufgang 2 zeigt beginnende Undichtigkeit.", act:"Bei naechster Begehung nachsehen.", prio:"niedrig"}, images:[]},
+          {id:uid(), cells:{area:"Treppenhaus", cond:"mangelhaft", note:"Wandanstrich im 2. OG beschmiert, Handlauf locker.", act:"Reinigung und Anstrich beauftragen.", prio:"hoch"}, images:[]},
+          {id:uid(), cells:{area:"Hauseingang / Haustür", cond:"gut", note:"", act:"", prio:"keine"}, images:[]},
+          {id:uid(), cells:{area:"Kellerräume", cond:"mittel", note:"Kellergang zugestellt, Fluchtweg eingeschränkt.", act:"Mieter anschreiben.", prio:"mittel"}, images:[]}
+        ]},
       {id:"i3", house_id:"h3", date:daysAgo(15), inspector:"Hausmeister 3", firm:"Muster Hausverwaltung", weather:"Regen, 6 °C",
         rows:[
           {id:uid(), cells:{area:"Aufzug", cond:"mangelhaft", note:"Aufzugstür schließt verzögert (Sensor).", act:"Aufzugsfirma – Störungsmeldung offen.", prio:"hoch"}, images:[]},
@@ -87,6 +93,11 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
         rows:[
           {id:uid(), cells:{area:"Fassade / Gebäudehülle", cond:"mittel", note:"Graffiti an Aufgang 5.", act:"Entfernung beauftragen.", prio:"niedrig"}, images:[]},
           {id:uid(), cells:{area:"Brandschutz (Melder, Löscher)", cond:"gut", note:"Feuerlöscher geprüft.", act:"", prio:"keine"}, images:[]}
+        ]},
+      {id:"i5", house_id:"h4", date:daysAgo(390), inspector:"Hausmeister 4", firm:"Muster Hausverwaltung", weather:"trocken",
+        rows:[
+          {id:uid(), cells:{area:"Fassade / Gebäudehülle", cond:"mangelhaft", note:"Fassade an Aufgang 5 großflächig beschmiert, Sockel feucht.", act:"Reinigung und Sockelabdichtung beauftragen.", prio:"hoch"}, images:[]},
+          {id:uid(), cells:{area:"Brandschutz (Melder, Löscher)", cond:"mittel", note:"Prüfplakette am Löscher Aufgang 3 abgelaufen.", act:"Prüfung beauftragen.", prio:"mittel"}, images:[]}
         ]}
     ],
 
@@ -213,9 +224,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     ],
 
     app_users: [
-      {email:"admin@demo.de",       objekte:true,  reinigung:true,  aufzuege:true,  sanierung:true,  tickets:true,  admin:true},
-      {email:"hausmeister@demo.de", objekte:true,  reinigung:false, aufzuege:true,  sanierung:false, tickets:true,  admin:false},
-      {email:"reinigung@demo.de",   objekte:false, reinigung:true,  aufzuege:false, sanierung:false, tickets:false, admin:false}
+      {email:"admin@demo.de",       objekte:true,  zaehler:true,  reinigung:true,  aufzuege:true,  sanierung:true,  tickets:true,  admin:true},
+      {email:"hausmeister@demo.de", objekte:true,  zaehler:true,  reinigung:false, aufzuege:true,  sanierung:false, tickets:true,  admin:false},
+      {email:"reinigung@demo.de",   objekte:false, zaehler:false, reinigung:true,  aufzuege:false, sanierung:false, tickets:false, admin:false},
+      {email:"ablesedienst@demo.de",objekte:false, zaehler:true,  reinigung:false, aufzuege:false, sanierung:false, tickets:false, admin:false}
     ]
   };
 
@@ -734,6 +746,57 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   .erf-fuss{margin-top:10px;font-size:10.5px;color:#4A5266;line-height:1.5}
   @media print{ .erf-tab{font-size:9.5px} .erf-tab tr{page-break-inside:avoid} }
 
+  /* ---- Posteingang ---- */
+  .po-zeile{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+  .po-zeile>span{color:var(--muted)}
+  .po-bezug{background:var(--bg2);border-radius:var(--r-sm);padding:10px 12px;margin:10px 0 0;font-size:12.8px;line-height:1.55}
+  .po-bezug b{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--navy);margin-bottom:4px}
+  .po-bezug ul{margin:0 0 0 16px;padding:0}
+  .po-ki{background:var(--navy-soft);border-radius:var(--r-sm);padding:11px 13px;margin:12px 0 0;font-size:13px;line-height:1.6}
+  .po-ki b{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--navy);margin-bottom:4px}
+  .po-ki p{margin:0;white-space:pre-line}
+  /* ---- Vorher / Nachher ---- */
+  .vn-card{margin-top:12px}
+  .vn-meta{display:flex;justify-content:space-between;gap:12px;font-size:13px;margin-bottom:10px;flex-wrap:wrap}
+  .vn-lbl{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--navy);margin-right:5px}
+  .vn-stage{position:relative;overflow:hidden;border-radius:var(--r-sm);background:var(--bg2);aspect-ratio:4/3;
+    max-height:60vh;cursor:ew-resize;touch-action:none;user-select:none}
+  .vn-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .vn-top{z-index:2}
+  .vn-tag{position:absolute;top:46px;z-index:3;background:rgba(10,14,26,.72);color:#fff;font-size:11px;font-weight:700;
+    letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;pointer-events:none}
+  .vn-tag-l{left:10px} .vn-tag-r{right:10px}
+  .vn-handle{position:absolute;top:0;bottom:0;width:3px;background:#fff;box-shadow:0 0 0 1px rgba(10,14,26,.35);pointer-events:none;z-index:4}
+  .vn-handle span{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:38px;height:38px;border-radius:50%;
+    background:#fff;color:var(--navy);display:grid;place-items:center;font-weight:800;font-size:13px;box-shadow:0 4px 14px -4px rgba(10,14,26,.5)}
+  .vn-range{width:100%;margin:12px 0 4px}
+  .vn-notes{font-size:13px;line-height:1.6;color:var(--muted);margin-top:10px}
+  .vn-notes b{color:var(--ink)}
+  /* ---- Karte ---- */
+  .karte-box{height:min(62vh,560px);border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--bg2);margin-top:12px}
+  .karte-load{height:100%;display:grid;place-items:center;text-align:center;padding:24px;color:var(--muted);font-size:13.5px;line-height:1.6}
+  .karte-legende{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:14px;font-size:12.5px;color:var(--muted)}
+  .karte-legende i.pin{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:middle}
+  .karte-legende i.pin.bad{background:var(--bad)} .karte-legende i.pin.mid{background:var(--mid)} .karte-legende i.pin.good{background:var(--good)}
+  .mk{width:30px;height:30px;border-radius:50% 50% 50% 2px;transform:rotate(-45deg);border:2px solid #fff;
+    box-shadow:0 2px 6px rgba(10,14,26,.4);display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px}
+  .mk>*{transform:rotate(45deg)}
+  .mk.bad{background:var(--bad)} .mk.mid{background:var(--mid)} .mk.good{background:var(--good)}
+  .mk-pop{font-size:13px;min-width:190px}
+  .mk-pop b{font-size:14px}
+  .mk-adr{color:#525C6E;margin:2px 0 6px}
+  .mk-st{font-weight:600;margin-bottom:8px}
+  .mk-st.bad{color:#C32B45} .mk-st.mid{color:#A86400} .mk-st.good{color:#0B7A55}
+  .mk-btns{display:flex;gap:6px}
+  .mk-btns button{border:1px solid var(--line2);background:#fff;border-radius:8px;padding:5px 9px;font-size:12px;font-weight:600;cursor:pointer}
+  .mk-btns button:hover{background:var(--bg2)}
+  /* ---- Rollen-Vorschau ---- */
+  .rolle-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;gap:12px;align-items:center;justify-content:center;
+    flex-wrap:wrap;background:var(--navy);color:#fff;padding:9px 16px;font-size:12.5px;box-shadow:0 -6px 18px -12px rgba(10,14,26,.5)}
+  .rolle-bar b{font-weight:700}
+  .rolle-bar .btn{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.3);color:#fff}
+  .rolle-bar .btn:hover{background:rgba(255,255,255,.24)}
+  @media print{ .rolle-bar{display:none !important} }
   /* ---- CO2-Rechner ---- */
   .co2-grid{display:grid;grid-template-columns:minmax(300px,1fr) minmax(300px,1.1fr);gap:14px;margin-top:14px}
   @media (max-width:900px){ .co2-grid{grid-template-columns:1fr} }
@@ -880,6 +943,12 @@ const DB = {
     const { error } = await sb.from('houses').insert(row);
     if(error){ console.error(error); throw error; }
     return {id:row.id,name:row.name,unit:row.unit||"",address:row.address||"",lat:null,lng:null};
+  },
+  async updateHouse(id,f){
+    const row={}; if(f.name!=null) row.name=f.name; if(f.unit!=null) row.unit=f.unit||null; if(f.address!=null) row.address=f.address||null;
+    if(!Object.keys(row).length) return;
+    const { error } = await sb.from('houses').update(row).eq('id',id);
+    if(error){ console.error(error); throw error; }
   },
   async saveHouseLocation(id,lat,lng){
     const { error } = await sb.from('houses').update({lat,lng}).eq('id',id);
@@ -1166,6 +1235,8 @@ async function getImg(path){               // Anzeige: kurzlebige, signierte URL
   }catch(e){ return null; }
 }
 async function getImgDataURL(path){         // PDF: Bytes laden -> dataURL (kein Canvas-Taint)
+  const c=S.imgCache[path];
+  if(typeof c==="string" && c.indexOf("data:")===0) return c;   // Demo-/Beispielbilder liegen schon als dataURL vor
   try{
     const { data, error } = await sb.storage.from(BUCKET).download(path);
     if(error||!data) return null;
@@ -1344,8 +1415,9 @@ function refreshMenuBadge(){
   if(n>0){ b.textContent=n>99?"99+":String(n); b.style.display="grid"; } else b.style.display="none";
 }
 async function openHouse(id){
-  if(!canArea("objekte")) return goHome();
-  S.houseId=id; S.view="house"; S.cmp=[]; S.houseTab=S.houseTab||"begehungen";
+  if(!canArea("objekte") && !canArea("zaehler")) return goHome();
+  S.houseId=id; S.view="house"; S.cmp=[];
+  S.houseTab = canArea("objekte") ? (S.houseTab||"begehungen") : "zaehler";
   const insps=await DB.listInspections(id);   // bereits nach Datum absteigend
   S.hidx=insps.map(it=>({id:it.id,date:it.date,inspector:it.inspector,updatedAt:it.updatedAt,finalized:!!it.finalizedAt,counts:countCond(it)}));
   S.anlagen=await DB.listAnlagen(id);
@@ -1405,6 +1477,7 @@ const normArea = s => (s||"").trim().toLowerCase().replace(/\s+/g," ");
 function render(){
   if(!allowedView(S.view)){ S.view="home"; }
   if(S.view!=="melden") meldMode(false);
+  if(typeof rolleBanner==="function") rolleBanner();
   if(S.view==="home") return renderHome();
   if(S.view==="house") return renderHouse();
   if(S.view==="stammblatt") return renderStammblatt();
@@ -1425,6 +1498,9 @@ function render(){
   if(S.view==="ablesung") return renderAblesung();
   if(S.view==="fristen") return renderFristen();
   if(S.view==="co2") return renderCO2();
+  if(S.view==="karte") return renderKarte();
+  if(S.view==="vorhernachher") return renderVorherNachher();
+  if(S.view==="post") return renderPost();
   if(S.view==="melden") return renderMelden();
   if(S.view==="aushang") return renderAushang();
   if(S.view==="etiketten") return renderEtiketten();
@@ -1480,7 +1556,7 @@ const I = {
 /* ---------- HOME: rollenabhängig ---------- */
 function renderHome(){
   const p=S.perm||{};
-  const anyArea = canArea("objekte")||canArea("reinigung")||canArea("aufzuege")||canArea("sanierung")||canArea("tickets");
+  const anyArea = canArea("objekte")||canArea("zaehler")||canArea("reinigung")||canArea("aufzuege")||canArea("sanierung")||canArea("tickets");
   const primaryBtn = canArea("objekte")?`<button class="btn primary" onclick="addHouse()">${I.plus} Neues Objekt</button>`:"";
 
   let body;
@@ -1514,6 +1590,7 @@ function renderHome(){
   } else {
     // Nur Teilbereiche (z. B. externe Firma) -> große Einstiegskacheln
     const entries=[];
+    if(canArea("zaehler")) entries.push(`<div class="house card" onclick="openAblesung()"><div class="hn">${I.grid} Zählerablesung</div><div class="ha">Zähler je Objekt ablesen, mit Standort und Vorjahreswert</div></div>`);
     if(canArea("reinigung")) entries.push(`<div class="house card" onclick="openReinigung()"><div class="hn">${I.broom} Hausdienstleister</div><div class="ha">Reinigungsplan &amp; Tätigkeitsnachweise</div></div>`);
     if(canArea("aufzuege")) entries.push(`<div class="house card" onclick="openAufzuege()"><div class="hn">${I.lift} Aufzüge</div><div class="ha">Wartung, TÜV &amp; Störungsmeldungen</div></div>`);
     if(canArea("sanierung")) entries.push(`<div class="house card" onclick="openSanierung()"><div class="hn">${I.hammer} Wohnungssanierungen</div><div class="ha">Sanierungsprojekte mit Status &amp; Kosten</div></div>`);
@@ -1523,7 +1600,7 @@ function renderHome(){
   view.innerHTML=`
     <div class="page-head" style="margin-bottom:18px">
       <div><h2>${canArea("objekte")?"Übersicht":"Übersicht"}</h2></div>
-      <div class="toolbar">${canArea("objekte")?`<button class="btn" onclick="openBerichtWahl()">${I.pdf} Eigentümerbericht</button>`:""}${primaryBtn}</div>
+      <div class="toolbar">${canArea("objekte")?`<button class="btn" onclick="openKarte()">${I.pin||I.building} Karte</button><button class="btn" onclick="openBerichtWahl()">${I.pdf} Eigentümerbericht</button>`:""}${primaryBtn}</div>
     </div>
     ${anyArea?`<div class="sec-head"><span class="sec-label">Auf einen Blick</span></div><div id="dashCards" class="dash"></div>`:""}
     ${body}`;
@@ -1682,7 +1759,10 @@ function renderHouse(){
   const zOffen=zList.filter(z=>!zPeriodeEintrag(z.id,abPeriode())).length;
   const zBadge = zOffen?`<span class="chip mid" style="margin-left:7px">${zOffen} offen</span>`:"";
 
-  const tabs=`<div class="tabs">
+  const nurZaehler = !canArea("objekte") && canArea("zaehler");
+  const tabs = nurZaehler ? `<div class="tabs">
+    <button class="tab on">${I.grid} Zähler &amp; Ablesung <span class="tabn">${zList.length}</span>${zBadge}</button>
+  </div>` : `<div class="tabs">
     <button class="tab ${tab==='begehungen'?'on':''}" onclick="setHouseTab('begehungen')">${I.book} Begehungen <span class="tabn">${items.length}</span></button>
     <button class="tab ${tab==='wartung'?'on':''}" onclick="setHouseTab('wartung')">${I.wrench} Technik &amp; Wartung <span class="tabn">${(S.anlagen||[]).length}</span>${wartBadge}</button>
     <button class="tab ${tab==='zaehler'?'on':''}" onclick="setHouseTab('zaehler')">${I.grid} Zähler &amp; Ablesung <span class="tabn">${zList.length}</span>${zBadge}</button>
@@ -1690,7 +1770,10 @@ function renderHouse(){
   </div>`;
 
   let content, toolbar;
-  if(tab==="tagebuch"){
+  if(nurZaehler){
+    toolbar=`${zList.length?`<button class="btn" onclick="openEtiketten()">${I.grid} QR-Etiketten</button>`:""}<button class="btn" onclick="openErfassung()">${I.clip} Erfassungsbogen</button><button class="btn primary" onclick="addZaehler()">${I.plus} Zähler anlegen</button>`;
+    content=houseZaehlerHTML();
+  } else if(tab==="tagebuch"){
     toolbar=`<button class="btn" onclick="openStammblatt()">${I.book} Stammblatt</button><button class="btn" onclick="exportObjektakte()">${I.pdf} Objektakte</button>`;
     content=houseTagebuchHTML();
   } else if(tab==="zaehler"){
@@ -1701,7 +1784,7 @@ function renderHouse(){
     content=houseWartungHTML();
   } else {
     const canCompare=items.length>=2;
-    toolbar=`<button class="btn" onclick="openStammblatt()">${I.book} Stammblatt</button><button class="btn" onclick="openDokumente()">${I.file} Dokumente</button><button class="btn" onclick="exportObjektakte()">${I.pdf} Objektakte</button><button class="btn" onclick="openBerichtWahl()">${I.pdf} Eigentümerbericht</button>${canCompare?`<button class="btn" onclick="startCompare()">${I.compare} Vergleichen</button>`:""}<button class="btn primary" onclick="newInspection()">${I.plus} Neue Begehung</button>`;
+    toolbar=`<button class="btn" onclick="openStammblatt()">${I.book} Stammblatt</button><button class="btn" onclick="openDokumente()">${I.file} Dokumente</button><button class="btn" onclick="exportObjektakte()">${I.pdf} Objektakte</button><button class="btn" onclick="openBerichtWahl()">${I.pdf} Eigentümerbericht</button>${canCompare?`<button class="btn" onclick="startCompare()">${I.compare} Vergleichen</button><button class="btn" onclick="openVorherNachher()">${I.cam} Vorher/Nachher</button>`:""}<button class="btn primary" onclick="newInspection()">${I.plus} Neue Begehung</button>`;
     content=houseBegehungenHTML(items);
   }
   view.innerHTML=`
@@ -2290,7 +2373,7 @@ function exportZaehlerCSV(scope){
 
 /* ---------- Objektübergreifende Ableseliste ---------- */
 async function openAblesung(){
-  if(!canArea("objekte")) return goHome();
+  if(!canArea("zaehler") && !canArea("objekte")) return goHome();
   S.view="ablesung";
   view.innerHTML=`<div class="crumb"><a onclick="goHome()">Objekte</a><span class="sep">/</span>Zählerablesung</div>
     <div class="page-head"><div><h2>Zählerablesung</h2><div class="lead">Lade Daten…</div></div></div>`;
@@ -2695,18 +2778,24 @@ function fristenSammeln(){
   return out;
 }
 
+/* Gemeinsamer Datenlader für Fristenkalender, Karte und Eigentümerbericht */
+async function frDaten(neu){
+  if(!neu && S._fr && S._frStamp && (Date.now()-S._frStamp)<60000) return S._fr;
+  const [anl,auf,tk,log,zz,aa]=await Promise.all([
+    DB.allAnlagen(), DB.listAufzuege(), DB.listTickets(), DB.listMeldungenLog(), DB.allZaehler(), DB.allAblesungen() ]);
+  const san=await DB.listSanierungen();
+  S._gwlSan=san;
+  S._fr={anl,auf,tk,log,zz,san,aa:aa.concat(offAll())};
+  S._frStamp=Date.now();
+  return S._fr;
+}
 async function openFristen(){
   if(!canArea("objekte")) return goHome();
   S.view="fristen";
   view.innerHTML=`<div class="crumb"><a onclick="goHome()">Objekte</a><span class="sep">/</span>Fristenkalender</div>
     <div class="page-head"><div><h2>Fristenkalender</h2><div class="lead">Lade Fristen…</div></div></div>`;
-  try{
-    const [anl,auf,tk,log,zz,aa]=await Promise.all([
-      DB.allAnlagen(), DB.listAufzuege(), DB.listTickets(), DB.listMeldungenLog(), DB.allZaehler(), DB.allAblesungen() ]);
-    const san=await DB.listSanierungen();
-    S._gwlSan=san;
-    S._fr={anl,auf,tk,log,zz,san,aa:aa.concat(offAll())};
-  }catch(e){ showError("Fristen konnten nicht geladen werden", e); S._fr={}; }
+  try{ await frDaten(true); }
+  catch(e){ showError("Fristen konnten nicht geladen werden", e); S._fr={}; }
   S.frFilter=S.frFilter||"offen";
   S.frObjekt=S.frObjekt||"";
   renderFristen();
@@ -2972,6 +3061,917 @@ function co2OutHTML(){
       <button class="btn sm" onclick="mailGesetz('co2')">${I.mail} Angaben beim Lieferanten anfordern</button>
     </div>
   </div>`;
+}
+
+
+
+
+
+/* ===================== Posteingang =====================
+   Eine eingehende Nachricht wird eingefügt oder aus dem Beispielstapel gewählt.
+   Die Anwendung erkennt das Objekt, schlägt Art und Dringlichkeit des Vorgangs vor
+   und entwirft eine Antwort. Das geschieht regelbasiert und damit auch ohne
+   KI-Schlüssel; ist ein Schlüssel hinterlegt, übernimmt zusätzlich das Modell
+   Zusammenfassung und Antwortentwurf.
+   Angelegt wird nichts von allein – jeder Vorgang wird bestätigt.
+--------------------------------------------------------- */
+const POST_BEISPIELE=[
+  { von:"m.schneider@beispiel.de", betreff:"Ahornweg 12 – Heizung im Treppenhaus kalt",
+    text:`Guten Tag,\n\nseit Freitag ist es im Treppenhaus Ahornweg 12, Aufgang B, eiskalt. Die Heizkörper bleiben kalt, im 4. OG tropft außerdem etwas aus dem Steigstrang. Meine Nachbarin hat schon angerufen, es hat sich aber niemand gemeldet.\n\nBitte kümmern Sie sich schnell darum.\n\nMit freundlichen Grüßen\nM. Schneider, WE 9` },
+  { von:"buchhaltung@waermedienst-alpha.de", betreff:"Wartungsbericht Heizung – Ahornweg 12",
+    text:`Sehr geehrte Damen und Herren,\n\nanbei der Wartungsbericht zur Heizungsanlage im Objekt Ahornweg 12 vom vergangenen Monat. Die Anlage läuft, wir empfehlen den Austausch des Ausdehnungsgefäßes in den nächsten 12 Monaten. Ein Angebot liegt bei.\n\nBitte bestätigen Sie den Erhalt.\n\nFreundliche Grüße\nWärmedienst Alpha GmbH` },
+  { von:"kanzlei@recht-beispiel.de", betreff:"Betriebskostenabrechnung 2025 – Widerspruch Mieter Marktplatz 3",
+    text:`Sehr geehrte Damen und Herren,\n\nin Vollmacht unseres Mandanten widersprechen wir der Betriebskostenabrechnung 2025 für die Einheit Laden EG, Marktplatz 3. Die Position Allgemeinstrom ist gegenüber dem Vorjahr um 68 % gestiegen; wir bitten um Vorlage der Zählerstände sowie der Ablesebelege.\n\nWir bitten um Rückäußerung binnen 14 Tagen.\n\nMit freundlichen Grüßen\nRechtsanwälte Beispiel` },
+  { von:"info@stadt-musterstadt.de", betreff:"Ortstermin Brandschutz Birkenallee 20-34",
+    text:`Guten Tag,\n\nim Rahmen der Brandverhütungsschau findet am kommenden Monatsanfang ein Ortstermin im Objekt Birkenallee 20-34 statt. Bitte stellen Sie sicher, dass die Rettungswege frei sind und die Prüfnachweise der Feuerlöscher vorliegen.\n\nMit freundlichen Grüßen\nStadt Musterstadt, Bauordnungsamt` }
+];
+const POST_ARTEN=[
+  { id:"mangel",   label:"Mangelmeldung",        ziel:"Ticket",           muster:[/kalt|tropf|undicht|defekt|kaputt|schimmel|l(ä|ae)uft aus|verstopft|ausgefallen|geht nicht|l(ä|ae)rm|schaden/i] },
+  { id:"wartung",  label:"Wartung / Prüfbericht", ziel:"Dokument & Frist", muster:[/wartungsbericht|pr(ü|ue)fbericht|wartung|pr(ü|ue)fung durchgef(ü|ue)hrt|protokoll/i] },
+  { id:"recht",    label:"Rechtliches / Widerspruch", ziel:"Meldung mit Frist", muster:[/widerspruch|anwalt|kanzlei|vollmacht|klage|frist|k(ü|ue)ndigung|mahnung/i] },
+  { id:"behoerde", label:"Behörde / Ortstermin",  ziel:"Meldung mit Frist", muster:[/amt|beh(ö|oe)rde|ortstermin|begehung|brandverh(ü|ue)tungsschau|bescheid|auflage/i] },
+  { id:"angebot",  label:"Angebot / Rechnung",    ziel:"Dokument",         muster:[/angebot|kostenvoranschlag|rechnung|zahlungs/i] },
+  { id:"sonst",    label:"Sonstiges",             ziel:"Ticket",           muster:[] }
+];
+function postArt(text){
+  const t=text||"";
+  for(const a of POST_ARTEN){ if(a.muster.some(m=>m.test(t))) return a; }
+  return POST_ARTEN[POST_ARTEN.length-1];
+}
+function postDringend(text){
+  const t=(text||"").toLowerCase();
+  if(/eiskalt|kein warmwasser|wasserschaden|l(ä|ae)uft aus|gasgeruch|es brennt|brandfall|stromausfall|gefahr für personen|notdienst|unverz(ü|ue)glich|sofort/.test(t)) return "hoch";
+  if(/kalt|tropf|undicht|seit tagen|dringend|schnell|frist/.test(t)) return "mittel";
+  return "";
+}
+/* Objekt aus Text erkennen: Name, Adresse, Wirtschaftseinheit oder Objektnummer */
+function postObjekt(text){
+  const t=(text||"").toLowerCase().replace(/[–—]/g,"-");
+  let best=null, bestScore=0;
+  (S.houses||[]).forEach(h=>{
+    let score=0;
+    const name=(h.name||"").toLowerCase().replace(/[–—]/g,"-");
+    if(name && t.indexOf(name)>=0) score+=10;
+    else {
+      const strasse=name.replace(/\s*\d.*$/,"").trim();
+      if(strasse.length>4 && t.indexOf(strasse)>=0) score+=6;
+    }
+    const adr=(h.address||"").toLowerCase();
+    const plz=(adr.match(/\b\d{5}\b/)||[])[0];
+    if(plz && t.indexOf(plz)>=0) score+=2;
+    const nr=((h.stammdaten&&h.stammdaten.objektnr)||"").toLowerCase();
+    if(nr && t.indexOf(nr)>=0) score+=8;
+    if(score>bestScore){ bestScore=score; best=h; }
+  });
+  return bestScore>=6? best : null;
+}
+/* Einheit / Wohnung aus dem Text */
+function postEinheit(text){
+  const t=text||"";
+  const we=t.match(/\bWE\s?\d+[a-z]?\b/i);            // Wirtschafts-/Wohneinheit hat Vorrang
+  if(we) return we[0].trim();
+  const m=t.match(/\b(Laden\s?EG|Gewerbe\s?\w*|[1-9]\.\s?OG(?:\s?(?:links|rechts|mitte))?|EG(?:\s?(?:links|rechts))?)\b/i);
+  return m? m[0].trim() : "";
+}
+function postFirma(text, von){
+  const dom=((von||"").split("@")[1]||"").toLowerCase();
+  const kont=S.kontakte||[];
+  let treffer=null;
+  kont.forEach(k=>{
+    const mailDom=((k.email||"").split("@")[1]||"").toLowerCase();
+    if(dom && mailDom && dom===mailDom) treffer=k;
+  });
+  if(!treffer){
+    const t=(text||"").toLowerCase();
+    kont.forEach(k=>{ const n=(k.name||"").toLowerCase(); if(!treffer && n.length>4 && t.indexOf(n)>=0) treffer=k; });
+  }
+  return treffer;
+}
+async function openPost(){
+  if(!canArea("tickets") && !canArea("objekte")) return goHome();
+  S.view="post";
+  if(!S.kontakte){ try{ S.kontakte=await DB.listKontakte(); }catch(e){ S.kontakte=[]; } }
+  S.post=S.post||{von:"",betreff:"",text:"",analyse:null,ki:""};
+  renderPost();
+}
+function renderPost(){
+  const p=S.post||{};
+  const a=p.analyse;
+  const kiDa=(typeof window.AIVerfuegbar==="function") && window.AIVerfuegbar();
+  view.innerHTML=`<div class="crumb"><a onclick="goHome()">Objekte</a><span class="sep">/</span>Posteingang</div>
+    <div class="page-head">
+      <div><h2>Posteingang</h2><div class="lead">Nachricht einfügen – Objekt, Art des Vorgangs und Dringlichkeit werden erkannt, der Vorgang wird vorgeschlagen und die Antwort entworfen.</div></div>
+      <div class="toolbar">
+        <button class="btn" onclick="postBeispiele()">${I.mail} Beispielnachrichten</button>
+        ${kiDa?`<span class="chip good">KI aktiv</span>`:`<button class="btn" onclick="AIPanelOeffnen()">${I.spark||I.book} KI freischalten</button>`}
+      </div>
+    </div>
+    <div class="co2-grid">
+      <div class="card">
+        <h3 class="co2-h">Eingehende Nachricht</h3>
+        <div class="field"><label>Absender</label><input id="poVon" value="${esc(p.von||"")}" placeholder="name@firma.de" oninput="S.post.von=this.value"></div>
+        <div class="field"><label>Betreff</label><input id="poBetreff" value="${esc(p.betreff||"")}" placeholder="Betreff der Nachricht" oninput="S.post.betreff=this.value"></div>
+        <div class="field"><label>Text</label>
+          <textarea id="poText" style="min-height:230px" placeholder="Nachricht hier einfügen…" oninput="S.post.text=this.value">${esc(p.text||"")}</textarea></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn primary" onclick="postAnalyse()">${I.search} Auswerten</button>
+          <button class="btn ghost" onclick="S.post={von:'',betreff:'',text:'',analyse:null,ki:''};renderPost()">Leeren</button>
+        </div>
+        <p class="hint">Es wird nichts verschickt und nichts automatisch angelegt. In dieser Demo bleiben die
+          Eingaben nur bis zum Neuladen erhalten.</p>
+      </div>
+      <div id="postOut">${postOutHTML()}</div>
+    </div>`;
+}
+function postOutHTML(){
+  const p=S.post||{}, a=p.analyse;
+  if(!a){
+    return `<div class="card"><h3 class="co2-h">Auswertung</h3>
+      <p class="m">Noch keine Nachricht ausgewertet. Über <b>Beispielnachrichten</b> lässt sich der Ablauf
+        ohne Tipparbeit zeigen: Mieterbeschwerde, Wartungsbericht, Anwaltsschreiben, Behördentermin.</p></div>`;
+  }
+  const h=a.haus;
+  return `<div class="card">
+    <h3 class="co2-h">Auswertung</h3>
+    <div class="po-zeile"><span>Objekt</span><b>${h?esc(h.name):`<span style="color:var(--mid)">nicht erkannt</span>`}</b></div>
+    ${a.einheit?`<div class="po-zeile"><span>Einheit</span><b>${esc(a.einheit)}</b></div>`:""}
+    <div class="po-zeile"><span>Art</span><b>${esc(a.art.label)}</b></div>
+    <div class="po-zeile"><span>Vorschlag</span><b>${esc(a.art.ziel)}</b></div>
+    <div class="po-zeile"><span>Dringlichkeit</span><b>${a.prio?`<span class="chip ${a.prio==="hoch"?"bad":"mid"}">${esc(a.prio)}</span>`:"normal"}</b></div>
+    ${a.firma?`<div class="po-zeile"><span>Absender im Adressbuch</span><b>${esc(a.firma.name)}${a.firma.gewerk?" · "+esc(a.firma.gewerk):""}</b></div>`:""}
+    ${a.frist?`<div class="po-zeile"><span>Frist / Wiedervorlage</span><b>${esc(fmtShort(a.frist))}</b></div>`:""}
+    ${a.bezug.length?`<div class="po-bezug"><b>Bezug im Bestand</b><ul>${a.bezug.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`:""}
+    ${p.ki?`<div class="po-ki"><b>${I.spark||""} Einschätzung der KI</b><p>${esc(p.ki).replace(/\\n/g,"<br>")}</p></div>`:""}
+    <h4 class="co2-h4">Vorgeschlagene Schritte</h4>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      ${a.art.ziel.indexOf("Ticket")>=0?`<button class="btn sm primary" onclick="postTicket()">${I.ticket} Ticket anlegen</button>`:""}
+      ${a.art.ziel.indexOf("Meldung")>=0?`<button class="btn sm primary" onclick="postMeldung()">${I.bell} Zur Überwachung aufnehmen</button>`:""}
+      <button class="btn sm" onclick="postAntwort()">${I.mail} Antwort entwerfen</button>
+      ${h?`<button class="btn sm" onclick="openHouse('${h.id}')">Objekt öffnen</button>`:""}
+      ${(typeof window.AIVerfuegbar==="function"&&window.AIVerfuegbar())?`<button class="btn sm" onclick="postKI()">${I.spark||""} Von der KI einschätzen lassen</button>`:""}
+    </div>
+    <h4 class="co2-h4">Antwortentwurf</h4>
+    <pre class="co2-pre" id="poEntwurf">${esc(a.entwurf||"")}</pre>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn sm" onclick="postKopieren()">In Zwischenablage</button>
+      <button class="btn sm" onclick="postAntwort()">${I.mail} Im E-Mail-Programm öffnen</button>
+    </div>
+  </div>`;
+}
+function postBeispiele(){
+  modal(`<h3>Beispielnachrichten</h3>
+    <p class="m">Vier typische Zugänge aus dem Alltag einer Hausverwaltung – zum Ausprobieren des Ablaufs.</p>
+    <div class="col-list">${POST_BEISPIELE.map((b,i)=>`
+      <div class="col-row" style="cursor:pointer" onclick="postBeispielWaehlen(${i})">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:13px">${esc(b.betreff)}</div>
+          <div style="font-size:12px;color:var(--muted)">${esc(b.von)}</div>
+        </div><span class="or-chev">${I.chev}</span></div>`).join("")}</div>
+    <div class="modal-actions"><button class="btn primary" onclick="closeModal()">Schließen</button></div>`);
+}
+function postBeispielWaehlen(i){
+  const b=POST_BEISPIELE[i]; if(!b) return;
+  S.post={von:b.von, betreff:b.betreff, text:b.text, analyse:null, ki:""};
+  closeModal(); renderPost();
+  postAnalyse();
+}
+function postAnalyse(){
+  const p=S.post||{};
+  const t=[(p.betreff||""),(p.text||"")].join("\n");
+  if(!t.trim()){ toast("Bitte eine Nachricht einfügen."); return; }
+  const haus=postObjekt(t);
+  const art=postArt(t);
+  const prio=postDringend(t);
+  const einheit=postEinheit(t);
+  const firma=postFirma(t, p.von);
+  /* Frist: aus dem Text genannte Tagesfrist, sonst nach Art */
+  const fm=t.match(/binnen\s+(\d{1,2})\s*(tage|tagen|werktage|werktagen)/i) || t.match(/innerhalb\s+von\s+(\d{1,2})\s*(tage|tagen)/i);
+  let frist="";
+  if(fm){ const d=new Date(); d.setDate(d.getDate()+Number(fm[1])); frist=d.toISOString().slice(0,10); }
+  else if(art.id==="recht"||art.id==="behoerde"){ const d=new Date(); d.setDate(d.getDate()+14); frist=d.toISOString().slice(0,10); }
+  else if(prio==="hoch"){ const d=new Date(); d.setDate(d.getDate()+2); frist=d.toISOString().slice(0,10); }
+  /* Bezug im eigenen Bestand */
+  const bezug=[];
+  if(haus){
+    const offen=(S.tickets||[]).filter(x=>x.houseId===haus.id && x.status!=="erledigt");
+    if(offen.length) bezug.push(`${offen.length} offene Ticket${offen.length===1?"":"s"} in diesem Objekt`);
+    if(S._fr){
+      const fr=fristenSammeln().filter(f=>f.houseId===haus.id && f.level==="overdue");
+      if(fr.length) bezug.push(`${fr.length} überfällige Frist${fr.length===1?"":"en"}: ${fr.slice(0,2).map(f=>f.titel).join(", ")}`);
+    }
+    if(art.id==="recht" && /allgemeinstrom|z(ä|ae)hler|ablese/i.test(t)){
+      const zz=(S.zaehler||[]).filter(z=>z.houseId===haus.id);
+      bezug.push(zz.length? `${zz.length} Zähler im Objekt erfasst – Stände und Ablesebelege liegen im Modul Zähler`
+                          : "Für dieses Objekt sind noch keine Zähler erfasst – die Belege wären nachzureichen");
+    }
+  }
+  S.post.analyse={haus, art, prio, einheit, firma, frist, bezug, entwurf:postEntwurf({haus,art,prio,einheit,firma,frist})};
+  renderPost();
+}
+function postEntwurf(a){
+  const p=S.post||{};
+  const anrede = a.firma ? "Sehr geehrte Damen und Herren," : "Guten Tag,";
+  const obj = a.haus ? `${a.haus.name}${a.einheit?", "+a.einheit:""}` : "das genannte Objekt";
+  let kern="";
+  if(a.art.id==="mangel"){
+    kern=`vielen Dank für Ihre Nachricht. Wir haben den gemeldeten Mangel in ${obj} aufgenommen und als Vorgang erfasst`
+      +(a.prio==="hoch"?" und als dringend eingestuft":"")+`.\n\n`
+      +`Wir beauftragen die zuständige Fachfirma und melden uns mit einem Termin. `
+      +(a.prio==="hoch"?`Sollte sich die Lage verschärfen – Wasseraustritt, Gasgeruch, Gefahr für Personen – bitte unmittelbar den Notdienst anrufen.\n`:`\n`);
+  } else if(a.art.id==="wartung"){
+    kern=`vielen Dank, den Bericht zu ${obj} haben wir erhalten und zur Objektakte genommen.\n\n`
+      +`Die empfohlene Maßnahme nehmen wir in die Planung auf. Für die Beauftragung bitten wir um ein `
+      +`Angebot mit Kosten und möglichem Termin sowie um Angabe, bis wann die Maßnahme aus Ihrer Sicht `
+      +`durchgeführt sein sollte.\n`;
+  } else if(a.art.id==="recht"){
+    kern=`wir bestätigen den Eingang Ihres Schreibens zu ${obj} und haben den Vorgang zur Bearbeitung erfasst.\n\n`
+      +`Die angeforderten Unterlagen stellen wir zusammen und äußern uns fristgerecht. `
+      +`Sollten wir für die Prüfung weitere Angaben benötigen, kommen wir auf Sie zu.\n`;
+  } else if(a.art.id==="behoerde"){
+    kern=`wir bestätigen den Termin für ${obj} und werden die Zugänglichkeit sicherstellen.\n\n`
+      +`Die Prüfnachweise halten wir vor Ort bereit; die Rettungswege werden vorab kontrolliert. `
+      +`Als Ansprechpartner steht Ihnen unser Hausmeister zur Verfügung.\n`;
+  } else if(a.art.id==="angebot"){
+    kern=`vielen Dank für Ihr Angebot zu ${obj}. Wir prüfen es und melden uns mit einer Entscheidung.\n\n`
+      +`Bitte teilen Sie uns mit, wie lange das Angebot Bindung hat und welcher Ausführungszeitraum möglich wäre.\n`;
+  } else {
+    kern=`vielen Dank für Ihre Nachricht zu ${obj}. Wir haben den Vorgang erfasst und melden uns.\n`;
+  }
+  const schluss = a.frist? `\nWir melden uns bis zum ${fmtShort(a.frist)}.\n` : "";
+  return `${anrede}\n\n${kern}${schluss}\n${MAIL_GRUSS}`;
+}
+async function postKI(){
+  const p=S.post||{}, a=p.analyse; if(!a) return;
+  if(!(typeof window.AIVerfuegbar==="function" && window.AIVerfuegbar())){ toast("Bitte zuerst den KI-Schlüssel im Assistenten eintragen."); return; }
+  const ov=geoOverlay("Die KI liest die Nachricht…");
+  try{
+    const sys="Du unterstützt eine deutsche Hausverwaltung. Antworte auf Deutsch, sachlich, ohne Floskeln. "
+      +"Gliedere in genau drei kurze Abschnitte: 1. Was verlangt der Absender? 2. Was ist zu tun, in Stichpunkten, mit Reihenfolge. "
+      +"3. Welche Frist oder welches Risiko besteht? Erfinde keine Daten; wenn etwas fehlt, benenne die Lücke.";
+    const kontext=`Objekt laut Erkennung: ${a.haus?a.haus.name:"nicht erkannt"}\nEinheit: ${a.einheit||"–"}\n`
+      +`Eingeordnet als: ${a.art.label}\nDringlichkeit: ${a.prio||"normal"}\n`
+      +(a.bezug.length?`Bekannt im Bestand: ${a.bezug.join("; ")}\n`:"")
+      +`\nNACHRICHT\nVon: ${p.von||"unbekannt"}\nBetreff: ${p.betreff||"–"}\n\n${p.text||""}`;
+    const antwort=await window.AIFragen(sys, kontext, 700);
+    S.post.ki=antwort||"";
+    ov.remove(); renderPost();
+  }catch(e){ ov.remove(); showError("Die KI konnte nicht antworten", e.message||e); }
+}
+async function postTicket(){
+  const p=S.post||{}, a=p.analyse; if(!a) return;
+  const h=a.haus;
+  if(!S.tickets){ try{ S.tickets=await DB.listTickets(); }catch(e){ S.tickets=[]; } }
+  const kurz=(p.betreff||p.text||"").slice(0,70);
+  const t={ id:uid(), houseId:h?h.id:"", bezug:a.einheit?"mieteinheit":"objekt", unit:a.einheit||"",
+    title:kurz, description:(p.text||"").slice(0,1200), status:"offen", prio:a.prio||"",
+    firm:a.firma?a.firma.name:"", firmEmail:a.firma?(a.firma.email||""):"",
+    reporter:p.von||"", createdDate:todayISO(), dueDate:a.frist||"", sentDate:"", sentTo:"",
+    note:`Eingang über Posteingang · eingeordnet als ${a.art.label}`, photos:[], quelle:"post" };
+  confirmModal("Ticket anlegen?",
+    `${esc(kurz)}\n\nObjekt: ${h?h.name:"– nicht erkannt –"}${a.einheit?" · "+a.einheit:""}${a.prio?" · Priorität "+a.prio:""}${a.frist?" · Frist "+fmtShort(a.frist):""}`,
+    async()=>{
+      try{ await DB.saveTicket(t); }catch(e){ return showError("Ticket konnte nicht angelegt werden", e); }
+      S.tickets.unshift(t);
+      toast("Ticket angelegt.");
+      openTickets();
+    }, "Ticket anlegen");
+}
+async function postMeldung(){
+  const p=S.post||{}, a=p.analyse; if(!a) return;
+  const eintrag={ id:uid(), kind:a.art.id==="behoerde"?"behoerde":"recht", houseId:a.haus?a.haus.id:"", aufzugId:"",
+    subject:(p.betreff||"Vorgang aus dem Posteingang").slice(0,120), recipient:p.von||"",
+    sentDate:todayISO(), dueDate:a.frist||"", status:"offen", note:(p.text||"").slice(0,400) };
+  confirmModal("Zur Überwachung aufnehmen?",
+    `${esc(eintrag.subject)}\n\nWiedervorlage: ${a.frist?fmtShort(a.frist):"ohne Frist"}`,
+    async()=>{
+      try{ await DB.logMeldung(eintrag); }catch(e){ return showError("Vorgang konnte nicht aufgenommen werden", e); }
+      toast("Vorgang wird überwacht.");
+      openMeldungen();
+    }, "Aufnehmen");
+}
+async function postAntwort(){
+  const p=S.post||{}, a=p.analyse; if(!a) return;
+  const entwurf=(document.getElementById("poEntwurf")||{}).textContent || a.entwurf || "";
+  composeMail({ to:p.von||"", subject:"Re: "+(p.betreff||""), body:entwurf,
+    track:!!a.frist, kind:a.art.id, houseId:a.haus?a.haus.id:"", defaultDue:a.frist||"",
+    hint:a.frist?"Mit Frist – der Vorgang wird in der Meldungs-Überwachung geführt.":undefined });
+}
+async function postKopieren(){
+  const t=(document.getElementById("poEntwurf")||{}).textContent||"";
+  try{ await navigator.clipboard.writeText(t); toast("Antwortentwurf kopiert."); }
+  catch(e){ toast("Kopieren nicht möglich – Text bitte markieren und kopieren."); }
+}
+
+/* ===================== Stammdaten aus SAP einlesen =====================
+   Objekte und Einheiten kommen aus dem Bestandssystem statt aus Handarbeit.
+   Eingelesen wird ein CSV-Export (Semikolon oder Tabulator), die Spalten werden
+   erkannt und lassen sich zuordnen. Vor der Übernahme zeigt eine Vorschau, was
+   neu ist, was sich ändert und was unverändert bleibt – übernommen wird nichts,
+   was nicht vorher zu sehen war.
+------------------------------------------------------------------- */
+const SAP_FELDER=[
+  {key:"objektnr",   label:"Objektnummer",        hinweis:"Schlüssel für den Abgleich (SAP: Wirtschaftseinheit / Objekt)"},
+  {key:"name",       label:"Bezeichnung",         hinweis:"Straße und Hausnummer"},
+  {key:"unit",       label:"Wirtschaftseinheit",  hinweis:"z. B. WE 1–12"},
+  {key:"address",    label:"PLZ / Ort",           hinweis:""},
+  {key:"baujahr",    label:"Baujahr",             hinweis:""},
+  {key:"we_anzahl",  label:"Wohneinheiten",       hinweis:""},
+  {key:"ge_anzahl",  label:"Gewerbeeinheiten",    hinweis:""},
+  {key:"wohnflaeche",label:"Wohn-/Nutzfläche",    hinweis:"in m², ohne Einheit"},
+  {key:"heizungsart",label:"Heizungsart",         hinweis:"Gas, Öl, Fernwärme, Wärmepumpe …"},
+  {key:"hausmeister",label:"Hausmeister",         hinweis:""}
+];
+/* Spaltennamen, wie sie in Exporten üblich sind */
+const SAP_MUSTER={
+  objektnr:   [/objektnr/i,/objekt.?nummer/i,/wirtschaftseinheit.?nr/i,/^we.?nr/i,/^swenr/i,/immobilie/i],
+  name:       [/bezeichnung/i,/objektbez/i,/^name/i,/stra(ss|ß)e/i,/anschrift/i],
+  unit:       [/^we$/i,/wirtschaftseinheit/i,/einheit/i],
+  address:    [/plz/i,/^ort/i,/postleitzahl/i,/^adresse/i],
+  baujahr:    [/baujahr/i,/bezugsjahr/i],
+  we_anzahl:  [/anz.*wohn/i,/wohneinheiten/i,/anzahl.?we/i],
+  ge_anzahl:  [/anz.*gewerb/i,/gewerbeeinheiten/i],
+  wohnflaeche:[/wohnfl/i,/nutzfl/i,/fl(ae|ä)che/i,/^qm/i,/^m2/i],
+  heizungsart:[/heizung/i,/w(ae|ä)rmeerzeug/i,/energietr/i],
+  hausmeister:[/hausmeister/i,/objektbetreu/i,/verwalter/i]
+};
+function sapTrenner(text){
+  const kopf=(text.split(/\r?\n/)[0]||"");
+  const kandidaten=[[";",(kopf.match(/;/g)||[]).length],["\t",(kopf.match(/\t/g)||[]).length],[",",(kopf.match(/,/g)||[]).length]];
+  kandidaten.sort((a,b)=>b[1]-a[1]);
+  return kandidaten[0][1]>0? kandidaten[0][0] : ";";
+}
+/* CSV-Zerlegung mit Anführungszeichen */
+function sapParse(text, trenner){
+  const zeilen=[]; let feld="", zeile=[], inQ=false;
+  text=text.replace(/^﻿/,"");
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(inQ){
+      if(c==='"'){ if(text[i+1]==='"'){ feld+='"'; i++; } else inQ=false; }
+      else feld+=c;
+    } else if(c==='"'){ inQ=true; }
+    else if(c===trenner){ zeile.push(feld); feld=""; }
+    else if(c==="\n"){ zeile.push(feld); zeilen.push(zeile); zeile=[]; feld=""; }
+    else if(c==="\r"){ /* ignorieren */ }
+    else feld+=c;
+  }
+  if(feld.length||zeile.length){ zeile.push(feld); zeilen.push(zeile); }
+  return zeilen.filter(z=>z.some(x=>String(x).trim()!==""));
+}
+function sapZuordnen(kopf){
+  const map={};
+  SAP_FELDER.forEach(f=>{
+    const muster=SAP_MUSTER[f.key]||[];
+    let idx=-1;
+    kopf.forEach((h,i)=>{ if(idx<0 && muster.some(m=>m.test(String(h).trim()))) idx=i; });
+    map[f.key]=idx;
+  });
+  return map;
+}
+async function openSapImport(){
+  S.sap={schritt:1, text:"", trenner:";", kopf:[], zeilen:[], map:{}, dateiname:""};
+  sapModal();
+  sapStammLaden();   // Stammblatt-Werte nachladen, damit der Abgleich sie kennt
+}
+/* Objektnummer und Stammblattfelder stehen nicht in der Objektliste – einmal nachladen */
+async function sapStammLaden(){
+  for(const h of (S.houses||[])){
+    if(h.stammdaten) continue;
+    try{ h.stammdaten=await DB.getHouseStammdaten(h.id)||{}; }catch(e){ h.stammdaten={}; }
+  }
+}
+function sapModal(){
+  const st=S.sap||{};
+  if(st.schritt===1){
+    modal(`<h3>Stammdaten einlesen</h3>
+      <p class="m">Aus dem Bestandssystem (SAP) exportierte Objektliste als <b>CSV</b> – Semikolon, Komma oder
+        Tabulator. Die erste Zeile muss die Spaltenüberschriften enthalten. Es wird nichts übernommen, bevor
+        du die Vorschau gesehen hast.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <label class="btn sm">${I.upload||I.file} Datei wählen
+          <input type="file" accept=".csv,.txt,.tsv,text/csv" style="display:none" onchange="sapDatei(this)"></label>
+        <button class="btn sm" onclick="sapVorlage()">${I.download} Vorlage herunterladen</button>
+        <button class="btn sm" onclick="sapBeispiel()">Beispieldaten einsetzen</button>
+      </div>
+      <div class="field"><label>… oder Inhalt hier einfügen</label>
+        <textarea id="sapText" style="min-height:150px;font-family:ui-monospace,Menlo,monospace;font-size:11.5px"
+          placeholder="Objektnr;Bezeichnung;WE;PLZ/Ort;Baujahr;Wohnfläche&#10;1001;Ahornweg 12;WE 1-12;12345 Musterstadt;1998;940">${esc(st.text||"")}</textarea></div>
+      <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Abbrechen</button>
+      <button class="btn primary" onclick="sapLesen()">Weiter zur Zuordnung</button></div>`);
+    const m=document.getElementById("modalBg"); if(m) m.querySelector(".modal").style.maxWidth="640px";
+    return;
+  }
+  if(st.schritt===2){
+    const opt=i=>st.kopf.map((h,k)=>`<option value="${k}" ${i===k?"selected":""}>${esc(String(h).trim()||("Spalte "+(k+1)))}</option>`).join("");
+    modal(`<h3>Spalten zuordnen</h3>
+      <p class="m">${st.zeilen.length} Datenzeile${st.zeilen.length===1?"":"n"} erkannt${st.dateiname?` aus <b>${esc(st.dateiname)}</b>`:""}.
+        Die Zuordnung ist vorbelegt; bitte prüfen. <b>Objektnummer</b> ist der Schlüssel für den Abgleich –
+        ohne sie wird über die Bezeichnung verglichen.</p>
+      <div class="col-list" style="max-height:320px">
+        ${SAP_FELDER.map(f=>`<div class="col-row">
+          <div style="flex:1;min-width:150px">
+            <div style="font-weight:600;font-size:13px">${esc(f.label)}</div>
+            ${f.hinweis?`<div style="font-size:11.5px;color:var(--muted)">${esc(f.hinweis)}</div>`:""}
+          </div>
+          <select onchange="S.sap.map['${f.key}']=Number(this.value)" style="max-width:200px">
+            <option value="-1" ${st.map[f.key]===-1||st.map[f.key]==null?"selected":""}>– nicht vorhanden –</option>
+            ${opt(st.map[f.key])}
+          </select></div>`).join("")}
+      </div>
+      <div class="modal-actions"><button class="btn ghost" onclick="S.sap.schritt=1;sapModal()">Zurück</button>
+      <button class="btn primary" onclick="sapVorschau()">Vorschau</button></div>`);
+    const m=document.getElementById("modalBg"); if(m) m.querySelector(".modal").style.maxWidth="660px";
+    return;
+  }
+  /* Schritt 3: Vorschau */
+  const pl=st.plan||[];
+  const neu=pl.filter(x=>x.art==="neu"), aend=pl.filter(x=>x.art==="aenderung"), gleich=pl.filter(x=>x.art==="unveraendert"), fehler=pl.filter(x=>x.art==="fehler");
+  modal(`<h3>Vorschau der Übernahme</h3>
+    <p class="m"><b>${neu.length}</b> neu · <b>${aend.length}</b> mit Änderungen · ${gleich.length} unverändert${fehler.length?` · <span style="color:var(--bad)">${fehler.length} ohne Bezeichnung (werden übersprungen)</span>`:""}</p>
+    <div class="col-list" style="max-height:330px">
+      ${pl.filter(x=>x.art!=="unveraendert").slice(0,80).map(x=>`<div class="col-row" style="align-items:flex-start">
+        <span class="chip ${x.art==="neu"?"good":x.art==="fehler"?"bad":"mid"}" style="flex:none">${x.art==="neu"?"neu":x.art==="fehler"?"Fehler":"Änderung"}</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:13px">${esc(x.name||"(ohne Bezeichnung)")}${x.objektnr?` <span style="color:var(--muted);font-weight:400">· ${esc(x.objektnr)}</span>`:""}</div>
+          <div style="font-size:12px;color:var(--muted)">${esc(x.info||"")}</div>
+        </div></div>`).join("") || '<p class="m">Keine Änderungen – der Bestand ist auf dem Stand des Exports.</p>'}
+      ${pl.filter(x=>x.art!=="unveraendert").length>80?`<div class="col-row"><div style="color:var(--muted);font-size:12.5px">… weitere Zeilen werden mit übernommen</div></div>`:""}
+    </div>
+    <p class="hint">Bestehende Objekte werden ergänzt, nicht ersetzt: leere Felder im Export lassen die
+      vorhandenen Werte unberührt. Objekte, die im Export fehlen, bleiben unangetastet.</p>
+    <div class="modal-actions"><button class="btn ghost" onclick="S.sap.schritt=2;sapModal()">Zurück</button>
+    <button class="btn primary" onclick="sapUebernehmen()" ${(neu.length+aend.length)?"":"disabled"}>${neu.length+aend.length} Zeilen übernehmen</button></div>`);
+  const m=document.getElementById("modalBg"); if(m) m.querySelector(".modal").style.maxWidth="680px";
+}
+function sapDatei(input){
+  const f=(input.files||[])[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ S.sap.text=String(r.result||""); S.sap.dateiname=f.name; sapLesen(); };
+  r.onerror=()=>toast("Datei konnte nicht gelesen werden.");
+  r.readAsText(f, "utf-8");
+}
+function sapBeispiel(){
+  const t=`Objektnr;Bezeichnung;WE;PLZ/Ort;Baujahr;Anzahl Wohnungen;Wohnfläche;Heizung;Hausmeister
+1001;Ahornweg 12;WE 1-12;12345 Musterstadt;1998;12;940;Fernwärme;Hausmeister 1
+1002;Lerchenstraße 7;WE 1-8;12345 Musterstadt;1972;8;610;Gas;Hausmeister 2
+1006;Ulmenhof 4;WE 1-16;12345 Musterstadt;2004;16;1180;Wärmepumpe;Hausmeister 1
+1007;Kastanienplatz 2;Gewerbe;23456 Beispielheim;1965;0;430;Öl;`;
+  const el=document.getElementById("sapText"); if(el) el.value=t;
+  S.sap.text=t; S.sap.dateiname="beispiel-export.csv";
+  toast("Beispieldaten eingesetzt – weiter zur Zuordnung.");
+}
+function sapVorlage(){
+  const kopf=["Objektnr","Bezeichnung","WE","PLZ/Ort","Baujahr","Anzahl Wohnungen","Anzahl Gewerbe","Wohnfläche","Heizung","Hausmeister"];
+  const bsp=["1001","Ahornweg 12","WE 1-12","12345 Musterstadt","1998","12","1","940","Fernwärme","Hausmeister 1"];
+  const csv="﻿"+kopf.join(";")+"\r\n"+bsp.join(";")+"\r\n";
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download="Vorlage_Stammdaten_Import.csv"; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  toast("Vorlage gespeichert – Spalten dürfen abweichen, sie werden zugeordnet.");
+}
+function sapLesen(){
+  const el=document.getElementById("sapText");
+  if(el && el.value.trim()) S.sap.text=el.value;
+  const text=(S.sap.text||"").trim();
+  if(!text){ toast("Bitte eine Datei wählen oder Inhalt einfügen."); return; }
+  const tr=sapTrenner(text);
+  const alle=sapParse(text,tr);
+  if(alle.length<2){ toast("Es wurden keine Datenzeilen erkannt."); return; }
+  S.sap.trenner=tr; S.sap.kopf=alle[0]; S.sap.zeilen=alle.slice(1);
+  S.sap.map=sapZuordnen(alle[0]);
+  S.sap.schritt=2; sapModal();
+}
+function sapWert(zeile,key){
+  const i=S.sap.map[key];
+  if(i==null || i<0) return "";
+  return String(zeile[i]==null?"":zeile[i]).trim();
+}
+async function sapVorschau(){
+  await sapStammLaden();
+  const st=S.sap;
+  const plan=[];
+  const vorhandene=(S.houses||[]);
+  const norm=v=>String(v==null?"":v).replace(/[–—]/g,"-").replace(/\s+/g," ").trim();
+  st.zeilen.forEach(z=>{
+    const name=sapWert(z,"name"), objektnr=sapWert(z,"objektnr");
+    if(!name && !objektnr){ return; }
+    if(!name){ plan.push({art:"fehler", objektnr, info:"Ohne Bezeichnung kann kein Objekt angelegt werden."}); return; }
+    const treffer = (objektnr && vorhandene.find(h=>String((h.stammdaten&&h.stammdaten.objektnr)||h.objektnr||"").trim()===objektnr))
+                 || vorhandene.find(h=>(h.name||"").trim().toLowerCase()===name.toLowerCase());
+    const felder={};
+    SAP_FELDER.forEach(f=>{ const v=sapWert(z,f.key); if(v) felder[f.key]=v; });
+    if(!treffer){
+      plan.push({art:"neu", name, objektnr, zeile:z, felder,
+        info:[felder.unit,felder.address,felder.baujahr?("Baujahr "+felder.baujahr):"",felder.wohnflaeche?(felder.wohnflaeche+" m²"):""].filter(Boolean).join(" · ")});
+      return;
+    }
+    const diffs=[];
+    if(felder.name && norm(felder.name)!==norm(treffer.name)) diffs.push(`Bezeichnung: ${treffer.name} → ${felder.name}`);
+    if(felder.unit && norm(felder.unit)!==norm(treffer.unit)) diffs.push(`Wirtschaftseinheit: ${treffer.unit||"–"} → ${felder.unit}`);
+    if(felder.address && norm(felder.address)!==norm(treffer.address)) diffs.push(`Adresse: ${treffer.address||"–"} → ${felder.address}`);
+    ["objektnr","baujahr","we_anzahl","ge_anzahl","wohnflaeche","heizungsart","hausmeister"].forEach(k=>{
+      const alt=(treffer.stammdaten&&treffer.stammdaten[k])||"";
+      if(felder[k] && norm(alt)!==norm(felder[k])) diffs.push(`${(SAP_FELDER.find(f=>f.key===k)||{}).label}: ${alt||"–"} → ${felder[k]}`);
+    });
+    plan.push({art:diffs.length?"aenderung":"unveraendert", name, objektnr, id:treffer.id, zeile:z, felder,
+      info:diffs.join(" · ")||"identisch"});
+  });
+  st.plan=plan; st.schritt=3; sapModal();
+}
+async function sapUebernehmen(){
+  const st=S.sap, plan=(st.plan||[]).filter(x=>x.art==="neu"||x.art==="aenderung");
+  if(!plan.length){ closeModal(); return; }
+  closeModal();
+  const ov=geoOverlay("Stammdaten werden übernommen…");
+  let angelegt=0, geaendert=0, fehler=0;
+  for(const p of plan){
+    try{
+      let id=p.id;
+      if(p.art==="neu"){
+        const h=await DB.addHouse({name:p.felder.name||p.name, unit:p.felder.unit||"", address:p.felder.address||""});
+        id=h.id;
+        S.houses.push({id:h.id,name:h.name,unit:h.unit,address:h.address,count:0,last:null});
+        angelegt++;
+      } else {
+        const h=S.houses.find(x=>x.id===id);
+        if(h){
+          if(p.felder.name) h.name=p.felder.name;
+          if(p.felder.unit) h.unit=p.felder.unit;
+          if(p.felder.address) h.address=p.felder.address;
+          try{ await DB.updateHouse(id,{name:h.name,unit:h.unit,address:h.address}); }catch(e){}
+        }
+        geaendert++;
+      }
+      /* Stammblatt-Felder ergänzen, ohne vorhandene Werte zu löschen */
+      const vorher=await DB.getHouseStammdaten(id)||{};
+      const neu={...vorher};
+      ["objektnr","baujahr","we_anzahl","ge_anzahl","wohnflaeche","heizungsart","hausmeister"].forEach(k=>{
+        if(p.felder[k]) neu[k]=p.felder[k];
+      });
+      if(p.objektnr) neu.objektnr=p.objektnr;
+      await DB.saveHouseStammdaten(id,neu);
+      const hh=S.houses.find(x=>x.id===id); if(hh) hh.stammdaten=neu;
+    }catch(e){ console.error(e); fehler++; }
+  }
+  S.houses.sort((a,b)=>(a.name||"").localeCompare(b.name||"","de"));
+  ov.remove();
+  S.sap=null;
+  await goHome();
+  modal(`<h3>Stammdaten übernommen</h3>
+    <p class="m"><b>${angelegt}</b> Objekt${angelegt===1?"":"e"} neu angelegt, <b>${geaendert}</b> aktualisiert${fehler?`, ${fehler} fehlgeschlagen`:""}.</p>
+    <p class="m">In dieser Demo bleibt die Übernahme nur bis zum Neuladen erhalten. Im Serverbetrieb landet sie
+      in der Datenbank – ein wiederholter Import gleicht dann ab, statt zu verdoppeln.</p>
+    <div class="modal-actions"><button class="btn primary" onclick="closeModal()">Schließen</button></div>`);
+}
+
+/* ===================== Vorher / Nachher =====================
+   Zwei Aufnahmen desselben Bereichs aus zwei Begehungen übereinander, mit Regler
+   dazwischen. Der Jahresvergleich ist die seltenste Funktion am Markt – hier ist
+   er in einem Bild statt in zwei Listen.
+----------------------------------------------------------- */
+async function openVorherNachher(houseId){
+  const hid=houseId||S.houseId;
+  if(!hid) return goHome();
+  S._vnHouse=hid; S.view="vorhernachher";
+  view.innerHTML=`<div class="crumb"><a onclick="goHome()">Objekte</a><span class="sep">/</span>Vorher / Nachher</div>
+    <div class="page-head"><div><h2>Vorher / Nachher</h2><div class="lead">Lade Begehungen…</div></div></div>`;
+  try{ S._vnInsps=await DB.listInspections(hid); }catch(e){ S._vnInsps=[]; }
+  S._vnPaare=vnPaare(S._vnInsps);
+  S._vnIdx=0; S._vnPos=50;
+  renderVorherNachher();
+}
+/* Bereiche, zu denen in zwei verschiedenen Begehungen ein Foto vorliegt */
+function vnPaare(insps){
+  const list=(insps||[]).slice().sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  const proBereich={};
+  list.forEach(ins=>{
+    (ins.rows||[]).forEach(r=>{
+      const area=(r.cells&&r.cells.area)||"";
+      const bild=(r.images||[])[0];
+      if(!area || !bild) return;
+      (proBereich[area]=proBereich[area]||[]).push({date:ins.date||"", inspId:ins.id, path:bild,
+        cond:(()=>{ const c=(ins.columns||[]).find(c=>c.type==="condition"); return c?(r.cells[c.id]||""):""; })(),
+        note:(()=>{ const c=(ins.columns||[]).find(c=>c.type==="longtext"); return c?(r.cells[c.id]||""):""; })()});
+    });
+  });
+  const paare=[];
+  Object.keys(proBereich).forEach(area=>{
+    const eintraege=proBereich[area].sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+    if(eintraege.length<2) return;
+    paare.push({area, neu:eintraege[0], alt:eintraege[eintraege.length-1], alle:eintraege});
+  });
+  return paare.sort((a,b)=>a.area.localeCompare(b.area));
+}
+function renderVorherNachher(){
+  const o=(S.houses||[]).find(x=>x.id===S._vnHouse);
+  const paare=S._vnPaare||[];
+  const kopf=`<div class="crumb"><a onclick="goHome()">Objekte</a><span class="sep">/</span><a onclick="openHouse('${esc(S._vnHouse)}')">${esc(o?o.name:"")}</a><span class="sep">/</span>Vorher / Nachher</div>
+    <div class="page-head">
+      <div><h2>Vorher / Nachher</h2><div class="lead">${esc(o?o.name:"")} – dieselbe Stelle aus zwei Begehungen, mit Regler dazwischen.</div></div>
+      <div class="toolbar"><button class="btn" onclick="openHouse('${esc(S._vnHouse)}')">${I.back} Zum Objekt</button></div>
+    </div>`;
+  if(!paare.length){
+    view.innerHTML=kopf+`<div class="empty card" style="border-style:dashed">${I.cam}<h3>Noch kein Bildpaar vorhanden</h3>
+      <p>Für den Vergleich braucht es zu einem Bereich <b>in zwei Begehungen je ein Foto</b>. Fotografiere die
+      auffälligen Stellen bei jeder Begehung aus derselben Position – dann steht hier beim nächsten Mal der
+      Verlauf, und der Streit über „war das vorher schon so?" ist beendet.</p></div>`;
+    return;
+  }
+  const idx=Math.min(S._vnIdx||0, paare.length-1);
+  const pa=paare[idx];
+  const pos=S._vnPos==null?50:S._vnPos;
+  const chips=paare.map((p,i)=>`<button class="tab ${i===idx?'on':''}" onclick="S._vnIdx=${i};S._vnPos=50;renderVorherNachher()">${esc(p.area)}</button>`).join("");
+  view.innerHTML=kopf+`
+    <div class="tabs" style="flex-wrap:wrap">${chips}</div>
+    <div class="card vn-card">
+      <div class="vn-meta">
+        <div><span class="vn-lbl">vorher</span> ${esc(fmtShort(pa.alt.date))}${pa.alt.cond?` · <span class="chip ${pa.alt.cond==="mangelhaft"?"bad":pa.alt.cond==="mittel"?"mid":"good"}">${esc(pa.alt.cond)}</span>`:""}</div>
+        <div style="text-align:right"><span class="vn-lbl">nachher</span> ${esc(fmtShort(pa.neu.date))}${pa.neu.cond?` · <span class="chip ${pa.neu.cond==="mangelhaft"?"bad":pa.neu.cond==="mittel"?"mid":"good"}">${esc(pa.neu.cond)}</span>`:""}</div>
+      </div>
+      <div class="vn-stage" id="vnStage">
+        <img id="vnNeu" class="vn-img" alt="nachher">
+        <img id="vnAlt" class="vn-img vn-top" alt="vorher" style="clip-path:inset(0 ${100-pos}% 0 0)">
+        <div class="vn-tag vn-tag-l">vorher</div>
+        <div class="vn-tag vn-tag-r">nachher</div>
+        <div class="vn-handle" id="vnHandle" style="left:${pos}%"><span>‹ ›</span></div>
+      </div>
+      <input type="range" min="0" max="100" value="${pos}" class="vn-range" oninput="vnSchieben(this.value)">
+      <div class="vn-notes">
+        ${pa.alt.note?`<div><b>${esc(fmtShort(pa.alt.date))}:</b> ${esc(pa.alt.note)}</div>`:""}
+        ${pa.neu.note?`<div><b>${esc(fmtShort(pa.neu.date))}:</b> ${esc(pa.neu.note)}</div>`:""}
+      </div>
+      ${pa.alle.length>2?`<p class="hint">Zu diesem Bereich liegen ${pa.alle.length} Aufnahmen vor; verglichen werden die älteste und die neueste.</p>`:""}
+    </div>`;
+  vnBilderLaden(pa);
+}
+async function vnBilderLaden(pa){
+  const a=document.getElementById("vnAlt"), n=document.getElementById("vnNeu");
+  if(!a||!n) return;
+  const [ua,un]=await Promise.all([getImg(pa.alt.path), getImg(pa.neu.path)]);
+  if(ua) a.src=ua; if(un) n.src=un;
+  const stage=document.getElementById("vnStage");
+  if(stage && !stage.dataset.drag){
+    stage.dataset.drag="1";
+    const setzen=ev=>{
+      const r=stage.getBoundingClientRect();
+      const x=(ev.touches?ev.touches[0].clientX:ev.clientX)-r.left;
+      vnSchieben(Math.max(0,Math.min(100, Math.round(x/r.width*100))));
+    };
+    let aktiv=false;
+    stage.addEventListener("pointerdown",e=>{ aktiv=true; setzen(e); });
+    stage.addEventListener("pointermove",e=>{ if(aktiv) setzen(e); });
+    window.addEventListener("pointerup",()=>{ aktiv=false; });
+  }
+}
+function vnSchieben(v){
+  v=Math.max(0,Math.min(100,Number(v)));
+  S._vnPos=v;
+  const a=document.getElementById("vnAlt"), h=document.getElementById("vnHandle"), r=document.querySelector(".vn-range");
+  if(a) a.style.clipPath=`inset(0 ${100-v}% 0 0)`;
+  if(h) h.style.left=v+"%";
+  if(r && r.value!=String(v)) r.value=v;
+}
+
+/* ---------- Beispielbilder für die Demo ----------
+   Die Testdaten enthalten keine echten Fotos. Damit der Vergleich zeigbar ist,
+   werden zwei Bereiche mit synthetischen Aufnahmen versehen – im Bild als
+   Beispielbild gekennzeichnet, damit sie niemand für eine echte Aufnahme hält. */
+function demoBild(variante, beschriftung, datum){
+  const c=document.createElement("canvas"); c.width=640; c.height=480;
+  const g=c.getContext("2d");
+  const himmel=g.createLinearGradient(0,0,0,200);
+  himmel.addColorStop(0,"#B9CBE3"); himmel.addColorStop(1,"#DCE6F2");
+  g.fillStyle=himmel; g.fillRect(0,0,640,200);
+  /* Fassade */
+  g.fillStyle = variante==="alt" ? "#C9C2B4" : "#DCD7CB";
+  g.fillRect(0,120,640,360);
+  g.strokeStyle="rgba(0,0,0,.07)";
+  for(let y=140;y<480;y+=26){ g.beginPath(); g.moveTo(0,y); g.lineTo(640,y); g.stroke(); }
+  /* Fenster */
+  [[60,180],[250,180],[440,180],[60,300],[250,300],[440,300]].forEach(([x,y])=>{
+    g.fillStyle="#3C4658"; g.fillRect(x,y,120,90);
+    g.fillStyle="rgba(255,255,255,.35)"; g.fillRect(x+6,y+6,48,36);
+    g.strokeStyle="#EDEFF3"; g.lineWidth=4; g.strokeRect(x,y,120,90);
+  });
+  /* Boden */
+  g.fillStyle="#9AA0A8"; g.fillRect(0,432,640,48);
+  if(variante==="alt"){
+    /* Graffiti-Schmierer und Feuchtefleck */
+    g.strokeStyle="rgba(178,40,80,.75)"; g.lineWidth=9; g.lineCap="round";
+    g.beginPath(); g.moveTo(200,400); g.bezierCurveTo(260,350,330,440,400,390); g.stroke();
+    g.beginPath(); g.moveTo(215,365); g.lineTo(255,425); g.stroke();
+    const fleck=g.createRadialGradient(540,420,10,540,420,90);
+    fleck.addColorStop(0,"rgba(90,80,60,.55)"); fleck.addColorStop(1,"rgba(90,80,60,0)");
+    g.fillStyle=fleck; g.beginPath(); g.arc(540,420,90,0,Math.PI*2); g.fill();
+  } else {
+    /* frisch gereinigt: leichte Aufhellung unten */
+    const hell=g.createLinearGradient(0,380,0,480);
+    hell.addColorStop(0,"rgba(255,255,255,0)"); hell.addColorStop(1,"rgba(255,255,255,.35)");
+    g.fillStyle=hell; g.fillRect(0,380,640,100);
+  }
+  /* Beschriftung */
+  g.fillStyle="rgba(14,18,32,.72)"; g.fillRect(0,0,640,34);
+  g.fillStyle="#fff"; g.font="600 16px Inter, Arial, sans-serif";
+  g.fillText(beschriftung+"  ·  "+datum, 12, 23);
+  g.font="600 12px Inter, Arial, sans-serif";
+  g.fillStyle="rgba(255,255,255,.85)";
+  g.fillText("BEISPIELBILD – keine echte Aufnahme", 12, 470);
+  return c.toDataURL("image/jpeg", 0.72);
+}
+async function demoBilderSeed(){
+  if(S._demoBilderFertig) return;
+  S._demoBilderFertig=true;
+  try{
+    for(const h of (S.houses||[])){
+      const insps=await DB.listInspections(h.id);
+      if(insps.length<2) continue;
+      const sortiert=insps.slice().sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+      const alt=sortiert[0], neu=sortiert[sortiert.length-1];
+      const bereiche=r=>new Set((r.rows||[]).map(x=>(x.cells&&x.cells.area)||"").filter(Boolean));
+      const beide=[...bereiche(alt)].filter(a=>bereiche(neu).has(a)).slice(0,2);
+      if(!beide.length) continue;
+      let geaendert=false;
+      for(const area of beide){
+        const rAlt=(alt.rows||[]).find(r=>((r.cells&&r.cells.area)||"")===area);
+        const rNeu=(neu.rows||[]).find(r=>((r.cells&&r.cells.area)||"")===area);
+        if(!rAlt||!rNeu) continue;
+        if((rAlt.images||[]).length||(rNeu.images||[]).length) continue;
+        const key=area.replace(/[^A-Za-z0-9]+/g,"").slice(0,10);
+        const pAlt=`demo/${h.id}-${key}-alt.jpg`, pNeu=`demo/${h.id}-${key}-neu.jpg`;
+        S.imgCache[pAlt]=demoBild("alt", area, fmtShort(alt.date||""));
+        S.imgCache[pNeu]=demoBild("neu", area, fmtShort(neu.date||""));
+        rAlt.images=[pAlt]; rNeu.images=[pNeu];
+        geaendert=true;
+      }
+      if(geaendert){ try{ await DB.saveInspection(alt); await DB.saveInspection(neu); }catch(e){} }
+    }
+  }catch(e){ console.error(e); }
+}
+
+/* ===================== Objekte auf der Karte =====================
+   Der Bestand als Karte mit Ampel je Haus, gespeist aus offenen Mängeln und
+   überfälligen Fristen. Die Kartenbibliothek wird erst beim Öffnen geladen –
+   ohne Netz bleibt die Liste, die Anwendung läuft weiter.
+--------------------------------------------------------------- */
+function leafletLaden(){
+  return new Promise((res,rej)=>{
+    if(window.L) return res(true);
+    const css=document.createElement("link");
+    css.rel="stylesheet"; css.href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
+    document.head.appendChild(css);
+    const sc=document.createElement("script");
+    sc.src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
+    sc.onload=()=>res(true);
+    sc.onerror=()=>rej(new Error("Kartenbibliothek nicht erreichbar"));
+    document.head.appendChild(sc);
+  });
+}
+/* Ampel je Objekt: rot bei Mangel oder überfälliger Frist, gelb bei „bald fällig" */
+function karteStatus(){
+  const out={};
+  (S.houses||[]).forEach(h=>{ out[h.id]={haus:h, maengel:0, mittel:0, ueber:0, bald:0, tickets:0, level:"good", grund:[]}; });
+  (S._karteDefs||[]).forEach(g=>{
+    const e=out[g.house.id]; if(!e) return;
+    e.maengel+=g.defs.filter(d=>d.cond==="mangelhaft").length;
+    e.mittel +=g.defs.filter(d=>d.cond==="mittel").length;
+  });
+  const fr=(S._fr? fristenSammeln():[]).filter(f=>f.houseId && f.gruppe!=="gesetz");
+  fr.forEach(f=>{ const e=out[f.houseId]; if(!e) return;
+    if(f.level==="overdue") e.ueber++; else if(daysUntil(f.datum)<=30) e.bald++; });
+  ((S._fr&&S._fr.tk)||[]).forEach(t=>{ const e=out[t.houseId]; if(!e) return; if(t.status!=="erledigt") e.tickets++; });
+  Object.values(out).forEach(e=>{
+    if(e.maengel || e.ueber){ e.level="bad"; }
+    else if(e.mittel || e.bald){ e.level="mid"; }
+    else e.level="good";
+    if(e.maengel) e.grund.push(`${e.maengel} Mangel${e.maengel===1?"":"·"}`);
+    if(e.ueber)   e.grund.push(`${e.ueber} Frist${e.ueber===1?"":"en"} überfällig`);
+    if(e.bald)    e.grund.push(`${e.bald} in 30 Tagen fällig`);
+    if(e.tickets) e.grund.push(`${e.tickets} offene Tickets`);
+  });
+  return out;
+}
+async function openKarte(){
+  if(!canArea("objekte")) return goHome();
+  S.view="karte";
+  view.innerHTML=`<div class="crumb"><a onclick="goHome()">Objekte</a><span class="sep">/</span>Karte</div>
+    <div class="page-head"><div><h2>Objekte auf der Karte</h2><div class="lead">Lade Bestand…</div></div></div>`;
+  try{
+    await frDaten();
+    S._karteDefs=await collectDefects();
+  }catch(e){ console.error(e); }
+  renderKarte();
+}
+function renderKarte(){
+  const st=karteStatus();
+  const alle=Object.values(st);
+  const mitGeo=alle.filter(e=>e.haus.lat!=null && e.haus.lng!=null);
+  const ohneGeo=alle.filter(e=>!(e.haus.lat!=null && e.haus.lng!=null));
+  const zahl=l=>alle.filter(e=>e.level===l).length;
+  view.innerHTML=`<div class="crumb"><a onclick="goHome()">Objekte</a><span class="sep">/</span>Karte</div>
+    <div class="page-head">
+      <div><h2>Objekte auf der Karte</h2><div class="lead">Ampel je Haus aus offenen Mängeln und Fristen – für verstreute Bestände die schnellste Übersicht.</div></div>
+      <div class="toolbar">
+        <button class="btn" onclick="goHome()">${I.list} Als Liste</button>
+        <button class="btn" onclick="openFristen()">${I.book} Fristen</button>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat bad"><div class="num">${zahl("bad")}</div><div class="lbl">Objekte mit Mangel oder überfälliger Frist</div></div>
+      <div class="stat" style="border-left:4px solid var(--mid)"><div class="num" style="color:var(--mid)">${zahl("mid")}</div><div class="lbl">Objekte mit Punkten in den nächsten 30 Tagen</div></div>
+      <div class="stat"><div class="num" style="color:var(--good)">${zahl("good")}</div><div class="lbl">Objekte ohne offene Punkte</div></div>
+      <div class="stat"><div class="num">${ohneGeo.length}</div><div class="lbl">ohne Koordinaten</div></div>
+    </div>
+    <div class="karte-legende">
+      <span><i class="pin bad"></i> Mangel oder Frist überfällig</span>
+      <span><i class="pin mid"></i> in den nächsten 30 Tagen fällig</span>
+      <span><i class="pin good"></i> nichts offen</span>
+      <span class="hint" style="margin-left:auto">Kartenbilder: OpenStreetMap-Mitwirkende</span>
+    </div>
+    <div id="mapBox" class="karte-box"><div class="karte-load">Karte wird geladen…</div></div>
+    ${ohneGeo.length?`<div class="card" style="margin-top:12px">
+      <div style="font-weight:700;font-size:13.5px;margin-bottom:6px">Ohne Koordinaten (${ohneGeo.length})</div>
+      <p class="m" style="margin-bottom:8px">Diese Objekte fehlen auf der Karte. Die Koordinaten lassen sich im Objekt über <b>Standort erfassen</b> setzen – einmal vor Ort genügt.</p>
+      <div class="col-list">${ohneGeo.map(e=>`<div class="col-row"><div style="flex:1">
+        <div style="font-weight:600;font-size:13px">${esc(e.haus.name)}</div>
+        <div style="font-size:12px;color:var(--muted)">${esc(e.haus.address||"")}</div></div>
+        <button class="btn sm" onclick="karteGeo('${e.haus.id}')">${I.pin||I.target||""} Standort erfassen</button>
+        <button class="btn sm" onclick="openHouse('${e.haus.id}')">Öffnen</button></div>`).join("")}</div>
+    </div>`:""}`;
+  karteZeichnen(mitGeo);
+}
+/* Koordinaten je Objekt setzen: vor Ort per GPS, im Büro von Hand */
+function karteGeo(hid){
+  const h=(S.houses||[]).find(x=>x.id===hid); if(!h) return;
+  modal(`<h3>Standort erfassen</h3>
+    <p class="m">${esc(h.name)} – vor Ort genügt <b>GPS verwenden</b>. Im Büro lassen sich die Koordinaten
+      auch eintragen (z. B. aus einer Kartenanwendung kopiert).</p>
+    <div class="field"><label>Breite (lat)</label><input id="kgLat" type="text" inputmode="decimal" placeholder="52.5200" value="${h.lat!=null?esc(String(h.lat)):""}"></div>
+    <div class="field"><label>Länge (lng)</label><input id="kgLng" type="text" inputmode="decimal" placeholder="13.4050" value="${h.lng!=null?esc(String(h.lng)):""}"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="karteGeoGps('${hid}')">GPS verwenden</button>
+      <button class="btn ghost" onclick="closeModal()">Abbrechen</button>
+      <button class="btn primary" onclick="karteGeoSpeichern('${hid}')">Speichern</button>
+    </div>`);
+}
+async function karteGeoGps(hid){
+  const ov=geoOverlay("Standort wird ermittelt…");
+  try{
+    const p=await getPosition(); ov.remove();
+    const la=document.getElementById("kgLat"), ln=document.getElementById("kgLng");
+    if(la&&ln){ la.value=p.lat.toFixed(6); ln.value=p.lng.toFixed(6); toast("Standort übernommen – jetzt speichern."); }
+    else await karteGeoAnwenden(hid,p.lat,p.lng);
+  }catch(e){ ov.remove(); showError("Standort konnte nicht ermittelt werden", e.message||e); }
+}
+async function karteGeoSpeichern(hid){
+  const lat=parseFloat((document.getElementById("kgLat").value||"").replace(",",".")),
+        lng=parseFloat((document.getElementById("kgLng").value||"").replace(",","."));
+  if(isNaN(lat)||isNaN(lng)){ toast("Bitte gültige Koordinaten eingeben."); return; }
+  await karteGeoAnwenden(hid,lat,lng);
+}
+async function karteGeoAnwenden(hid,lat,lng){
+  try{ await DB.saveHouseLocation(hid,lat,lng); }
+  catch(e){ showError("Standort konnte nicht gespeichert werden", e); return; }
+  const h=(S.houses||[]).find(x=>x.id===hid); if(h){ h.lat=lat; h.lng=lng; }
+  closeModal(); toast("Standort gespeichert.");
+  if(S.view==="karte") renderKarte();
+}
+async function karteZeichnen(eintraege){
+  const box=document.getElementById("mapBox"); if(!box) return;
+  if(!eintraege.length){
+    box.innerHTML=`<div class="karte-load">Für keines der Objekte sind Koordinaten hinterlegt.</div>`;
+    return;
+  }
+  try{ await leafletLaden(); }
+  catch(e){
+    box.innerHTML=`<div class="karte-load">Die Karte braucht eine Internetverbindung (Kartenbibliothek und Kartenbilder).
+      Offline bleiben Liste und Fristen nutzbar.</div>`;
+    return;
+  }
+  box.innerHTML="";
+  const map=L.map(box,{scrollWheelZoom:false});
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{
+    maxZoom:19, attribution:"© OpenStreetMap-Mitwirkende"
+  }).addTo(map);
+  const punkte=[];
+  eintraege.forEach(e=>{
+    const anzahl=e.maengel+e.ueber;
+    const ic=L.divIcon({className:"", iconSize:[30,38], iconAnchor:[15,36], popupAnchor:[0,-32],
+      html:`<div class="mk ${e.level}">${anzahl>0?anzahl:""}</div>`});
+    const m=L.marker([e.haus.lat, e.haus.lng],{icon:ic}).addTo(map);
+    m.bindPopup(`<div class="mk-pop">
+      <b>${esc(e.haus.name)}</b>
+      <div class="mk-adr">${esc(e.haus.address||"")}${e.haus.unit?" · "+esc(e.haus.unit):""}</div>
+      <div class="mk-st ${e.level}">${e.grund.length?esc(e.grund.join(" · ")):"keine offenen Punkte"}</div>
+      <div class="mk-btns">
+        <button onclick="openHouse('${e.haus.id}')">Zum Objekt</button>
+        <button onclick="openHouseZaehler('${e.haus.id}')">Zähler</button>
+      </div></div>`);
+    punkte.push([e.haus.lat, e.haus.lng]);
+  });
+  map.fitBounds(punkte,{padding:[40,40], maxZoom:15});
+  setTimeout(()=>map.invalidateSize(),200);
+  S._map=map;
 }
 
 /* ---------- Gesetzliche Pflichten: Übersicht und Einzelvorlage ---------- */
@@ -5922,7 +6922,61 @@ function remindLog(id){
 }
 
 /* ===================== Benutzerverwaltung (Admin) ===================== */
-const AREAS=[["objekte","Objekte"],["reinigung","Reinigung"],["aufzuege","Aufzüge"],["sanierung","Sanierung"],["tickets","Tickets"],["admin","Admin"]];
+const AREAS=[["objekte","Objekte"],["zaehler","Zähler"],["reinigung","Reinigung"],["aufzuege","Aufzüge"],["sanierung","Sanierung"],["tickets","Tickets"],["admin","Admin"]];
+/* „zaehler" ist der Bereich für einen Ablesedienstleister: Zählerliste, Ablesen,
+   Erfassungsbogen und QR-Etiketten – ohne Begehungen, Dokumente, Tickets und Kosten. */
+
+/* ---------- Rollen-Vorschau (Demo) ----------
+   Zeigt, was ein Konto mit eingeschränkten Bereichen tatsächlich sieht. Im
+   Serverbetrieb ergibt sich das aus der Anmeldung; hier lässt es sich umschalten,
+   damit die Rechte in einer Vorführung sichtbar werden. */
+const ROLLEN=[
+  {id:"admin",       label:"Administrator",       beschr:"alle Bereiche, Benutzerverwaltung",
+   perm:{objekte:true,zaehler:true,reinigung:true,aufzuege:true,sanierung:true,tickets:true,admin:true}},
+  {id:"verwalter",   label:"Objektverwalter",     beschr:"alle Fachbereiche, ohne Benutzerverwaltung",
+   perm:{objekte:true,zaehler:true,reinigung:true,aufzuege:true,sanierung:true,tickets:true,admin:false}},
+  {id:"hausmeister", label:"Hausmeister",         beschr:"Objekte, Zähler, Aufzüge und Tickets",
+   perm:{objekte:true,zaehler:true,reinigung:false,aufzuege:true,sanierung:false,tickets:true,admin:false}},
+  {id:"ablese",      label:"Ablesedienstleister", beschr:"nur Zähler und Ablesung – keine Begehungen, Dokumente, Kosten",
+   perm:{objekte:false,zaehler:true,reinigung:false,aufzuege:false,sanierung:false,tickets:false,admin:false}},
+  {id:"reinigung",   label:"Reinigungsfirma",     beschr:"nur Reinigungsplan und Tätigkeitsnachweise",
+   perm:{objekte:false,zaehler:false,reinigung:true,aufzuege:false,sanierung:false,tickets:false,admin:false}}
+];
+function rolleWahl(){
+  const akt=S._rolle||"admin";
+  modal(`<h3>Ansicht testen als …</h3>
+    <p class="m">Die Anwendung schaltet Bereiche je Konto frei. Hier lässt sich die Sicht wechseln, ohne sich neu
+      anzumelden – so ist in einer Vorführung zu sehen, was ein externer Dienstleister tatsächlich vorfindet.
+      Im Serverbetrieb ergibt sich das aus der Anmeldung und ist nicht umschaltbar.</p>
+    <div class="col-list">${ROLLEN.map(r=>`
+      <div class="col-row" style="cursor:pointer" onclick="rolleSetzen('${r.id}')">
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:13.5px">${esc(r.label)}${akt===r.id?' <span class="chip good">aktiv</span>':''}</div>
+          <div style="font-size:12.5px;color:var(--muted)">${esc(r.beschr)}</div>
+        </div>
+        <span class="or-chev">${I.chev}</span>
+      </div>`).join("")}</div>
+    <div class="modal-actions"><button class="btn primary" onclick="closeModal()">Schließen</button></div>`);
+}
+async function rolleSetzen(id){
+  const r=ROLLEN.find(x=>x.id===id)||ROLLEN[0];
+  S._rolle=id; S.perm={...r.perm}; S.permKnown=true;
+  S.houseTab=null; S.houseId=null; S.view="home";
+  closeModal(); closeMenu();
+  await goHome();
+  rolleBanner();
+  toast("Ansicht: "+r.label);
+}
+function rolleBanner(){
+  const alt=document.getElementById("rolleBar"); if(alt) alt.remove();
+  const id=S._rolle; if(!id || id==="admin") return;
+  const r=ROLLEN.find(x=>x.id===id); if(!r) return;
+  const bar=document.createElement("div");
+  bar.id="rolleBar"; bar.className="rolle-bar";
+  bar.innerHTML=`<span><b>Vorschau:</b> ${esc(r.label)} — ${esc(r.beschr)}</span>
+    <button class="btn sm" onclick="rolleSetzen('admin')">Zurück zum Administrator</button>`;
+  document.body.appendChild(bar);
+}
 async function manageUsers(){
   if(!(S.perm&&S.perm.admin)) return;
   const users=await DB.listAppUsers();
@@ -6085,12 +7139,16 @@ async function openMenu(){
   let rows=row("Start",I.home,"goHome()",cur==="home");
   rows+=row("Suche",I.search,"openSearch()",false);
   if(canArea("objekte")){
+    rows+=row("Karte",I.pin||I.building,"openKarte()",cur==="karte");
     rows+=row("Mängelübersicht",I.alert,"openDefects()",cur==="defects");
     rows+=row("Wartungsübersicht",I.wrench,"openWartung()",cur==="wartung",cnt(al.wartung));
-    rows+=row("Zählerablesung",I.grid,"openAblesung()",cur==="ablesung",cnt(al.zaehler));
+  }
+  if(canArea("objekte")||canArea("zaehler")) rows+=row("Zählerablesung",I.grid,"openAblesung()",cur==="ablesung",cnt(al.zaehler));
+  if(canArea("objekte")){
     rows+=row("Fristenkalender",I.book,"openFristen()",cur==="fristen",cnt(al.fristen));
     rows+=row("CO₂-Kostenaufteilung",I.chart||I.grid,"openCO2()",cur==="co2");
   }
+  if(canArea("tickets")||canArea("objekte")) rows+=row("Posteingang",I.mail,"openPost()",cur==="post");
   if(canArea("tickets")) rows+=row("Tickets",I.ticket,"openTickets()",cur==="tickets",cnt(al.tickets));
   if(canArea("reinigung")) rows+=row("Hausdienstleister",I.broom,"openReinigung()",cur==="reinigung"||cur==="reinigungObj");
   if(canArea("aufzuege")) rows+=row("Aufzüge",I.lift,"openAufzuege()",cur==="aufzuege"||cur==="aufzug",cnt(al.aufzug));
@@ -6098,8 +7156,10 @@ async function openMenu(){
   if(canArea("objekte")||canArea("aufzuege")) rows+=row("Meldungs-Überwachung",I.bell,"openMeldungen()",cur==="meldungen",cnt(al.meldungen));
   if(canArea("objekte")||canArea("aufzuege")||canArea("tickets")) rows+=row("Adressbuch",I.key,"openKontakte()",cur==="kontakte");
   rows+=`<div class="nav-sec">Konto</div>`;
+  rows+=row("Ansicht testen als …",I.key,"rolleWahl()",!!(S._rolle&&S._rolle!=="admin"));
   rows+=row("Passwort ändern",I.lock,"openChangePassword()",false);
-  if(S.perm&&S.perm.admin&&S.permKnown){ rows+=`<div class="nav-sec">Verwaltung</div>`; rows+=row("Benutzer &amp; Bereiche",I.key,"manageUsers()",false); }
+  if(canArea("objekte")){ rows+=`<div class="nav-sec">Verwaltung</div>`; rows+=row("Stammdaten einlesen (SAP)",I.upload||I.file,"openSapImport()",false); }
+  if(S.perm&&S.perm.admin&&S.permKnown){ if(!canArea("objekte")) rows+=`<div class="nav-sec">Verwaltung</div>`; rows+=row("Benutzer &amp; Bereiche",I.key,"manageUsers()",false); }
   const bg=document.createElement("div"); bg.className="drawer-bg"; bg.id="drawerBg"; bg.onclick=closeMenu;
   const dr=document.createElement("div"); dr.className="drawer"; dr.onclick=e=>e.stopPropagation();
   dr.innerHTML=`<div class="drawer-head"><h3>Menü</h3><button class="icon-btn" onclick="closeMenu()">${I.x}</button></div>
@@ -6750,10 +7810,11 @@ async function exportPDF(id){
 function modal(html){ closeModal(); const bg=document.createElement("div"); bg.className="modal-bg"; bg.id="modalBg";
   bg.innerHTML=`<div class="modal">${html}</div>`; bg.onclick=e=>{ if(e.target===bg) closeModal(); }; document.body.appendChild(bg); }
 function closeModal(){ document.getElementById("modalBg")?.remove(); }
-function confirmModal(title,msg,onYes){
-  modal(`<h3>${esc(title)}</h3><p class="m">${esc(msg)}</p>
+function confirmModal(title,msg,onYes,okLabel){
+  const gefahr=!okLabel;
+  modal(`<h3>${esc(title)}</h3><p class="m" style="white-space:pre-line">${esc(msg)}</p>
     <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Abbrechen</button>
-    <button class="btn danger primary" style="background:var(--bad);border-color:var(--bad)" id="cfYes">Löschen</button></div>`);
+    <button class="btn primary${gefahr?" danger":""}" ${gefahr?'style="background:var(--bad);border-color:var(--bad)"':""} id="cfYes">${esc(okLabel||"Löschen")}</button></div>`);
   document.getElementById("cfYes").onclick=()=>{ closeModal(); onYes(); };
 }
 let toastT=null;
@@ -6893,22 +7954,26 @@ async function submitChangePassword(){
 }
 async function loadPerm(){
   try{
-    const { data, error } = await sb.from('app_users').select('objekte,reinigung,aufzuege,sanierung,tickets,admin').limit(1).maybeSingle();
-    if(error){ S.permKnown=false; S.perm={objekte:true,reinigung:true,aufzuege:true,sanierung:true,tickets:true,admin:true}; return; } // Rollen noch nicht eingerichtet -> alles sichtbar
+    const { data, error } = await sb.from('app_users').select('objekte,zaehler,reinigung,aufzuege,sanierung,tickets,admin').limit(1).maybeSingle();
+    if(error){ S.permKnown=false; S.perm={objekte:true,zaehler:true,reinigung:true,aufzuege:true,sanierung:true,tickets:true,admin:true}; return; } // Rollen noch nicht eingerichtet -> alles sichtbar
     S.permKnown=true;
-    if(!data){ S.perm={objekte:false,reinigung:false,aufzuege:false,sanierung:false,tickets:false,admin:false}; return; }
+    if(!data){ S.perm={objekte:false,zaehler:false,reinigung:false,aufzuege:false,sanierung:false,tickets:false,admin:false}; return; }
     const ad=!!data.admin;
-    S.perm={objekte:ad||!!data.objekte, reinigung:ad||!!data.reinigung, aufzuege:ad||!!data.aufzuege, sanierung:ad||!!data.sanierung, tickets:ad||!!data.tickets, admin:ad};
-  }catch(e){ S.permKnown=false; S.perm={objekte:true,reinigung:true,aufzuege:true,sanierung:true,tickets:true,admin:true}; }
+    S.perm={objekte:ad||!!data.objekte, zaehler:ad||!!data.objekte||!!data.zaehler, reinigung:ad||!!data.reinigung,
+      aufzuege:ad||!!data.aufzuege, sanierung:ad||!!data.sanierung, tickets:ad||!!data.tickets, admin:ad};
+  }catch(e){ S.permKnown=false; S.perm={objekte:true,zaehler:true,reinigung:true,aufzuege:true,sanierung:true,tickets:true,admin:true}; }
 }
 function canArea(a){ const p=S.perm||{}; return p.admin || !!p[a]; }
 function allowedView(v){
-  if(["house","editor","viewer","compare","defects","wartung","stammblatt","dokumente","ablesung","etiketten","erfassung","fristen","aushang","co2"].includes(v)) return canArea("objekte");
+  if(["ablesung","etiketten","erfassung"].includes(v)) return canArea("zaehler")||canArea("objekte");
+  if(v==="house") return canArea("objekte")||canArea("zaehler");
+  if(["editor","viewer","compare","defects","wartung","stammblatt","dokumente","fristen","aushang","co2","karte","vorhernachher"].includes(v)) return canArea("objekte");
   if(["reinigung","reinigungObj"].includes(v)) return canArea("reinigung");
   if(["aufzuege","aufzug"].includes(v)) return canArea("aufzuege");
   if(v==="sanierung") return canArea("sanierung");
   if(v==="tickets") return canArea("tickets");
   if(v==="meldungen") return canArea("objekte")||canArea("aufzuege");
+  if(v==="post") return canArea("tickets")||canArea("objekte");
   if(v==="kontakte") return canArea("objekte")||canArea("aufzuege")||canArea("tickets");
   return true;
 }
@@ -6923,6 +7988,7 @@ async function onAuth(session){
   offRegisterSW();               // App im Gerät ablegen, damit sie ohne Netz startet
   if(istOnline() && offCount()) offSync(true);   // Nachzügler aus der letzten Begehung übertragen
   if(!zCheckHash()) mCheckHash();  // Direkteinstieg per QR-Code (#z=… Zähler, #m=… Mängelmeldung)
+  demoBilderSeed();                // Beispielaufnahmen für den Vorher/Nachher-Vergleich (nur Demodaten)
 }
 
 (async function init(){
@@ -7080,6 +8146,22 @@ window.addEventListener("beforeunload",()=>{ if(S.insp) persistInsp(); });
     }catch(e){ lines.push("(Kontext teilweise nicht verfügbar)"); }
     return lines.join("\n");
   }
+
+  /* Von anderen Modulen nutzbar (z. B. Posteingang) – der Schlüssel bleibt im Browser */
+  window.AIVerfuegbar=function(){ return !!gk(); };
+  window.AIFragen=async function(system, userText, maxTokens){
+    var key=gk(); if(!key) throw new Error("kein API-Key hinterlegt");
+    var res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{ "content-type":"application/json", "x-api-key":key, "anthropic-version":"2023-06-01", "anthropic-dangerous-direct-browser-access":"true" },
+      body:JSON.stringify({ model:gm()||DEF_MODEL, max_tokens:maxTokens||800, system:system,
+        messages:[{role:"user",content:userText}] })
+    });
+    var data=await res.json();
+    if(data && data.error) throw new Error(data.error.message||("API "+res.status));
+    return ((data&&data.content)||[]).filter(function(b){return b.type==="text";}).map(function(b){return b.text;}).join("\n").trim();
+  };
+  window.AIPanelOeffnen=function(){ var f=document.getElementById("aiFab"); if(f) f.click(); };
 
   window.AISend=async function(){
     if(busy) return;

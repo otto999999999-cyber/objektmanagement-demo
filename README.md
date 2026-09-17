@@ -115,8 +115,9 @@ Modul für die jährliche Ablesung der Allgemein- und Unterzähler zur Betriebsk
   man sieht also jederzeit, was noch nicht in der Zentrale angekommen ist.
 - Die Warteschlange übersteht das Schließen der App und einen Neustart des Geräts.
 
-Über **Menü → Benutzer & Bereiche** lässt sich der Bereich *Objekte* gezielt für einen
-Ablesedienstleister freischalten – dann liest dieser direkt in die Plattform ein, statt auf Papier.
+Über **Menü → Benutzer & Bereiche** lässt sich der Bereich **Zähler** gezielt für einen
+Ablesedienstleister freischalten – dann liest dieser direkt in die Plattform ein, statt auf Papier,
+und sieht dabei nichts außer den Zählern (Abschnitt 15).
 
 ---
 
@@ -272,7 +273,90 @@ versandfertig.
 
 ---
 
-## 11. Objekt-Tagebuch
+## 11. Objekte auf der Karte
+
+**Startseite → Karte** oder Menü → *Karte*. Der Bestand als Karte mit einer Ampel je Haus, gespeist
+aus offenen Mängeln und Fristen: rot bei Mangel oder überfälliger Frist, gelb bei Fälligkeit in den
+nächsten 30 Tagen, grün wenn nichts offen ist. Die Zahl im Stecknadelkopf nennt die Summe aus
+Mängeln und überfälligen Fristen; ein Klick öffnet Objekt oder Zählerliste.
+
+Objekte ohne Koordinaten stehen unter der Karte mit dem Knopf **Standort erfassen** – vor Ort per
+GPS, im Büro von Hand. Die Kartenbibliothek wird erst beim Öffnen geladen; ohne Internetverbindung
+bleibt die Liste und die Anwendung läuft weiter. Kartenbilder: OpenStreetMap-Mitwirkende.
+
+---
+
+## 12. Vorher / Nachher
+
+Reiter *Begehungen* → **Vorher/Nachher** (sobald zwei Begehungen vorliegen). Zwei Aufnahmen
+derselben Stelle liegen übereinander, der Regler dazwischen wischt zwischen den Jahren – mit Datum,
+Zustandsbewertung und Feststellung beider Begehungen.
+
+Voraussetzung ist ein Foto zum **gleichen Bereich in zwei Begehungen**. Wer die auffälligen Stellen
+bei jeder Begehung aus derselben Position fotografiert, beendet damit die Diskussion, ob etwas
+„vorher schon so war". In der Demo sind dafür zwei Bereiche mit **synthetischen Beispielbildern**
+belegt; sie sind im Bild als Beispielbild gekennzeichnet.
+
+---
+
+## 13. Posteingang
+
+**Menü → Posteingang.** Eine eingehende Nachricht wird eingefügt (oder aus vier Beispielen gewählt:
+Mieterbeschwerde, Wartungsbericht, Anwaltsschreiben, Behördentermin). Die Anwendung erkennt
+
+- das **Objekt** über Bezeichnung, Straße, PLZ oder Objektnummer, dazu die **Einheit**,
+- die **Art des Vorgangs** – Mangelmeldung, Wartung/Prüfbericht, Rechtliches, Behörde, Angebot,
+- die **Dringlichkeit** aus dem Wortlaut und eine **Frist** (aus „binnen 14 Tagen" oder nach Art),
+- den **Absender im Adressbuch** über die Maildomäne,
+- den **Bezug im Bestand**: offene Tickets, überfällige Fristen, erfasste Zähler des Objekts.
+
+Daraus wird auf Knopfdruck ein **Ticket** oder ein Vorgang in der **Meldungs-Überwachung** – jeweils
+mit Rückfrage, nichts entsteht von allein. Der **Antwortentwurf** ist nach Art des Vorgangs
+formuliert und lässt sich kopieren oder im E-Mail-Programm öffnen.
+
+Das alles läuft **regelbasiert und ohne KI-Schlüssel**. Ist ein Schlüssel hinterlegt (Abschnitt 2),
+kommt der Knopf *Von der KI einschätzen lassen* hinzu: drei Abschnitte zu Forderung, Vorgehen und
+Frist/Risiko, mit dem Hinweis auf fehlende Angaben statt erfundener.
+
+---
+
+## 14. Stammdaten aus SAP einlesen
+
+**Menü → Stammdaten einlesen (SAP).** Objekte und Einheiten kommen aus dem Bestandssystem statt aus
+Handarbeit:
+
+1. CSV-Export wählen oder einfügen (Semikolon, Komma oder Tabulator; Vorlage zum Herunterladen,
+   Beispieldaten zum Ausprobieren).
+2. **Spalten zuordnen** – die Zuordnung ist vorbelegt, weil übliche Spaltennamen erkannt werden
+   (Objektnr, Bezeichnung, WE, PLZ/Ort, Baujahr, Wohnfläche, Heizung, Hausmeister …).
+3. **Vorschau**: was neu ist, was sich ändert (mit alt → neu je Feld) und was unverändert bleibt.
+   Erst dann wird übernommen.
+
+Abgeglichen wird über die **Objektnummer**, ersatzweise über die Bezeichnung. Bestehende Objekte
+werden ergänzt, nicht ersetzt: leere Felder im Export lassen vorhandene Werte unberührt, und
+Objekte, die im Export fehlen, bleiben unangetastet. Ein zweiter Import gleicht ab, statt zu
+verdoppeln.
+
+---
+
+## 15. Bereiche und Rollen
+
+Die Anwendung schaltet Bereiche je Konto frei: **Objekte, Zähler, Reinigung, Aufzüge, Sanierung,
+Tickets, Admin**. Der Bereich **Zähler** ist der für einen **Ablesedienstleister**: er sieht die
+Zählerliste, liest ab, druckt Erfassungsbogen und QR-Etiketten – und sonst nichts. Keine
+Begehungen, keine Dokumente, keine Tickets, keine Kosten. Damit hält die Software, was ein
+eingeschränkter Zugang für externe Dienstleister versprechen soll.
+
+Unter **Menü → Ansicht testen als …** lässt sich die Sicht wechseln – Administrator,
+Objektverwalter, Hausmeister, Ablesedienstleister, Reinigungsfirma. Eine Leiste am unteren Rand
+zeigt die aktive Vorschau und führt zurück. Das ist die Vorführfunktion; im Serverbetrieb ergibt
+sich die Sicht aus der Anmeldung und ist nicht umschaltbar.
+
+Die Bereiche je Benutzer werden unter **Menü → Benutzer & Bereiche** gesetzt.
+
+---
+
+## 16. Objekt-Tagebuch
 
 Reiter *Tagebuch* je Objekt: der Verlauf eines Hauses über **alle Bereiche hinweg** in einer
 Zeitschiene, nach Jahren gruppiert und neueste Einträge zuerst.
@@ -291,7 +375,7 @@ Tickets, Mängel und das Adressbuch.
 
 ---
 
-## 12. „Firma anschreiben" — überall dort, wo eine Firma zuständig ist
+## 17. „Firma anschreiben" — überall dort, wo eine Firma zuständig ist
 
 Aus jedem Vorgang lässt sich direkt eine E-Mail an die zuständige Firma erzeugen. Der Text wird
 aus den Daten des Vorgangs vorbefüllt, der **Empfänger automatisch aus dem Adressbuch** aufgelöst,
@@ -312,6 +396,7 @@ und der Vorgang landet auf Wunsch in der Meldungs-Überwachung.
 | **Gesetzliche Pflichten** | vorbereitetes Schreiben je Pflicht, mit Rechtsgrundlage im Text |
 | **Sanierungen** | Mängelanzeige unter laufender Gewährleistung an die Baufirma |
 | **CO₂-Rechner** | Anforderung der CO₂-Angaben beim Brennstofflieferanten |
+| **Posteingang** | Antwortentwurf auf eine eingehende Nachricht, nach Art des Vorgangs |
 
 Der Empfänger wird über den Firmennamen im Adressbuch gesucht — beim Ableseauftrag zusätzlich
 darüber, wer in der Vorperiode tatsächlich abgelesen hat. Ist nichts hinterlegt, bleibt das Feld
@@ -319,7 +404,7 @@ leer und ein Hinweis nennt die Stelle, an der die Adresse ergänzt werden sollte
 
 ---
 
-## 13. Hinweise
+## 18. Hinweise
 
 - **Reine Demo:** Eingaben/Änderungen sind **nicht dauerhaft** – nach dem Neuladen der Seite
   stehen wieder die ursprünglichen Testdaten bereit. Ausnahme: offline erfasste Ablesungen bleiben
@@ -327,13 +412,14 @@ leer und ein Hinweis nennt die Stelle, an der die Adresse ergänzt werden sollte
   **Verwerfen** in der Verbindungsanzeige lässt sich die Warteschlange leeren.
 - **Datenschutz:** Alle Namen, Straßen, Orte und Firmen sind fiktiv; es besteht kein Bezug zu
   realen Personen oder Unternehmen.
-- **Rechte-Demo:** Unter **Menü → Benutzer & Bereiche** sind drei Beispielkonten hinterlegt
-  (`admin@demo.de`, `hausmeister@demo.de`, `reinigung@demo.de`), um die bereichsweise
-  Freischaltung von Mitarbeitern/Dienstleistern zu zeigen.
+- **Rechte-Demo:** Unter **Menü → Benutzer & Bereiche** sind vier Beispielkonten hinterlegt
+  (`admin@demo.de`, `hausmeister@demo.de`, `reinigung@demo.de`, `ablesedienst@demo.de`), um die
+  bereichsweise Freischaltung von Mitarbeitern und Dienstleistern zu zeigen. Die Sicht eines Kontos
+  lässt sich über **Ansicht testen als …** direkt vorführen (Abschnitt 15).
 
 ---
 
-## 14. Vom Demo zum echten Portal
+## 19. Vom Demo zum echten Portal
 
 Diese Demo nutzt eine eingebettete Testdatenschicht anstelle eines Servers. Für den
 produktiven Mehrbenutzerbetrieb (Login + zentrale Datenbank in Frankfurt, bereichsbasierte
