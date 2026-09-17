@@ -140,7 +140,9 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     sanierungen: [
       {id:"s1", house_id:"h1", wohnung:"WE 7", title:"Bad-Sanierung nach Wasserschaden", status:"laufend", start_date:daysAgo(20), end_planned:inDays(15), end_date:"", budget:18500, cost:9200, firm:"Baustein & Fliese GmbH", note:"Trocknung abgeschlossen"},
       {id:"s2", house_id:"h4", wohnung:"WE 22", title:"Küche + Bodenbelag", status:"geplant", start_date:inDays(30), end_planned:inDays(60), end_date:"", budget:12000, cost:"", firm:"", note:"Angebote einholen"},
-      {id:"s3", house_id:"h3", wohnung:"Laden EG", title:"Schaufenster-Erneuerung", status:"abgeschlossen", start_date:daysAgo(120), end_planned:daysAgo(85), end_date:daysAgo(80), budget:9000, cost:8650, firm:"Glaswerk Beispiel", note:""}
+      {id:"s3", house_id:"h3", wohnung:"Laden EG", title:"Schaufenster-Erneuerung", status:"abgeschlossen", start_date:daysAgo(120), end_planned:daysAgo(85), end_date:daysAgo(80), budget:9000, cost:8650, firm:"Glaswerk Beispiel", note:"", abnahme:daysAgo(80), gwl_monate:48, gwl_note:"Sicherheitseinbehalt 5 % bis Ablauf"},
+      {id:"s4", house_id:"h1", wohnung:"WE 3", title:"Komplettsanierung Bad und Kueche", status:"abgeschlossen", start_date:daysAgo(760), end_planned:daysAgo(700), end_date:daysAgo(690), budget:26000, cost:27400, firm:"Baustein & Fliese GmbH", note:"Nachtrag Elektro", abnahme:daysAgo(690), gwl_monate:24, gwl_note:"VOB/B vereinbart"},
+      {id:"s5", house_id:"h4", wohnung:"WE 31", title:"Fenstertausch und Malerarbeiten", status:"abgeschlossen", start_date:daysAgo(400), end_planned:daysAgo(360), end_date:daysAgo(350), budget:15500, cost:15100, firm:"Fensterbau Beispiel GmbH", note:"", abnahme:daysAgo(350), gwl_monate:60, gwl_note:""}
     ],
 
     meldungen_log: [
@@ -510,6 +512,9 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 
   .chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 9px;border-radius:7px;font-size:12px;font-weight:600;background:var(--bg2);color:var(--muted)}
   .chip::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--faint);flex:none}
+  .gwl-warn{background:var(--mid-bg);border:1px solid #E8C98A;border-radius:var(--r-sm);padding:10px 12px;margin:-4px 0 12px}
+  .gwl-warn b{display:block;font-size:13px;color:#8A5A00;margin-bottom:3px}
+  .gwl-warn p{margin:0 0 8px;font-size:12.8px;line-height:1.5;color:var(--ink)}
   .fr-mon{display:flex;align-items:baseline;justify-content:space-between;margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line2)}
   .fr-mon h3{font-size:16px}
   .fr-mon span{font-size:12.5px;color:var(--muted);font-weight:600}
@@ -729,6 +734,67 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   .erf-fuss{margin-top:10px;font-size:10.5px;color:#4A5266;line-height:1.5}
   @media print{ .erf-tab{font-size:9.5px} .erf-tab tr{page-break-inside:avoid} }
 
+  /* ---- CO2-Rechner ---- */
+  .co2-grid{display:grid;grid-template-columns:minmax(300px,1fr) minmax(300px,1.1fr);gap:14px;margin-top:14px}
+  @media (max-width:900px){ .co2-grid{grid-template-columns:1fr} }
+  .co2-h{font-size:14px;margin-bottom:10px;color:var(--navy);text-transform:uppercase;letter-spacing:.05em}
+  .co2-h4{font-size:12px;margin:16px 0 6px;color:var(--navy);text-transform:uppercase;letter-spacing:.05em}
+  .co2-big{display:flex;gap:16px;align-items:center;border-radius:var(--r-sm);padding:14px 16px;margin-bottom:12px;background:var(--bg2)}
+  .co2-big.good{background:var(--good-bg)} .co2-big.mid{background:var(--mid-bg)} .co2-big.bad{background:var(--bad-bg)}
+  .co2-spez{font-family:'Plus Jakarta Sans';font-size:34px;font-weight:800;line-height:1;letter-spacing:-.02em}
+  .co2-spez span{display:block;font-size:11px;font-weight:600;letter-spacing:.03em;color:var(--muted);margin-top:4px}
+  .co2-stufe{font-size:13px;font-weight:600;line-height:1.5}
+  .co2-stufe b{display:block;font-size:14px;margin-top:3px}
+  .co2-kv{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+  .co2-kv.hl{background:var(--bad-bg);border-radius:8px;padding:8px 10px;border-bottom:none;margin:6px 0}
+  .co2-pre{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;line-height:1.55;
+    background:var(--bg2);border-radius:var(--r-sm);padding:12px;margin:0 0 10px;max-height:240px;overflow:auto}
+  .co2-tab{width:100%;border-collapse:collapse;font-size:13px}
+  .co2-tab th{text-align:left;background:var(--bg2);padding:7px 10px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  .co2-tab td{padding:6px 10px;border-bottom:1px solid var(--line)}
+  .co2-tab tr.on td{background:var(--navy-soft);font-weight:700}
+  /* ---- Mieter-Mängelmeldung (QR) ---- */
+  body.meld-mode header.top .top-row>*:not(.brand){display:none !important}
+  body.meld-mode #aiFab,body.meld-mode #aiPanel,body.meld-mode .env-badge{display:none !important}
+  .meld-wrap{max-width:560px;margin:0 auto;padding:6px 0 30px}
+  .meld-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px 20px 20px;box-shadow:var(--shadow)}
+  .meld-head{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:14px}
+  .meld-kicker{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--navy)}
+  .meld-head h2{font-size:22px;margin:4px 0 2px}
+  .meld-adr{font-size:13px;color:var(--muted)}
+  .meld-intro{font-size:13.5px;line-height:1.6;color:var(--muted);margin:0 0 16px}
+  .meld-ds{font-size:11.5px;line-height:1.55;color:var(--faint);margin:14px 0 16px}
+  .btn.block{width:100%;justify-content:center}
+  .meld-ok{text-align:center}
+  .meld-ok-ic{width:56px;height:56px;margin:0 auto 12px;border-radius:50%;background:var(--good-bg);color:var(--good);display:grid;place-items:center}
+  .meld-ok-ic svg{width:30px;height:30px}
+  .meld-ok h2{font-size:20px;margin-bottom:6px}
+  .meld-sum{text-align:left;background:var(--bg2);border-radius:var(--r-sm);padding:12px 14px;margin:14px 0;font-size:13px;line-height:1.6}
+  /* ---- Aushang zum Ausdrucken ---- */
+  .aushang{background:#fff;border:1px solid var(--line2);border-radius:10px;padding:26px 26px 18px;max-width:780px;margin:14px auto;color:#0E1220}
+  .au-top{text-align:center;border-bottom:2px solid #0E1220;padding-bottom:14px}
+  .au-kicker{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#4A5266}
+  .au-top h1{font-size:40px;line-height:1.05;margin:6px 0 6px;letter-spacing:-.02em}
+  .au-obj{font-size:15px;font-weight:600}
+  .au-mid{display:flex;gap:24px;align-items:center;padding:20px 0;border-bottom:1px solid #C9D1DF}
+  .au-qr{flex:0 0 190px;width:190px}
+  .au-qr svg{width:190px;height:190px;display:block}
+  .au-qrfail{font-size:12px;color:#C32B45;border:1px dashed #C32B45;padding:10px;border-radius:8px}
+  .au-txt{flex:1;min-width:0}
+  .au-txt ol{margin:0 0 10px 20px;padding:0;font-size:15px;line-height:1.6}
+  .au-txt ol li{margin-bottom:5px}
+  .au-note{font-size:12.5px;line-height:1.5;color:#4A5266;margin:0 0 8px}
+  .au-url{font-size:11.5px;color:#4A5266;margin:0}
+  .au-url span{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;word-break:break-all}
+  .au-bottom{display:flex;gap:16px;padding-top:16px}
+  .au-box{flex:1;border:1px solid #C9D1DF;border-radius:8px;padding:10px 12px;font-size:12.5px;line-height:1.6}
+  .au-box b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+  .au-foot{text-align:center;font-size:10.5px;color:#6E7688;margin-top:14px}
+  @media print{
+    .aushang{border:none;border-radius:0;margin:0;padding:0;max-width:none}
+    .au-top h1{font-size:46px}
+    .au-qr,.au-qr svg{flex-basis:210px;width:210px;height:210px}
+  }
   /* ---- QR-Etiketten für Zählerplätze ---- */
   .etiketten{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:14px}
   .etikett{border:1px dashed #9AA3B4;border-radius:8px;padding:10px 11px;background:#fff;display:flex;gap:11px;align-items:flex-start;break-inside:avoid}
@@ -1019,7 +1085,7 @@ const DB = {
   async deleteMeldung(id){ const {error}=await sb.from('aufzug_meldungen').delete().eq('id',id); if(error) console.error(error); },
   /* ---- Wohnungssanierungen ---- */
   async listSanierungen(){ const {data,error}=await sb.from('sanierungen').select('*').order('updated_at',{ascending:false}); if(error){console.error(error);return [];} return (data||[]).map(normSan); },
-  async saveSanierung(s){ const row={ id:s.id, house_id:s.houseId||null, wohnung:s.wohnung||null, title:s.title||null, status:s.status||'geplant', start_date:s.start||null, end_planned:s.endPlanned||null, end_date:s.end||null, budget:s.budget===""?null:s.budget, cost:s.cost===""?null:s.cost, firm:s.firm||null, note:s.note||null, updated_at:new Date().toISOString() }; const {error}=await sb.from('sanierungen').upsert(row); if(error){console.error(error);throw error;} },
+  async saveSanierung(s){ const row={ id:s.id, house_id:s.houseId||null, wohnung:s.wohnung||null, title:s.title||null, status:s.status||'geplant', start_date:s.start||null, end_planned:s.endPlanned||null, end_date:s.end||null, budget:s.budget===""?null:s.budget, cost:s.cost===""?null:s.cost, firm:s.firm||null, note:s.note||null, abnahme:s.abnahme||null, gwl_monate:(s.gwlMonate===""||s.gwlMonate==null)?null:Number(s.gwlMonate), gwl_note:s.gwlNote||null, updated_at:new Date().toISOString() }; const {error}=await sb.from('sanierungen').upsert(row); if(error){console.error(error);throw error;} },
   async deleteSanierung(id){ const {error}=await sb.from('sanierungen').delete().eq('id',id); if(error) console.error(error); },
   /* ---- Benutzerverwaltung (nur Admin) ---- */
   async listAppUsers(){ const {data,error}=await sb.from('app_users').select('*').order('email',{ascending:true}); if(error){console.error(error);return null;} return data||[]; },
@@ -1031,12 +1097,13 @@ const DB = {
   async deleteMeldungLog(id){ const {error}=await sb.from('meldungen_log').delete().eq('id',id); if(error) console.error(error); },
   /* ---- Ticketsystem ---- */
   async listTickets(){ const {data,error}=await sb.from('tickets').select('*').order('updated_at',{ascending:false}); if(error){console.error(error);return [];} return (data||[]).map(normTicket); },
-  async saveTicket(t){ const row={ id:t.id, house_id:t.houseId||null, bezug:t.bezug||'objekt', unit:t.unit||null, title:t.title||null, description:t.description||null, status:t.status||'offen', prio:t.prio||null, firm:t.firm||null, firm_email:t.firmEmail||null, reporter:t.reporter||null, created_date:t.createdDate||null, due_date:t.dueDate||null, sent_date:t.sentDate||null, sent_to:t.sentTo||null, note:t.note||null, photos:t.photos||[], created_by:t.createdBy||null, updated_by:t.updatedBy||null, updated_at:new Date().toISOString() }; const {error}=await sb.from('tickets').upsert(row); if(error){console.error(error);throw error;} },
+  async saveTicket(t){ const row={ id:t.id, house_id:t.houseId||null, bezug:t.bezug||'objekt', unit:t.unit||null, title:t.title||null, description:t.description||null, status:t.status||'offen', prio:t.prio||null, firm:t.firm||null, firm_email:t.firmEmail||null, reporter:t.reporter||null, created_date:t.createdDate||null, due_date:t.dueDate||null, sent_date:t.sentDate||null, sent_to:t.sentTo||null, note:t.note||null, quelle:t.quelle||null, photos:t.photos||[], created_by:t.createdBy||null, updated_by:t.updatedBy||null, updated_at:new Date().toISOString() }; const {error}=await sb.from('tickets').upsert(row); if(error){console.error(error);throw error;} },
   async deleteTicket(id){ const {error}=await sb.from('tickets').delete().eq('id',id); if(error) console.error(error); }
 };
-function normTicket(d){ if(!d) return null; return { id:d.id, houseId:d.house_id||"", bezug:d.bezug||"objekt", unit:d.unit||"", title:d.title||"", description:d.description||"", status:d.status||"offen", prio:d.prio||"", firm:d.firm||"", firmEmail:d.firm_email||"", reporter:d.reporter||"", createdDate:d.created_date||"", dueDate:d.due_date||"", sentDate:d.sent_date||"", sentTo:d.sent_to||"", note:d.note||"", photos:d.photos||[], createdBy:d.created_by||"", updatedBy:d.updated_by||"" }; }
+function normTicket(d){ if(!d) return null; return { id:d.id, houseId:d.house_id||"", bezug:d.bezug||"objekt", unit:d.unit||"", title:d.title||"", description:d.description||"", status:d.status||"offen", prio:d.prio||"", firm:d.firm||"", firmEmail:d.firm_email||"", reporter:d.reporter||"", createdDate:d.created_date||"", dueDate:d.due_date||"", sentDate:d.sent_date||"", sentTo:d.sent_to||"", note:d.note||"", photos:d.photos||[], createdBy:d.created_by||"", updatedBy:d.updated_by||"", quelle:d.quelle||"" }; }
 function normLog(d){ if(!d) return null; return { id:d.id, kind:d.kind||"maengel", houseId:d.house_id||"", aufzugId:d.aufzug_id||"", subject:d.subject||"", recipient:d.recipient||"", sentDate:d.sent_date||"", dueDate:d.due_date||"", status:d.status||"offen", note:d.note||"" }; }
-function normSan(d){ if(!d) return null; return { id:d.id, houseId:d.house_id||"", wohnung:d.wohnung||"", title:d.title||"", status:d.status||"geplant", start:d.start_date||"", endPlanned:d.end_planned||"", end:d.end_date||"", budget:d.budget==null?"":d.budget, cost:d.cost==null?"":d.cost, firm:d.firm||"", note:d.note||"" }; }
+function normSan(d){ if(!d) return null; return { id:d.id, houseId:d.house_id||"", wohnung:d.wohnung||"", title:d.title||"", status:d.status||"geplant", start:d.start_date||"", endPlanned:d.end_planned||"", end:d.end_date||"", budget:d.budget==null?"":d.budget, cost:d.cost==null?"":d.cost, firm:d.firm||"", note:d.note||"",
+  abnahme:d.abnahme||"", gwlMonate:d.gwl_monate==null?"":d.gwl_monate, gwlNote:d.gwl_note||"" }; }
 function normAufzug(d){ if(!d) return null; return { id:d.id, houseId:d.house_id, name:d.name||"", fabriknr:d.fabriknr||"", hersteller:d.hersteller||"", firm:d.firm||"", firmEmail:d.firm_email||"", interval:d.interval_months||0, lastDate:d.last_date||"", tuevInterval:d.tuev_interval_months||0, tuevLast:d.tuev_last||"", note:d.note||"" }; }
 function normMeldung(d){ if(!d) return null; return { id:d.id, aufzugId:d.aufzug_id, houseId:d.house_id||"", date:d.date||"", title:d.title||"", status:d.status||"offen", prio:d.prio||"", reporter:d.reporter||"", resolvedDate:d.resolved_date||"", note:d.note||"" }; }
 function normAnlage(d){
@@ -1337,6 +1404,7 @@ const normArea = s => (s||"").trim().toLowerCase().replace(/\s+/g," ");
 /* ===================== RENDER ===================== */
 function render(){
   if(!allowedView(S.view)){ S.view="home"; }
+  if(S.view!=="melden") meldMode(false);
   if(S.view==="home") return renderHome();
   if(S.view==="house") return renderHouse();
   if(S.view==="stammblatt") return renderStammblatt();
@@ -1356,6 +1424,9 @@ function render(){
   if(S.view==="kontakte") return renderKontakte();
   if(S.view==="ablesung") return renderAblesung();
   if(S.view==="fristen") return renderFristen();
+  if(S.view==="co2") return renderCO2();
+  if(S.view==="melden") return renderMelden();
+  if(S.view==="aushang") return renderAushang();
   if(S.view==="etiketten") return renderEtiketten();
   if(S.view==="erfassung") return renderErfassung();
 }
@@ -1452,7 +1523,7 @@ function renderHome(){
   view.innerHTML=`
     <div class="page-head" style="margin-bottom:18px">
       <div><h2>${canArea("objekte")?"Übersicht":"Übersicht"}</h2></div>
-      <div class="toolbar">${primaryBtn}</div>
+      <div class="toolbar">${canArea("objekte")?`<button class="btn" onclick="openBerichtWahl()">${I.pdf} Eigentümerbericht</button>`:""}${primaryBtn}</div>
     </div>
     ${anyArea?`<div class="sec-head"><span class="sec-label">Auf einen Blick</span></div><div id="dashCards" class="dash"></div>`:""}
     ${body}`;
@@ -1630,7 +1701,7 @@ function renderHouse(){
     content=houseWartungHTML();
   } else {
     const canCompare=items.length>=2;
-    toolbar=`<button class="btn" onclick="openStammblatt()">${I.book} Stammblatt</button><button class="btn" onclick="openDokumente()">${I.file} Dokumente</button><button class="btn" onclick="exportObjektakte()">${I.pdf} Objektakte</button>${canCompare?`<button class="btn" onclick="startCompare()">${I.compare} Vergleichen</button>`:""}<button class="btn primary" onclick="newInspection()">${I.plus} Neue Begehung</button>`;
+    toolbar=`<button class="btn" onclick="openStammblatt()">${I.book} Stammblatt</button><button class="btn" onclick="openDokumente()">${I.file} Dokumente</button><button class="btn" onclick="exportObjektakte()">${I.pdf} Objektakte</button><button class="btn" onclick="openBerichtWahl()">${I.pdf} Eigentümerbericht</button>${canCompare?`<button class="btn" onclick="startCompare()">${I.compare} Vergleichen</button>`:""}<button class="btn primary" onclick="newInspection()">${I.plus} Neue Begehung</button>`;
     content=houseBegehungenHTML(items);
   }
   view.innerHTML=`
@@ -2586,6 +2657,15 @@ function fristenSammeln(){
       ziel:`openMeldungen()` });
   });
 
+  (d.san||[]).forEach(s=>{
+    const h=houses[s.houseId]; if(!h) return;
+    const g=gwlStatus(s); if(g.level==="none"||g.level==="overdue") return;
+    add({ datum:g.next, level:g.level, gruppe:"gwl", artLbl:"Gewährleistung",
+      titel:`${s.wohnung||"Einheit"}${s.title?" – "+s.title:""}`, houseId:h.id, objekt:objZeile(h),
+      info:`Abnahme ${fmtShort(s.abnahme)} · Gewährleistung endet${s.firm?" · "+s.firm:""}${s.gwlNote?" · "+s.gwlNote:""}`,
+      mail:`mailGewaehrleistung('${s.id}','')`, ziel:`openSanierung()` });
+  });
+
   /* Ablesung: Stichtag ist das Jahresende der laufenden Periode */
   const per=abPeriode();
   const offene=(d.zz||[]).filter(z=>houses[z.houseId] &&
@@ -2623,14 +2703,16 @@ async function openFristen(){
   try{
     const [anl,auf,tk,log,zz,aa]=await Promise.all([
       DB.allAnlagen(), DB.listAufzuege(), DB.listTickets(), DB.listMeldungenLog(), DB.allZaehler(), DB.allAblesungen() ]);
-    S._fr={anl,auf,tk,log,zz,aa:aa.concat(offAll())};
+    const san=await DB.listSanierungen();
+    S._gwlSan=san;
+    S._fr={anl,auf,tk,log,zz,san,aa:aa.concat(offAll())};
   }catch(e){ showError("Fristen konnten nicht geladen werden", e); S._fr={}; }
   S.frFilter=S.frFilter||"offen";
   S.frObjekt=S.frObjekt||"";
   renderFristen();
 }
 const FR_GRUPPEN={ wartung:"Wartung", pflicht:"Gesetzliche Prüfung", aufzug:"Aufzug", eich:"Eichfrist",
-  ablesung:"Ablesung", ticket:"Ticket", meldung:"Meldung", gesetz:"Gesetzlicher Stichtag" };
+  ablesung:"Ablesung", ticket:"Ticket", meldung:"Meldung", gwl:"Gewährleistung", gesetz:"Gesetzlicher Stichtag" };
 function frMonatLbl(iso){
   const M=["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
   const j=iso.slice(0,4), m=Number(iso.slice(5,7))-1;
@@ -2705,6 +2787,193 @@ function renderFristen(){
     <p class="hint" style="margin-top:14px">Die Rechtsangaben sind eine Arbeitshilfe, Stand ${GESETZ_STAND}, und keine Rechtsberatung. Fristen und Folgen im Einzelfall bitte prüfen lassen.</p>`;
 }
 
+
+/* ===================== CO₂-Kostenaufteilung (CO2KostAufG) =====================
+   Stufenmodell für Wohngebäude: der spezifische CO₂-Ausstoß je m² Wohnfläche und
+   Jahr bestimmt, welchen Anteil der CO₂-Kosten der Vermieter trägt. Nimmt der
+   Vermieter die Aufteilung nicht vor, darf der Mieter den Heizkostenanteil um 3 %
+   kürzen (§ 7 Abs. 4 CO2KostAufG).
+   Arbeitshilfe, Stand September 2026 – keine Rechtsberatung, Stufentabelle und
+   Emissionsfaktoren vor der Abrechnung gegenprüfen.
+--------------------------------------------------------------------------- */
+const CO2_STUFEN=[
+  {bis:12,  vermieter:0,  mieter:100, lbl:"unter 12"},
+  {bis:17,  vermieter:10, mieter:90,  lbl:"12 bis unter 17"},
+  {bis:22,  vermieter:20, mieter:80,  lbl:"17 bis unter 22"},
+  {bis:27,  vermieter:30, mieter:70,  lbl:"22 bis unter 27"},
+  {bis:32,  vermieter:40, mieter:60,  lbl:"27 bis unter 32"},
+  {bis:37,  vermieter:50, mieter:50,  lbl:"32 bis unter 37"},
+  {bis:42,  vermieter:60, mieter:40,  lbl:"37 bis unter 42"},
+  {bis:47,  vermieter:70, mieter:30,  lbl:"42 bis unter 47"},
+  {bis:52,  vermieter:80, mieter:20,  lbl:"47 bis unter 52"},
+  {bis:Infinity, vermieter:95, mieter:5, lbl:"52 und mehr"}
+];
+/* Richtwerte; maßgeblich sind die Angaben auf der Brennstoffrechnung */
+const CO2_BRENNSTOFFE=[
+  {id:"gas",  label:"Erdgas (kWh)",   einheit:"kWh",   faktor:0.201, hinweis:"rund 0,201 kg CO₂ je kWh"},
+  {id:"oel",  label:"Heizöl (Liter)", einheit:"Liter", faktor:2.66,  hinweis:"rund 2,66 kg CO₂ je Liter"},
+  {id:"oelk", label:"Heizöl (kWh)",   einheit:"kWh",   faktor:0.266, hinweis:"rund 0,266 kg CO₂ je kWh"},
+  {id:"direkt",label:"CO₂-Menge direkt aus der Rechnung (kg)", einheit:"kg CO₂", faktor:1,
+   hinweis:"Wert der Rechnung, keine Umrechnung – bei Fernwärme der übliche Weg, dort weist der Versorger CO₂-Menge und -Kosten aus"}
+];
+function co2Stufe(spez){
+  for(const st of CO2_STUFEN){ if(spez < st.bis) return st; }
+  return CO2_STUFEN[CO2_STUFEN.length-1];
+}
+function co2Num(v){ const n=Number(String(v==null?"":v).replace(/\./g,"").replace(",",".")); return isFinite(n)?n:0; }
+function co2Euro(n){ return (Math.round(n*100)/100).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €"; }
+function co2Kg(n){ return Math.round(n).toLocaleString("de-DE")+" kg"; }
+
+async function openCO2(){
+  if(!canArea("objekte")) return goHome();
+  S.view="co2";
+  S.co2=S.co2||{ houseId:(S.houses&&S.houses[0]?S.houses[0].id:""), jahr:String(new Date().getFullYear()-1),
+    brennstoff:"gas", menge:"", flaeche:"", kosten:"", preis:"55", nutzung:"wohn" };
+  if(!S.co2.houseId && S.houses && S.houses[0]) S.co2.houseId=S.houses[0].id;
+  await co2Flaeche();
+  renderCO2();
+}
+/* Wohnfläche und Heizungsart aus den Stammdaten ziehen, wenn dort gepflegt */
+async function co2Flaeche(){
+  const hid=S.co2.houseId; if(!hid) return;
+  try{
+    const st=await DB.getHouseStammdaten(hid)||{};
+    S.co2._stamm=st;
+    if(st.wohnflaeche && !S.co2._flaecheFor) { S.co2.flaeche=String(st.wohnflaeche).replace(/[^\d.,]/g,""); }
+    const hz=(st.heizungsart||"").toLowerCase();
+    if(hz.indexOf("öl")>=0) S.co2.brennstoff="oel";
+    else if(hz.indexOf("gas")>=0) S.co2.brennstoff="gas";
+    else if(hz) S.co2.brennstoff="direkt";   // Fernwärme, Wärmepumpe, Pellet: Werte kommen vom Versorger
+    S.co2._flaecheFor=hid;
+  }catch(e){ S.co2._stamm={}; }
+}
+function co2Set(k,v){
+  S.co2[k]=v;
+  if(k==="houseId"){ S.co2._flaecheFor=null; co2Flaeche().then(renderCO2); return; }
+  renderCO2();
+}
+function co2Rechne(){
+  const c=S.co2||{};
+  const bs=CO2_BRENNSTOFFE.find(x=>x.id===c.brennstoff)||CO2_BRENNSTOFFE[0];
+  const menge=co2Num(c.menge), flaeche=co2Num(c.flaeche);
+  const kg = bs.id==="direkt" ? menge : menge*bs.faktor;
+  const kostenEingabe=co2Num(c.kosten);
+  const preis=co2Num(c.preis);
+  const kosten = kostenEingabe>0 ? kostenEingabe : (kg/1000)*preis;
+  const kostenGeschaetzt = !(kostenEingabe>0) && kg>0;
+  const spez = flaeche>0 ? kg/flaeche : 0;
+  const nichtWohn = c.nutzung==="gewerbe";
+  const st = nichtWohn ? {vermieter:50, mieter:50, lbl:"Nichtwohngebäude – Aufteilung 50/50"} : co2Stufe(spez);
+  return { bs, menge, flaeche, kg, kosten, kostenGeschaetzt, preis, spez, st, nichtWohn,
+    vermieterEuro: kosten*st.vermieter/100, mieterEuro: kosten*st.mieter/100 };
+}
+function co2Text(){
+  const c=S.co2||{}, r=co2Rechne();
+  const h=(S.houses||[]).find(x=>x.id===c.houseId);
+  return `Angaben zur CO₂-Kostenaufteilung nach CO2KostAufG\n`
+   +`Objekt: ${h?objZeile(h):"–"}\n`
+   +`Abrechnungszeitraum: ${c.jahr||"–"}\n`
+   +`Brennstoff: ${r.bs.label}${r.bs.id!=="direkt"?` · Menge ${r.menge.toLocaleString("de-DE")} ${r.bs.einheit}`:""}\n`
+   +`CO₂-Menge: ${co2Kg(r.kg)}\n`
+   +`CO₂-Kosten der Lieferung: ${co2Euro(r.kosten)}${r.kostenGeschaetzt?` (errechnet aus ${r.preis.toLocaleString("de-DE")} € je Tonne – in der Abrechnung ist der Rechnungsbetrag zu verwenden)`:""}\n`
+   +`Wohn-/Nutzfläche: ${r.flaeche.toLocaleString("de-DE")} m²\n`
+   +`Spezifischer Ausstoß: ${r.spez.toFixed(1).replace(".",",")} kg CO₂ je m² und Jahr\n`
+   +(r.nichtWohn
+      ? `Einstufung: Nichtwohngebäude – hälftige Aufteilung nach § 8 CO2KostAufG\n`
+      : `Stufe: ${r.st.lbl} kg CO₂/m²·a → Vermieteranteil ${r.st.vermieter} %, Mieteranteil ${r.st.mieter} %\n`)
+   +`Vermieteranteil: ${co2Euro(r.vermieterEuro)}\n`
+   +`Mieteranteil (umlagefähig): ${co2Euro(r.mieterEuro)}\n`
+   +`\nDer Vermieteranteil ist in der Heizkostenabrechnung offen auszuweisen und von den umlagefähigen Kosten abzuziehen.`;
+}
+async function co2Kopieren(){
+  try{ await navigator.clipboard.writeText(co2Text()); toast("Angaben in die Zwischenablage kopiert."); }
+  catch(e){ toast("Kopieren nicht möglich – Text bitte markieren und kopieren."); }
+}
+function renderCO2(){
+  const c=S.co2||{}, r=co2Rechne();
+  const h=(S.houses||[]).find(x=>x.id===c.houseId);
+  const st=c._stamm||{};
+  const jahre=[]; const jetzt=new Date().getFullYear();
+  for(let j=jetzt;j>=jetzt-5;j--) jahre.push(String(j));
+  const stufenTab=CO2_STUFEN.map(x=>{
+    const aktiv = !r.nichtWohn && x===r.st;
+    return `<tr class="${aktiv?'on':''}"><td>${esc(x.lbl)}</td><td>${x.vermieter} %</td><td>${x.mieter} %</td></tr>`;
+  }).join("");
+  view.innerHTML=`<div class="crumb"><a onclick="goHome()">Objekte</a><span class="sep">/</span>CO₂-Kostenaufteilung</div>
+    <div class="page-head">
+      <div><h2>CO₂-Kostenaufteilung</h2><div class="lead">Stufenmodell nach dem CO2KostAufG: Der spezifische CO₂-Ausstoß je m² entscheidet, welchen Anteil der Vermieter trägt. Ohne die Aufteilung darf der Mieter den Heizkostenanteil um 3 % kürzen.</div></div>
+      <div class="toolbar">
+        <button class="btn" onclick="openGesetz('co2')">${I.book} Grundlage &amp; Folge</button>
+        <button class="btn" onclick="co2Kopieren()">${I.copy||I.file} Angaben kopieren</button>
+      </div>
+    </div>
+    <div class="co2-grid">
+      <div class="card co2-in">
+        <h3 class="co2-h">Eingaben</h3>
+        <div class="field"><label>Objekt</label>
+          <select onchange="co2Set('houseId',this.value)">${(S.houses||[]).map(x=>`<option value="${esc(x.id)}" ${x.id===c.houseId?"selected":""}>${esc(x.name)}</option>`).join("")}</select>
+          ${st.heizungsart?`<span class="hint">Stammdaten: Heizungsart ${esc(st.heizungsart)}${st.wohnflaeche?` · Fläche ${esc(st.wohnflaeche)} m²`:""}</span>`:`<span class="hint">In den Stammdaten dieses Objekts sind Heizungsart und Fläche nicht gepflegt – bitte unten eintragen.</span>`}</div>
+        <div class="field"><label>Abrechnungszeitraum</label>
+          <select onchange="co2Set('jahr',this.value)">${jahre.map(j=>`<option ${c.jahr===j?"selected":""}>${j}</option>`).join("")}</select></div>
+        <div class="field"><label>Gebäudeart</label>
+          <select onchange="co2Set('nutzung',this.value)">
+            <option value="wohn" ${c.nutzung==="wohn"?"selected":""}>Wohngebäude (Stufenmodell)</option>
+            <option value="gewerbe" ${c.nutzung==="gewerbe"?"selected":""}>Nichtwohngebäude (hälftige Aufteilung)</option>
+          </select></div>
+        <div class="field"><label>Brennstoff / Bezugsgröße</label>
+          <select onchange="co2Set('brennstoff',this.value)">${CO2_BRENNSTOFFE.map(b=>`<option value="${b.id}" ${c.brennstoff===b.id?"selected":""}>${esc(b.label)}</option>`).join("")}</select>
+          <span class="hint">${esc(r.bs.hinweis)} – maßgeblich sind die Angaben auf der Brennstoffrechnung.</span></div>
+        <div class="field"><label>Menge (${esc(r.bs.einheit)})</label>
+          <input type="text" inputmode="decimal" value="${esc(c.menge)}" oninput="S.co2.menge=this.value;renderCO2Out()" placeholder="z. B. 148500"></div>
+        <div class="field"><label>Wohn-/Nutzfläche (m²)</label>
+          <input type="text" inputmode="decimal" value="${esc(c.flaeche)}" oninput="S.co2.flaeche=this.value;renderCO2Out()" placeholder="z. B. 940"></div>
+        <div class="field"><label>CO₂-Kosten aus der Rechnung (€)</label>
+          <input type="text" inputmode="decimal" value="${esc(c.kosten)}" oninput="S.co2.kosten=this.value;renderCO2Out()" placeholder="Betrag laut Rechnung">
+          <span class="hint">Der Lieferant muss CO₂-Menge und CO₂-Kosten ausweisen. Bleibt das Feld leer, wird ersatzweise gerechnet.</span></div>
+        <div class="field"><label>Ersatzweise: CO₂-Preis (€ je Tonne)</label>
+          <input type="text" inputmode="decimal" value="${esc(c.preis)}" oninput="S.co2.preis=this.value;renderCO2Out()">
+          <span class="hint">Nur zur Näherung, wenn die Rechnung noch nicht vorliegt.</span></div>
+      </div>
+      <div id="co2Out">${co2OutHTML()}</div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3 class="co2-h">Stufentabelle für Wohngebäude</h3>
+      <table class="co2-tab"><thead><tr><th>kg CO₂ je m² und Jahr</th><th>Vermieter</th><th>Mieter</th></tr></thead>
+        <tbody>${stufenTab}</tbody></table>
+      <p class="hint" style="margin-top:10px">Arbeitshilfe, Stand ${GESETZ_STAND}. Keine Rechtsberatung – Stufentabelle, Emissionsfaktoren und CO₂-Preis vor der Abrechnung gegenprüfen. Für Nichtwohngebäude gilt die hälftige Aufteilung.</p>
+    </div>`;
+}
+function renderCO2Out(){ const el=document.getElementById("co2Out"); if(el) el.innerHTML=co2OutHTML(); }
+function co2OutHTML(){
+  const r=co2Rechne(); const c=S.co2||{};
+  const fehlt=[];
+  if(!(r.menge>0)) fehlt.push(r.bs.id==="direkt"?"CO₂-Menge":"Brennstoffmenge");
+  if(!(r.flaeche>0)) fehlt.push("Wohn-/Nutzfläche");
+  if(fehlt.length){
+    return `<div class="card co2-res"><h3 class="co2-h">Ergebnis</h3>
+      <p class="m">Es fehlt noch: <b>${esc(fehlt.join(" und "))}</b>. Danach steht hier die Einstufung mit dem Vermieteranteil in Euro und den Pflichtangaben für die Abrechnung.</p></div>`;
+  }
+  const lvl = r.st.vermieter>=60?"bad":r.st.vermieter>=30?"mid":"good";
+  return `<div class="card co2-res">
+    <h3 class="co2-h">Ergebnis</h3>
+    <div class="co2-big ${lvl}">
+      <div class="co2-spez">${esc(r.spez.toFixed(1).replace(".",","))}<span>kg CO₂ / m²·a</span></div>
+      <div class="co2-stufe">${r.nichtWohn?"Nichtwohngebäude":"Stufe "+esc(r.st.lbl)}<b>Vermieter ${r.st.vermieter} % · Mieter ${r.st.mieter} %</b></div>
+    </div>
+    <div class="co2-kv"><span>CO₂-Menge</span><b>${esc(co2Kg(r.kg))}</b></div>
+    <div class="co2-kv"><span>CO₂-Kosten${r.kostenGeschaetzt?" (genähert)":""}</span><b>${esc(co2Euro(r.kosten))}</b></div>
+    <div class="co2-kv hl"><span>Vermieteranteil – nicht umlagefähig</span><b>${esc(co2Euro(r.vermieterEuro))}</b></div>
+    <div class="co2-kv"><span>Mieteranteil – umlagefähig</span><b>${esc(co2Euro(r.mieterEuro))}</b></div>
+    ${r.kostenGeschaetzt?`<p class="hint">Die CO₂-Kosten sind aus Menge und Preis je Tonne genähert. In der Abrechnung ist der auf der Rechnung ausgewiesene Betrag zu verwenden.</p>`:""}
+    <h4 class="co2-h4">Pflichtangaben für die Abrechnung</h4>
+    <pre class="co2-pre">${esc(co2Text())}</pre>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn sm" onclick="co2Kopieren()">In Zwischenablage</button>
+      <button class="btn sm" onclick="mailGesetz('co2')">${I.mail} Angaben beim Lieferanten anfordern</button>
+    </div>
+  </div>`;
+}
+
 /* ---------- Gesetzliche Pflichten: Übersicht und Einzelvorlage ---------- */
 function openGesetzListe(){
   const grp={};
@@ -2744,6 +3013,7 @@ function openGesetz(id){
     <p class="hint">Arbeitshilfe, Stand ${GESETZ_STAND}. Keine Rechtsberatung – im Einzelfall bitte prüfen lassen.</p>
     <div class="modal-actions">
       <button class="btn ghost" onclick="closeModal()">Schließen</button>
+      ${g.id==="co2"?`<button class="btn" onclick="closeModal();openCO2()">${I.chart||I.grid} Rechner öffnen</button>`:""}
       ${g.vorlage?`<button class="btn primary" onclick="mailGesetz('${g.id}')">${I.mail} Schreiben erzeugen</button>`:""}
     </div>`);
   const m=document.getElementById("modalBg"); if(m) m.querySelector(".modal").style.maxWidth="660px";
@@ -2831,6 +3101,203 @@ function exportFristenCSV(){
   a.download=`Fristen_${todayISO()}.csv`; a.click();
   setTimeout(()=>URL.revokeObjectURL(a.href),4000);
   toast("CSV gespeichert.");
+}
+
+
+/* ===================== Mängelmeldung für Mieter (QR am Hauseingang) =====================
+   Aufkleber im Eingang, Handykamera drauf, Formular ausfüllen – ohne App und ohne Konto.
+   Aus der Meldung wird ein Ticket mit Objektzuordnung und der Quelle „Mieter (QR)“.
+------------------------------------------------------------------------------------- */
+const MELD_ORTE=["Treppenhaus","Eingang / Haustür","Aufzug","Keller","Waschküche","Müllplatz","Hof / Außenanlage",
+  "Fahrradkeller","Tiefgarage / Stellplatz","Dach / Fassade","meine Wohnung","Sonstiges"];
+function mAppUrl(hid){ return location.origin + location.pathname + "#m=" + hid; }
+function mCheckHash(){
+  const m=(location.hash||"").match(/^#m=([A-Za-z0-9_-]+)$/);
+  if(!m) return false;
+  history.replaceState(null,"",location.pathname+location.search);
+  openMelden(m[1]);
+  return true;
+}
+async function openMelden(hid){
+  if(!S.houses || !S.houses.length){ try{ S.houses=await DB.listHouses(); }catch(e){} }
+  const h=(S.houses||[]).find(x=>x.id===hid);
+  if(!h){ toast("Objekt zu diesem Code nicht gefunden."); return; }
+  S._meldHouse=hid; S._meldPhotos=[]; S.view="melden";
+  renderMelden();
+}
+function meldMode(on){ document.body.classList.toggle("meld-mode", !!on); }
+function renderMelden(){
+  const h=(S.houses||[]).find(x=>x.id===S._meldHouse);
+  if(!h) return goHome();
+  meldMode(true);
+  view.innerHTML=`
+    <div class="meld-wrap">
+      <div class="meld-card">
+        <div class="meld-head">
+          <div class="meld-kicker">Mangel melden</div>
+          <h2>${esc(h.name)}</h2>
+          <div class="meld-adr">${esc(h.address||"")}</div>
+        </div>
+        <p class="meld-intro">Bitte beschreiben Sie, was nicht in Ordnung ist. Die Meldung geht direkt in die
+          Hausverwaltung und wird dort als Vorgang geführt. Angaben zu Ihrer Person sind freiwillig – ohne
+          Kontaktdaten können wir aber nicht zurückfragen.</p>
+
+        <div class="field"><label>Wo ist der Mangel? *</label>
+          <select id="mdOrt">${MELD_ORTE.map(o=>`<option>${esc(o)}</option>`).join("")}</select></div>
+        <div class="field"><label>Genauere Lage (optional)</label>
+          <input id="mdLage" placeholder="z. B. Aufgang B, 2. OG, Fenster zum Hof"></div>
+        <div class="field"><label>Was ist passiert? *</label>
+          <textarea id="mdText" style="min-height:110px" placeholder="z. B. Treppenhauslicht im 2. OG geht nicht, seit Montag dunkel"></textarea></div>
+        <div class="field"><label>Dringlichkeit</label>
+          <select id="mdPrio">
+            <option value="">normal</option>
+            <option value="mittel">störend, sollte zügig behoben werden</option>
+            <option value="hoch">gefährlich oder Wasser läuft – dringend</option>
+          </select>
+          <span class="hint">Bei Gefahr für Personen, Wasseraustritt oder Gasgeruch bitte zusätzlich den Notdienst anrufen.</span></div>
+        <div class="field"><label>Foto (optional)</label>
+          <div id="mdThumbs" class="thumbs"></div>
+          <label class="btn sm" style="margin-top:8px"><input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="mdFotos(this)">${I.cam} Foto aufnehmen</label>
+          <span class="hint">Ein Bild spart oft eine Rückfrage und einen Termin.</span></div>
+        <div class="field"><label>Ihr Name (optional)</label><input id="mdName" placeholder="Vor- und Nachname"></div>
+        <div class="field"><label>Wohnung (optional)</label><input id="mdWhg" placeholder="z. B. WE 12 oder 3. OG links"></div>
+        <div class="field"><label>Telefon oder E-Mail (optional)</label><input id="mdKontakt" placeholder="für Rückfragen und Terminabstimmung"></div>
+
+        <p class="meld-ds">Ihre Angaben werden ausschließlich zur Bearbeitung dieser Meldung verwendet und an die
+          beauftragte Fachfirma weitergegeben, soweit das für die Behebung erforderlich ist. In dieser Demo werden
+          keine Daten übertragen und beim Neuladen der Seite wieder verworfen.</p>
+
+        <button class="btn primary block" onclick="meldAbsenden()">${I.check} Meldung absenden</button>
+        <button class="btn ghost block" style="margin-top:8px" onclick="goHome()">Abbrechen</button>
+      </div>
+    </div>`;
+}
+async function mdFotos(input){
+  const files=[...(input.files||[])]; input.value="";
+  for(const f of files.slice(0,3)){
+    try{ const d=await compressFile(f,1400,0.7); S._meldPhotos.push(d); }catch(e){ console.error(e); }
+  }
+  mdThumbs();
+}
+function mdThumbs(){
+  const box=document.getElementById("mdThumbs"); if(!box) return;
+  const ph=S._meldPhotos||[];
+  box.innerHTML = ph.length ? ph.map((d,i)=>`<div class="thumb-wrap"><img class="thumb" src="${d}"><button class="thumb-x" onclick="S._meldPhotos.splice(${i},1);mdThumbs()">${I.x}</button></div>`).join("")
+    : "";
+}
+async function meldAbsenden(){
+  const text=(document.getElementById("mdText").value||"").trim();
+  if(!text){ toast("Bitte beschreiben Sie kurz, was nicht in Ordnung ist."); return; }
+  const h=(S.houses||[]).find(x=>x.id===S._meldHouse);
+  const ort=document.getElementById("mdOrt").value||"";
+  const lage=(document.getElementById("mdLage").value||"").trim();
+  const name=(document.getElementById("mdName").value||"").trim();
+  const whg=(document.getElementById("mdWhg").value||"").trim();
+  const kontakt=(document.getElementById("mdKontakt").value||"").trim();
+  const prio=document.getElementById("mdPrio").value||"";
+  const overlay=geoOverlay("Meldung wird übermittelt…");
+  const paths=[];
+  try{
+    for(const d of (S._meldPhotos||[])){ const p=await uploadPhoto("meld", d); if(p) paths.push(p); }
+  }catch(e){ console.error(e); }
+  const kurz=text.length>70? text.slice(0,67).trim()+"…" : text;
+  const t={ id:uid(), houseId:S._meldHouse, bezug: whg?"mieteinheit":"objekt", unit: whg||ort,
+    title:`${ort}: ${kurz}`, description:text + (lage?`\nLage: ${lage}`:""),
+    status:"offen", prio, firm:"", firmEmail:"",
+    reporter: [name||"Mieter", whg, kontakt].filter(Boolean).join(", "),
+    createdDate: todayISO(), dueDate:"", sentDate:"", sentTo:"",
+    note:`Eingang über QR-Aushang im Objekt${lage?" · "+lage:""}`, photos:paths,
+    quelle:"mieter" };
+  try{ await DB.saveTicket(t); }
+  catch(e){ overlay.remove(); showError("Meldung konnte nicht übermittelt werden", e); return; }
+  S.tickets=null; S._meldPhotos=[];
+  overlay.remove();
+  meldMode(true);
+  const nr=t.id.slice(-6).toUpperCase();
+  view.innerHTML=`
+    <div class="meld-wrap">
+      <div class="meld-card meld-ok">
+        <div class="meld-ok-ic">${I.check}</div>
+        <h2>Vielen Dank – Ihre Meldung ist eingegangen.</h2>
+        <p>Vorgangsnummer <b>${esc(nr)}</b>${h?` · ${esc(h.name)}`:""}</p>
+        <div class="meld-sum">
+          <div><b>Ort:</b> ${esc(ort)}${lage?" · "+esc(lage):""}</div>
+          <div><b>Meldung:</b> ${esc(text)}</div>
+          ${paths.length?`<div><b>Fotos:</b> ${paths.length}</div>`:""}
+          ${kontakt?`<div><b>Rückfragen an:</b> ${esc(kontakt)}</div>`:`<div style="color:var(--mid)">Ohne Kontaktdaten können wir nicht zurückfragen.</div>`}
+        </div>
+        <p class="meld-ds">Die Hausverwaltung prüft die Meldung und beauftragt, wenn nötig, eine Fachfirma.
+          Bei Gefahr im Verzug bitte den Notdienst anrufen.</p>
+        <button class="btn primary block" onclick="openMelden('${esc(S._meldHouse)}')">Weitere Meldung erfassen</button>
+        <button class="btn ghost block" style="margin-top:8px" onclick="openTickets()">Zur Verwaltungsansicht (Demo)</button>
+      </div>
+    </div>`;
+}
+
+/* ---------- Aushang zum Ausdrucken ---------- */
+function openAushangWahl(){
+  const opts=(S.houses||[]).slice().sort((a,b)=>(a.name||"").localeCompare(b.name||""))
+    .map(h=>`<option value="${esc(h.id)}">${esc(h.name)}</option>`).join("");
+  modal(`<h3>QR-Aushang für Mieter</h3>
+    <p class="m">Ein Aushang je Objekt: QR-Code für die Mängelmeldung, Erklärung in zwei Sätzen und
+      Platz für die Notdienstnummern. In den Eingang oder ans Infobrett – wer den Code scannt, landet
+      unmittelbar im Meldeformular dieses Objekts.</p>
+    <div class="field"><label>Objekt</label><select id="ausHouse">${opts}</select></div>
+    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Abbrechen</button>
+    <button class="btn primary" onclick="const v=document.getElementById('ausHouse').value;closeModal();openAushang(v)">Aushang öffnen</button></div>`);
+}
+function openAushang(hid){ S._ausHouse=hid||S.houseId; S.view="aushang"; renderAushang(); }
+function renderAushang(){
+  const h=(S.houses||[]).find(x=>x.id===S._ausHouse);
+  if(!h) return goHome();
+  const url=mAppUrl(h.id);
+  const qr=zQrSvg(url);
+  const st=(S._ausStamm && S._ausStamm.id===h.id) ? S._ausStamm.data : {};
+  view.innerHTML=`
+    <div class="crumb no-print"><a onclick="goHome()">Objekte</a><span class="sep">/</span><a onclick="openTickets()">Tickets</a><span class="sep">/</span>QR-Aushang</div>
+    <div class="page-head no-print">
+      <div><h2>QR-Aushang „Mangel melden"</h2><div class="lead">${esc(h.name)} – zum Ausdrucken und Aushängen im Eingangsbereich.</div></div>
+      <div class="toolbar">
+        <select class="objsort" onchange="openAushang(this.value)">${(S.houses||[]).map(x=>`<option value="${esc(x.id)}" ${x.id===h.id?"selected":""}>${esc(x.name)}</option>`).join("")}</select>
+        <button class="btn" onclick="window.print()">${I.print||I.pdf} Drucken</button>
+      </div>
+    </div>
+    <div class="aushang">
+      <div class="au-top">
+        <div class="au-kicker">Hausverwaltung</div>
+        <h1>Mangel melden</h1>
+        <div class="au-obj">${esc(h.name)}${h.address?` · ${esc(h.address)}`:""}</div>
+      </div>
+      <div class="au-mid">
+        <div class="au-qr">${qr||`<div class="au-qrfail">QR-Code konnte nicht erzeugt werden</div>`}</div>
+        <div class="au-txt">
+          <ol>
+            <li>Handykamera auf den Code halten und den Hinweis antippen.</li>
+            <li>Ort und Beschreibung eingeben, gern mit Foto.</li>
+            <li>Absenden – die Meldung liegt sofort bei der Hausverwaltung.</li>
+          </ol>
+          <p class="au-note">Keine App, kein Konto, keine Anmeldung. Angaben zur Person sind freiwillig –
+            ohne Telefonnummer oder E-Mail können wir aber nicht zurückfragen.</p>
+          <p class="au-url">Ohne Kamera erreichbar unter:<br><span>${esc(url)}</span></p>
+        </div>
+      </div>
+      <div class="au-bottom">
+        <div class="au-box"><b>Bei Gefahr bitte anrufen</b>
+          <div>Heizung / Sanitär: ${esc(st.notdienst_heizung||"______________________")}</div>
+          <div>Aufzug: ${esc(st.notdienst_aufzug||"______________________")}</div>
+          <div>Feuerwehr / Rettung: 112 · Polizei: 110</div></div>
+        <div class="au-box"><b>Hausmeister</b>
+          <div>${esc(st.hausmeister||"______________________")}</div>
+          <div>${esc(st.hausmeister_tel||"______________________")}</div></div>
+      </div>
+      <div class="au-foot">Aushang erstellt am ${esc(fmtShort(todayISO()))} · Objektmanagement</div>
+    </div>`;
+  if(!(S._ausStamm && S._ausStamm.id===h.id)){
+    DB.getHouseStammdaten(h.id).then(st2=>{
+      S._ausStamm={id:h.id, data:st2||{}};
+      if(S.view==="aushang" && S._ausHouse===h.id) renderAushang();
+    }).catch(()=>{ S._ausStamm={id:h.id, data:{}}; });
+  }
 }
 
 /* ---------- QR-Etiketten für den Zählerplatz ---------- */
@@ -3316,7 +3783,7 @@ function zCheckHash(){
   zOpenDeepLink(m[1]);
   return true;
 }
-window.addEventListener("hashchange",zCheckHash);
+window.addEventListener("hashchange",()=>{ if(!zCheckHash()) mCheckHash(); });
 
 const GEWERKE=["Heizung / Sanitär","Elektro","Aufzug","Dach / Spengler","Maler","Schlosser / Metallbau","Garten / Grünpflege","Reinigung","Schädlingsbekämpfung","Brandschutz","Trinkwasser / Hygiene","Schornsteinfeger","Hausmeister","Versicherung","Behörde / Amt","Sonstige"];
 function normKontakt(d){ return { id:d.id, name:d.name||"", gewerk:d.gewerk||"", person:d.person||"", phone:d.phone||"", email:d.email||"", address:d.address||"", note:d.note||"" }; }
@@ -3765,6 +4232,9 @@ async function exportObjektakte(){
         const zeit=`${s.start?fmtShort(s.start):"–"} – ${s.end?fmtShort(s.end):(s.endPlanned?fmtShort(s.endPlanned)+" (geplant)":"offen")}`;
         const kost=`Budget ${s.budget!==""?euro(s.budget):"–"} · Ist ${s.cost!==""?euro(s.cost):"–"}`;
         doc.text(`${zeit}  ·  ${kost}${s.firm?("  ·  "+s.firm):""}`,M+2,y); y+=5;
+        const gw=gwlStatus(s);
+        if(gw.level!=="none"){ doc.setTextColor(...(gw.level==="overdue"?muted:gw.level==="soon"?mid:good)); doc.setFontSize(8.2);
+          doc.text(`Abnahme ${fmtShort(s.abnahme)} · ${gw.label} ${gw.next?"bis "+fmtShort(gw.next):""}`,M+2,y-0.6); y+=4; doc.setTextColor(...muted); doc.setFontSize(8.3); }
         const anz=anhFor("sanierung",s.id).length;
         if(anz){ doc.setFontSize(8); doc.setTextColor(120,116,140); doc.text(`${anz} Foto/Dokument${anz===1?"":"e"} hinterlegt`,M+2,y-0.8); y+=3.4; } }); }
 
@@ -3785,6 +4255,262 @@ async function exportObjektakte(){
     overlay.remove(); toast("Objektakte als PDF gespeichert.");
   }catch(e){ console.error(e); overlay.remove(); showError("Objektakte fehlgeschlagen", e); }
 }
+
+/* ===================== Eigentümerbericht als PDF =====================
+   Ein Bericht, der ohne Nacharbeit versandfertig ist: Kennzahlen, Zustand aus der
+   letzten Begehung, offene Punkte, Fristenlage, Sanierungen samt Gewährleistung
+   und der Stand der Ablesung. Für ein Objekt oder den gesamten Bestand.
+------------------------------------------------------------------------- */
+function openBerichtWahl(){
+  const opts=(S.houses||[]).slice().sort((a,b)=>(a.name||"").localeCompare(b.name||""))
+    .map(h=>`<option value="${esc(h.id)}" ${h.id===S.houseId?"selected":""}>${esc(h.name)}</option>`).join("");
+  modal(`<h3>Eigentümerbericht erzeugen</h3>
+    <p class="m">Der Bericht fasst zusammen, was ein Eigentümer wissen will: Zustand, offene Punkte,
+      Fristen, Kosten. Er zieht die Zahlen aus dem laufenden Bestand – nichts wird von Hand nachgetragen.</p>
+    <div class="field"><label>Umfang</label>
+      <select id="brScope" onchange="document.getElementById('brHouseRow').style.display=this.value==='objekt'?'block':'none'">
+        <option value="objekt">Ein Objekt</option>
+        <option value="alle">Gesamter Bestand</option>
+      </select></div>
+    <div class="field" id="brHouseRow"><label>Objekt</label><select id="brHouse">${opts}</select></div>
+    <div class="field"><label>Berichtszeitraum (Text für die Kopfzeile)</label>
+      <input id="brZeit" value="Stand ${esc(fmtShort(todayISO()))}"></div>
+    <div class="field"><label>Empfänger / Eigentümer (optional)</label>
+      <input id="brEmpf" placeholder="z. B. Musterstadt Immobilien GmbH"></div>
+    <div class="field"><label>Fotos aus der letzten Begehung anhängen</label>
+      <select id="brFotos"><option value="ja">ja, bis zu sechs Aufnahmen</option><option value="nein">nein</option></select></div>
+    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Abbrechen</button>
+    <button class="btn primary" onclick="startBericht()">${I.pdf} Bericht erzeugen</button></div>`);
+}
+function startBericht(){
+  const scope=document.getElementById("brScope").value;
+  const hid=document.getElementById("brHouse").value;
+  const zeit=document.getElementById("brZeit").value||"";
+  const empf=document.getElementById("brEmpf").value||"";
+  const fotos=document.getElementById("brFotos").value==="ja";
+  closeModal();
+  exportEigentuemerbericht({scope, houseId:hid, zeit, empf, fotos});
+}
+async function exportEigentuemerbericht(opt){
+  opt=opt||{};
+  if(!window.jspdf){ toast("PDF-Bibliothek lädt noch – bitte erneut versuchen."); return; }
+  const overlay=geoOverlay("Eigentümerbericht wird erstellt…");
+  try{
+    const einObjekt = opt.scope!=="alle";
+    const haeuser = einObjekt ? (S.houses||[]).filter(h=>h.id===opt.houseId) : (S.houses||[]).slice();
+    if(!haeuser.length){ overlay.remove(); toast("Kein Objekt gewählt."); return; }
+    const hIds=haeuser.map(h=>h.id);
+
+    const [anl, auf, tk, log, zz, aaRaw, san, defGroups] = await Promise.all([
+      DB.allAnlagen(), DB.listAufzuege(), DB.listTickets(), DB.listMeldungenLog(),
+      DB.allZaehler(), DB.allAblesungen(), DB.listSanierungen(), collectDefects() ]);
+    const aa=aaRaw.concat(offAll());
+    S._gwlSan=san;
+    S._fr={anl,auf,tk,log,zz,san,aa};
+    const fristen=fristenSammeln().filter(f=>f.gruppe!=="gesetz" && (!einObjekt || f.houseId===opt.houseId));
+    const inspAll=await DB.allInspMeta();
+
+    const mine=x=>hIds.indexOf(x.houseId)>=0;
+    const anlagen=anl.filter(mine), aufz=auf.filter(mine), tickets=tk.filter(mine),
+          zaehler=zz.filter(mine), sans=san.filter(mine), defs=defGroups.filter(g=>hIds.indexOf(g.house.id)>=0);
+    const per=abPeriode();
+    const abgelesen=zaehler.filter(z=>aa.some(a=>a.zaehlerId===z.id&&(a.datum||"").slice(0,4)===per&&a.status==="abgelesen")).length;
+    const offeneTk=tickets.filter(t=>t.status!=="erledigt");
+    const maengel=defs.reduce((n,g)=>n+g.defs.filter(d=>d.cond==="mangelhaft").length,0);
+    const mittel=defs.reduce((n,g)=>n+g.defs.filter(d=>d.cond==="mittel").length,0);
+    const ueberfaellig=fristen.filter(f=>f.level==="overdue");
+    const bald=fristen.filter(f=>f.level!=="overdue" && daysUntil(f.datum)<=90);
+
+    const { jsPDF }=window.jspdf; const doc=new jsPDF({unit:"mm",format:"a4"});
+    const PW=210,PH=297,M=15; let y=M;
+    const navy=[79,70,229],muted=[110,106,96],line=[214,220,230],ink=[20,23,38],
+          bad=[200,40,60],mid=[200,130,0],good=[14,140,90],soft=[235,234,254];
+    const titel = einObjekt ? haeuser[0].name : "Gesamter Bestand";
+    const footer=()=>{ const pg=doc.internal.getNumberOfPages(); doc.setFontSize(8); doc.setFont("helvetica","normal"); doc.setTextColor(...muted);
+      doc.text("Eigentümerbericht · "+titel+" · "+(opt.zeit||fmtShort(todayISO())),M,PH-8);
+      doc.text("Seite "+pg,PW-M,PH-8,{align:"right"}); };
+    const ensure=h=>{ if(y+h>PH-14){ footer(); doc.addPage(); y=M; } };
+    const sec=t=>{ ensure(16); doc.setFillColor(...soft); doc.roundedRect(M,y-1,PW-2*M,8.5,1.5,1.5,"F"); doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.setTextColor(...navy); doc.text(t,M+3,y+4.6); y+=13; doc.setTextColor(...ink); };
+    const para=(s,color,size)=>{ doc.setFont("helvetica","normal"); doc.setFontSize(size||9.2); doc.setTextColor(...(color||ink)); const ls=doc.splitTextToSize(s,PW-2*M-4); ensure(ls.length*4.4+1); doc.text(ls,M+2,y); y+=ls.length*4.4+1.5; };
+    const zeile=(links,rechts,farbe)=>{ ensure(6); doc.setFont("helvetica","normal"); doc.setFontSize(9.2); doc.setTextColor(...ink);
+      doc.text(links,M+2,y); doc.setFont("helvetica","bold"); doc.setTextColor(...(farbe||ink)); doc.text(String(rechts),PW-M,y,{align:"right"}); y+=5.4; };
+    /* Kennzahlenkachel */
+    const kacheln=(items)=>{
+      const cols=3, bw=(PW-2*M-2*4)/cols, bh=19;
+      for(let i=0;i<items.length;i+=cols){
+        ensure(bh+4);
+        items.slice(i,i+cols).forEach((it,k)=>{
+          const x=M+k*(bw+4);
+          doc.setFillColor(...(it.col==="bad"?[252,228,234]:it.col==="mid"?[251,239,219]:it.col==="good"?[225,245,236]:[240,242,248]));
+          doc.roundedRect(x,y,bw,bh,2,2,"F");
+          doc.setFont("helvetica","bold"); doc.setFontSize(15);
+          doc.setTextColor(...(it.col==="bad"?bad:it.col==="mid"?mid:it.col==="good"?good:ink));
+          doc.text(String(it.wert),x+4,y+9.5);
+          doc.setFont("helvetica","normal"); doc.setFontSize(7.6); doc.setTextColor(...muted);
+          const ls=doc.splitTextToSize(it.label,bw-7); doc.text(ls.slice(0,2),x+4,y+14.4);
+        });
+        y+=bh+4;
+      }
+    };
+
+    /* ---- Kopf ---- */
+    doc.setFillColor(...navy); doc.rect(0,0,PW,30,"F");
+    doc.setTextColor(255,255,255); doc.setFont("helvetica","bold"); doc.setFontSize(19); doc.text("Eigentümerbericht",M,14);
+    doc.setFont("helvetica","normal"); doc.setFontSize(10.5); doc.text(titel,M,22);
+    doc.setFontSize(8.5); doc.text(opt.zeit||("Stand "+fmtShort(todayISO())),PW-M,22,{align:"right"}); y=38;
+    if(opt.empf){ para("Für: "+opt.empf, muted); y+=1; }
+
+    /* ---- Kurzfassung in Worten ---- */
+    sec("Das Wichtigste in Kürze");
+    const lage = ueberfaellig.length===0 && maengel===0
+      ? "Es gibt derzeit keine überfälligen Fristen und keine als mangelhaft bewerteten Punkte."
+      : `${ueberfaellig.length===0?"Überfällige Fristen gibt es derzeit nicht":(ueberfaellig.length===1?"Eine Frist ist überfällig":ueberfaellig.length+" Fristen sind überfällig")}`
+        +`. ${maengel===0?"Aus der letzten Begehung ist kein Punkt als mangelhaft bewertet":(maengel===1?"Ein Punkt aus der letzten Begehung ist als mangelhaft bewertet":maengel+" Punkte aus der letzten Begehung sind als mangelhaft bewertet")}`
+        +`${mittel?(maengel===1?`, ${mittel} weitere als eingeschränkt`:`, ${mittel} weitere als eingeschränkt`):""}.`;
+    para(lage + ` In den nächsten 90 Tagen ${bald.length===0?"steht kein Termin an":(bald.length===1?"steht ein Termin an":"stehen "+bald.length+" Termine an")}.`
+      + ` ${offeneTk.length===0?"Offene Tickets gibt es nicht":(offeneTk.length===1?"Ein Ticket ist offen":offeneTk.length+" Tickets sind offen")}.`
+      + (zaehler.length?` Für die Periode ${per} ${abgelesen===1?"ist":"sind"} ${abgelesen} von ${zaehler.length} Zählern abgelesen.`:""));
+    y+=2;
+    kacheln([
+      {label:"Objekte", wert:haeuser.length},
+      {label:"Mängel aus der letzten Begehung", wert:maengel, col:maengel?"bad":"good"},
+      {label:"offene Tickets", wert:offeneTk.length, col:offeneTk.length?"mid":"good"},
+      {label:"Fristen überfällig", wert:ueberfaellig.length, col:ueberfaellig.length?"bad":"good"},
+      {label:"Fristen in 90 Tagen", wert:bald.length, col:bald.length?"mid":""},
+      {label:"Sanierungen laufend", wert:sans.filter(x=>x.status==="laufend").length},
+      {label:"Anlagen mit Wartungspflicht", wert:anlagen.length},
+      {label:"Aufzüge", wert:aufz.length},
+      {label:"Zähler abgelesen ("+per+")", wert:zaehler.length?`${abgelesen}/${zaehler.length}`:"–", col:(zaehler.length&&abgelesen<zaehler.length)?"mid":""}
+    ]);
+    y+=2;
+
+    /* ---- Zustand je Objekt ---- */
+    sec("Zustand aus der letzten Begehung");
+    const metaByHouse={}; inspAll.forEach(m=>{ if(!metaByHouse[m.house_id]) metaByHouse[m.house_id]=m; });
+    if(!defs.length && !Object.keys(metaByHouse).length) para("Für diesen Umfang liegen keine Begehungen vor.", muted);
+    haeuser.forEach(h=>{
+      const g=defs.find(x=>x.house.id===h.id);
+      const meta=metaByHouse[h.id];
+      ensure(9);
+      doc.setFont("helvetica","bold"); doc.setFontSize(9.6); doc.setTextColor(...ink);
+      doc.text(h.name||"", M+2, y);
+      doc.setFont("helvetica","normal"); doc.setFontSize(8.4);
+      if(!meta){ doc.setTextColor(...mid); doc.text("keine Begehung dokumentiert",PW-M,y,{align:"right"}); y+=5.6; return; }
+      const nBad=g?g.defs.filter(d=>d.cond==="mangelhaft").length:0;
+      const nMid=g?g.defs.filter(d=>d.cond==="mittel").length:0;
+      doc.setTextColor(...(nBad?bad:nMid?mid:good));
+      doc.text(`${nBad} mangelhaft · ${nMid} eingeschränkt`,PW-M,y,{align:"right"}); y+=4.4;
+      doc.setTextColor(...muted); doc.setFontSize(8.2);
+      doc.text(`letzte Begehung ${meta.date?fmtShort(meta.date):"–"}`,M+2,y); y+=5;
+    });
+    y+=1;
+
+    /* ---- Offene Punkte ---- */
+    const alleDefs=[];
+    defs.forEach(g=>g.defs.forEach(d=>alleDefs.push({...d, house:g.house, date:g.date})));
+    alleDefs.sort((a,b)=>(a.cond===b.cond?0:a.cond==="mangelhaft"?-1:1));
+    if(alleDefs.length){
+      sec("Offene Punkte, nach Dringlichkeit");
+      alleDefs.slice(0,18).forEach(d=>{
+        ensure(8);
+        doc.setFillColor(...(d.cond==="mangelhaft"?bad:mid)); doc.circle(M+3,y-1.3,1.1,"F");
+        doc.setFont("helvetica","bold"); doc.setFontSize(9); doc.setTextColor(...ink);
+        doc.text(`${d.area}${d.prio&&d.prio!=="keine"?"  [Prio "+d.prio+"]":""}`, M+7, y);
+        doc.setFont("helvetica","normal"); doc.setFontSize(7.8); doc.setTextColor(...muted);
+        if(!einObjekt) doc.text(d.house.name||"",PW-M,y,{align:"right"});
+        y+=4.2;
+        const txt=d.fields.map(f=>f.val).filter(Boolean).join(" · ");
+        if(txt){ doc.setFontSize(8.4); doc.setTextColor(70,70,80); const ls=doc.splitTextToSize(txt,PW-2*M-9);
+          ensure(ls.length*4); doc.text(ls.slice(0,3),M+7,y); y+=Math.min(ls.length,3)*4+1.6; }
+      });
+      if(alleDefs.length>18) para(`… sowie ${alleDefs.length-18} weitere Punkte, die in der Mängelübersicht geführt werden.`, muted, 8.4);
+      y+=1;
+    }
+
+    /* ---- Fristen ---- */
+    sec("Fristen und Termine");
+    if(!fristen.length) para("Für diesen Umfang sind keine Fristen hinterlegt.", muted);
+    else {
+      if(ueberfaellig.length){ para("Überfällig:", bad); ueberfaellig.slice(0,12).forEach(f=>{
+        const s=fristAus(f.datum);
+        zeile(`${f.artLbl}: ${f.titel}${einObjekt?"":"  ("+f.objekt.split(",")[0]+")"}`, `${fmtShort(f.datum)} · ${fristText(s)}`, bad); }); y+=1; }
+      if(bald.length){ para("In den nächsten 90 Tagen:", mid); bald.slice(0,14).forEach(f=>{
+        const s=fristAus(f.datum);
+        zeile(`${f.artLbl}: ${f.titel}${einObjekt?"":"  ("+f.objekt.split(",")[0]+")"}`, `${fmtShort(f.datum)} · ${fristText(s)}`, mid); }); }
+      if(!ueberfaellig.length && !bald.length) para("Alles im Plan – in den nächsten 90 Tagen steht nichts an.", good);
+    }
+    y+=1;
+
+    /* ---- Sanierungen und Kosten ---- */
+    if(sans.length){
+      sec("Sanierungen und Kosten");
+      const sumBudget=sans.reduce((n,s)=>n+(Number(s.budget)||0),0);
+      const sumIst=sans.reduce((n,s)=>n+(Number(s.cost)||0),0);
+      para(`${sans.length} Maßnahme${sans.length===1?"":"n"} · Budget ${euro(sumBudget)} · bisher abgerechnet ${euro(sumIst)}.`, muted);
+      y+=1;
+      sans.forEach(s=>{
+        ensure(9);
+        doc.setFont("helvetica","bold"); doc.setFontSize(9.2); doc.setTextColor(...ink);
+        doc.text(`${s.wohnung||"Einheit"}${s.title?" – "+s.title:""}`, M+2, y);
+        doc.setFont("helvetica","normal"); doc.setFontSize(8.2); doc.setTextColor(...muted);
+        doc.text(s.status,PW-M,y,{align:"right"}); y+=4.2;
+        doc.setFontSize(8.2);
+        doc.text(`Budget ${s.budget!==""?euro(s.budget):"–"} · Ist ${s.cost!==""?euro(s.cost):"–"}${s.firm?"  ·  "+s.firm:""}${einObjekt?"":"  ·  "+((S.houses.find(h=>h.id===s.houseId)||{}).name||"")}`, M+2, y); y+=4;
+        const g=gwlStatus(s);
+        if(g.level==="ok"||g.level==="soon"){ doc.setTextColor(...(g.level==="soon"?mid:good));
+          doc.text(`Gewährleistung bis ${fmtShort(g.next)} (${fristText(g)}) – Mängel dort der Baufirma anzeigen`, M+2, y); y+=4; doc.setTextColor(...muted); }
+        y+=1.4;
+      });
+      y+=1;
+    }
+
+    /* ---- Ablesung ---- */
+    if(zaehler.length){
+      sec("Zähler und Ablesung");
+      const offenZ=zaehler.length-abgelesen;
+      const eichAb=zaehler.filter(z=>eichStatus(z).level==="overdue").length;
+      para(`Periode ${per}: ${abgelesen} von ${zaehler.length} Zählern abgelesen${offenZ?`, ${offenZ} offen`:""}.`
+        + (eichAb?` ${eichAb} Zähler mit abgelaufener Eichfrist – die darauf gestützten Abrechnungspositionen sind angreifbar.`:" Alle Eichfristen laufen."),
+        eichAb?bad:muted);
+      y+=1;
+    }
+
+    /* ---- Fotos ---- */
+    if(opt.fotos){
+      const bilder=[];
+      alleDefs.forEach(d=>{ if(d.img && bilder.length<6) bilder.push({path:d.img, cap:(einObjekt?"":(d.house.name+" · "))+d.area}); });
+      if(bilder.length){
+        sec("Aufnahmen aus der letzten Begehung");
+        const imW=(PW-2*M-8)/3, imH=imW*0.72; let x=M;
+        ensure(imH+12);
+        for(const b of bilder){
+          let data=await getImgDataURL(b.path); if(!data) continue;
+          try{ data=await recompressDataURL(data,900,0.6); }catch(e){}
+          if(x+imW>PW-M+0.5){ x=M; y+=imH+11; ensure(imH+12); }
+          try{ doc.addImage(data,"JPEG",x,y,imW,imH); }catch(e){}
+          doc.setDrawColor(...line); doc.rect(x,y,imW,imH);
+          doc.setFont("helvetica","normal"); doc.setFontSize(7); doc.setTextColor(...muted);
+          const ls=doc.splitTextToSize(b.cap||"",imW); doc.text(ls.slice(0,2),x,y+imH+3.2);
+          x+=imW+4;
+        }
+        y+=imH+12;
+      }
+    }
+
+    /* ---- Hinweis ---- */
+    ensure(20);
+    doc.setDrawColor(...line); doc.setLineWidth(0.2); doc.line(M,y,PW-M,y); y+=5;
+    para("Der Bericht ist aus dem laufenden Objektmanagement erzeugt und gibt den dort dokumentierten Stand wieder. "
+      +"Rechtliche Hinweise zu Fristen sind Arbeitshilfen und keine Rechtsberatung.", muted, 8);
+
+    footer();
+    const datei = `Eigentuemerbericht_${(einObjekt?titel:"Bestand").replace(/[^\w\-]+/g,"_")}_${todayISO()}.pdf`;
+    doc.save(datei);
+    overlay.remove();
+    toast("Eigentümerbericht als PDF gespeichert.");
+  }catch(e){ console.error(e); overlay.remove(); showError("Eigentümerbericht fehlgeschlagen", e); }
+}
+
 function inspDefCols(ins){
   const condCol=(ins.columns||[]).find(c=>c.type==="condition");
   const textCols=(ins.columns||[]).filter(c=>c.type!=="area"&&c.type!=="condition");
@@ -4442,6 +5168,73 @@ async function exportAuswertungPDF(){
 
 /* ===================== Wohnungssanierungen ===================== */
 const SAN_STATUS=["geplant","laufend","abgeschlossen"];
+
+/* ---------- Gewährleistung an Sanierungen ----------
+   Mit der Abnahme beginnt die Frist. Läuft sie noch, gehört ein Mangel in diesem
+   Bereich zuerst der Baufirma angezeigt – nicht auf eigene Kosten beseitigt. */
+function gwlStatus(s){
+  if(!s || !s.abnahme || !s.gwlMonate) return {level:"none", label:"keine Gewährleistung erfasst", days:null, next:""};
+  return fristAus(addMonthsISO(s.abnahme, Number(s.gwlMonate)), {soon:120,
+    keinLabel:"keine Gewährleistung erfasst", overdueLabel:"Gewährleistung abgelaufen",
+    soonLabel:"Gewährleistung läuft aus", okLabel:"Gewährleistung läuft"});
+}
+function gwlNorm(t){ return String(t||"").toLowerCase().replace(/[^a-z0-9äöüß]+/g,""); }
+/* Sanierungen mit laufender Gewährleistung, passend zu Objekt und (optional) Einheit */
+function gwlFuer(houseId, unit, liste){
+  const l=liste || S._gwlSan || S.sanierungen || [];
+  const u=gwlNorm(unit);
+  return l.filter(s=>{
+    if(houseId && s.houseId!==houseId) return false;
+    const g=gwlStatus(s); if(g.level!=="ok" && g.level!=="soon") return false;
+    if(!u) return true;
+    const w=gwlNorm(s.wohnung);
+    return !w || !u || w===u || w.indexOf(u)>=0 || u.indexOf(w)>=0;
+  });
+}
+async function gwlLaden(){
+  if(S._gwlSan) return S._gwlSan;
+  try{ S._gwlSan=await DB.listSanierungen(); }catch(e){ S._gwlSan=[]; }
+  return S._gwlSan;
+}
+async function gwlPruefe(){
+  const box=document.getElementById("tkGwl"); if(!box) return;
+  await gwlLaden();
+  const hid=(document.getElementById("tkHouse")||{}).value||"";
+  const unit=(document.getElementById("tkUnit")||{}).value||"";
+  const hits=gwlFuer(hid, unit);
+  if(!hits.length){ box.innerHTML=""; return; }
+  box.innerHTML=hits.slice(0,3).map(s=>{
+    const g=gwlStatus(s);
+    return `<div class="gwl-warn">
+      <b>${I.shield||""} Gewährleistung läuft noch</b>
+      <p>${esc(s.wohnung||"")}${s.title?" – "+esc(s.title):""}: Abnahme ${esc(fmtShort(s.abnahme))}, Gewährleistung bis
+        <b>${esc(fmtShort(g.next))}</b> (${esc(fristText(g))})${s.firm?` · ausgeführt von ${esc(s.firm)}`:""}.
+        ${s.gwlNote?esc(s.gwlNote)+". ":""}Bitte den Mangel zuerst der Baufirma anzeigen, statt ihn selbst zu beauftragen.</p>
+      <button type="button" class="btn sm" onclick="mailGewaehrleistung('${s.id}', document.getElementById('tkTitle')?document.getElementById('tkTitle').value:'')">${I.mail} Mangel unter Gewährleistung anzeigen</button>
+    </div>`;
+  }).join("");
+}
+async function mailGewaehrleistung(id, mangel){
+  await gwlLaden();
+  const s=(S._gwlSan||[]).concat(S.sanierungen||[]).find(x=>x.id===id);
+  if(!s){ toast("Sanierung nicht gefunden."); return; }
+  const h=(S.houses||[]).find(x=>x.id===s.houseId);
+  const g=gwlStatus(s);
+  const body=`Sehr geehrte Damen und Herren,\n\nwir zeigen einen Mangel an der von Ihnen ausgeführten Leistung an und bitten um Beseitigung im Rahmen der Gewährleistung.\n\n`
+    +`Objekt: ${objZeile(h)}\n`
+    +`Einheit: ${s.wohnung||"–"}\n`
+    +`Leistung: ${s.title||"Sanierung"}\n`
+    +(s.abnahme?`Abnahme: ${fmtShort(s.abnahme)}\n`:"")
+    +(g.next?`Gewährleistung läuft bis: ${fmtShort(g.next)}\n`:"")
+    +(s.gwlNote?`Vereinbarung: ${s.gwlNote}\n`:"")
+    +`\nMangel: ${mangel||"[Mangel bitte hier beschreiben]"}\n`
+    +`\nWir bitten um Mitteilung eines Termins zur Mängelbeseitigung innerhalb von 14 Tagen. `
+    +`Die Anzeige erfolgt fristwahrend innerhalb der laufenden Gewährleistung; eine Kostenübernahme durch uns ist damit nicht verbunden.\n\n${MAIL_GRUSS}`;
+  closeModal();
+  composeMail({ to: await firmMailAdresse(s.firm), subject:`Mängelanzeige unter Gewährleistung – ${h?h.name:""}${s.wohnung?" / "+s.wohnung:""}`,
+    body, track:true, kind:"gwl", houseId:h?h.id:"", defaultDue:addMonthsISO(todayISO(),1),
+    hint:s.firm?undefined:"Tipp: Hinterlege die ausführende Firma bei der Sanierung, dann ist der Empfänger vorausgefüllt." });
+}
 function sanClass(s){ return s==="abgeschlossen"?"good":s==="laufend"?"mid":"na"; }
 const euro = v => (v===""||v==null||isNaN(Number(v)))? "–" : Number(v).toLocaleString("de-DE",{style:"currency",currency:"EUR",maximumFractionDigits:0});
 
@@ -4497,13 +5290,15 @@ function drawSanierung(){
         : `<b>Budget:</b> ${euro(s.budget)}`;
       return `<div class="def card ${s.status==="laufend"?"mid":""}" style="border-left-color:var(--${s.status==="abgeschlossen"?"good":s.status==="laufend"?(over?"bad":"mid"):"na"})">
         <div class="body">
-          <div class="area">${esc(s.wohnung||"(ohne Wohnung)")}${s.title?` – ${esc(s.title)}`:""} <span class="chip ${sanClass(s.status)}">${esc(s.status)}</span>${over?`<span class="chip bad">Termin überschritten</span>`:""}</div>
+          <div class="area">${esc(s.wohnung||"(ohne Wohnung)")}${s.title?` – ${esc(s.title)}`:""} <span class="chip ${sanClass(s.status)}">${esc(s.status)}</span>${over?`<span class="chip bad">Termin überschritten</span>`:""}${(()=>{const g=gwlStatus(s);return g.level==="none"?"":`<span class="chip ${fristClass(g.level)}">${esc(g.label)} ${g.next?"· "+esc(fmtShort(g.next)):""}</span>`;})()}</div>
+          ${(()=>{const g=gwlStatus(s);return (g.level==="ok"||g.level==="soon")?`<div class="kv"><b>Gewährleistung:</b> Abnahme ${esc(fmtShort(s.abnahme))} · läuft bis ${esc(fmtShort(g.next))} (${esc(fristText(g))})${s.gwlNote?" · "+esc(s.gwlNote):""}</div>`:"";})()}
           <div class="kv"><b>Objekt:</b> ${h?esc(h.name):"–"}${s.firm?` &nbsp;·&nbsp; <b>Firma:</b> ${esc(s.firm)}`:""}</div>
           <div class="kv"><b>Zeitraum:</b> ${zeit} &nbsp;·&nbsp; ${kosten}</div>
           ${s.note?`<div class="kv" style="color:var(--muted)">${esc(s.note)}</div>`:""}
           <div class="seg" style="margin-top:9px">${SAN_STATUS.map(x=>`<button data-v="${x}" class="${s.status===x?'on':''}" onclick="setSanStatus('${s.id}','${x}')">${x}</button>`).join("")}
             <span style="margin-left:auto"></span>${anhKnopf('sanierung',s.id)}
             <button class="btn sm" onclick="mailSanierung('${s.id}')">${I.mail} Firma anschreiben</button>
+            ${(()=>{const g=gwlStatus(s);return (g.level==="ok"||g.level==="soon")?`<button class="btn sm" onclick="mailGewaehrleistung('${s.id}','')">${I.mail} Gewährleistung</button>`:"";})()}
             <button class="btn sm" onclick="addSanierung('${s.id}')">${I.edit}</button>
             <button class="btn sm danger" onclick="delSanierung('${s.id}')">${I.trash}</button></div>
         </div></div>`;
@@ -4539,6 +5334,11 @@ function addSanierung(id){
     <div class="field"><label>Budget (€)</label><input id="snBudget" type="number" min="0" step="100" value="${s?esc(String(s.budget)):""}"></div>
     <div class="field"><label>Ist-Kosten (€, bei Abschluss)</label><input id="snCost" type="number" min="0" step="100" value="${s?esc(String(s.cost)):""}"></div>
     <div class="field"><label>Ausführende Firma (optional)</label><input id="snFirm" value="${s?esc(s.firm):""}"></div>
+    <div class="field"><label>Abnahme am</label><input id="snAbn" type="date" value="${s?esc(s.abnahme||""):""}">
+      <span class="hint">Mit der Abnahme beginnt die Gewährleistung – das ist das Datum, auf das es im Streitfall ankommt.</span></div>
+    <div class="field"><label>Gewährleistung (Monate)</label>
+      <select id="snGwl">${[["","– keine Angabe –"],["24","24 Monate (VOB/B, 4 Jahre bei Bauwerken: 48)"],["48","48 Monate (BGB-Bauvertrag, Bauwerk)"],["60","60 Monate (vereinbart)"],["12","12 Monate (vereinbart)"]].map(([v,l])=>`<option value="${v}" ${s&&String(s.gwlMonate||"")===v?"selected":""}>${l}</option>`).join("")}</select></div>
+    <div class="field"><label>Gewährleistung – Bemerkung (optional)</label><input id="snGwlNote" placeholder="z. B. Sicherheitseinbehalt 5 % bis Ablauf" value="${s?esc(s.gwlNote||""):""}"></div>
     <div class="field"><label>Bemerkung (optional)</label><input id="snNote" value="${s?esc(s.note):""}"></div>
     <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Abbrechen</button>
     <button class="btn primary" onclick="saveSanierungForm('${s?s.id:""}')">${s?"Speichern":"Anlegen"}</button></div>`);
@@ -4552,6 +5352,8 @@ async function saveSanierungForm(id){
     start:document.getElementById("snStart").value||"", endPlanned:document.getElementById("snEndP").value||"",
     end:document.getElementById("snEnd").value||"", budget:document.getElementById("snBudget").value,
     cost:document.getElementById("snCost").value, firm:document.getElementById("snFirm").value.trim(),
+    abnahme:document.getElementById("snAbn").value||"", gwlMonate:document.getElementById("snGwl").value,
+    gwlNote:document.getElementById("snGwlNote").value.trim(),
     note:document.getElementById("snNote").value.trim() };
   try{ await DB.saveSanierung(s); }catch(e){ showError("Sanierung konnte nicht gespeichert werden", e); return; }
   S.sanierungen=S.sanierungen||[]; const pos=S.sanierungen.findIndex(x=>x.id===s.id);
@@ -4561,6 +5363,7 @@ async function saveSanierungForm(id){
 async function setSanStatus(id,status){
   const s=(S.sanierungen||[]).find(x=>x.id===id); if(!s) return;
   s.status=status; if(status==="abgeschlossen"&&!s.end) s.end=todayISO();
+  if(status==="abgeschlossen"&&!s.abnahme) s.abnahme=s.end||todayISO();
   try{ await DB.saveSanierung(s); }catch(e){ return showError("Fehler", e); }
   drawSanierung();
 }
@@ -4872,6 +5675,7 @@ function tkRef(t){
 }
 
 async function openTickets(){
+  meldMode(false);
   if(!canArea("tickets")) return goHome();
   S.view="tickets";
   if(!S.tkFilter) S.tkFilter={status:"offen",bezug:"alle",house:"alle"};
@@ -4924,7 +5728,7 @@ function drawTickets(){
       const dueTxt = t.dueDate? `Frist ${esc(fmtShort(t.dueDate))}${t.status!=="erledigt"?` (${daysUntil(t.dueDate)<0?Math.abs(daysUntil(t.dueDate))+" T überschritten":"in "+daysUntil(t.dueDate)+" T"})`:""}` : "keine Frist";
       return `<div class="def card ${t.status==="in Bearbeitung"?"mid":""}" style="border-left-color:var(--${t.status==='erledigt'?'good':over?'bad':t.status==='in Bearbeitung'?'mid':'bad'})">
         <div class="body">
-          <div class="area" style="font-size:15px">${esc(t.title||"(ohne Titel)")} <span class="chip ${tkClass(t.status)}">${esc(t.status)}</span>${prioChip}${over?`<span class="chip bad">überfällig</span>`:""}</div>
+          <div class="area" style="font-size:15px">${esc(t.title||"(ohne Titel)")} <span class="chip ${tkClass(t.status)}">${esc(t.status)}</span>${prioChip}${over?`<span class="chip bad">überfällig</span>`:""}${t.quelle==="mieter"?`<span class="chip" style="background:var(--navy-soft);color:var(--navy)">Mieter-Meldung (QR)</span>`:""}</div>
           <div class="kv"><b>${esc(bezugLbl(t.bezug))}:</b> ${esc(tkRef(t))}</div>
           ${t.description?`<div class="kv">${esc(t.description)}</div>`:""}
           <div class="kv" style="color:var(--muted)">${t.reporter?`gemeldet von ${esc(t.reporter)}`:""}${t.createdDate?` · erfasst ${esc(fmtShort(t.createdDate))}`:""}${t.firm?` · ${esc(t.firm)}`:""} · <b style="${over?'color:var(--bad)':''}">${esc(dueTxt)}</b></div>
@@ -4946,7 +5750,9 @@ function drawTickets(){
   view.innerHTML=`<div class="crumb"><a onclick="goHome()">Objekte</a><span class="sep">/</span>Tickets</div>
     <div class="page-head">
       <div><h2>Tickets</h2><div class="lead">Mängel-Tickets mit Bezug auf Objekt, Mieteinheit oder Aufzug – mit Status, Priorität, Frist und Versand an die Firma.</div></div>
-      <div class="toolbar"><button class="btn primary" onclick="addTicket()">${I.plus} Ticket erstellen</button></div>
+      <div class="toolbar">
+        <button class="btn" onclick="openAushangWahl()">${I.grid} QR-Aushang für Mieter</button>
+        <button class="btn primary" onclick="addTicket()">${I.plus} Ticket erstellen</button></div>
     </div>
     ${body}`;
   fillThumbs(view);
@@ -4958,8 +5764,9 @@ function addTicket(id){
   const houseOpts=S.houses.map(h=>`<option value="${h.id}" ${t&&t.houseId===h.id?"selected":""}>${esc(h.name)}</option>`).join("");
   modal(`<h3>${t?"Ticket bearbeiten":"Ticket erstellen"}</h3>
     <div class="field"><label>Bezug</label><select id="tkBezug" onchange="tkBezugHint()">${TK_BEZUG.map(([k,l])=>`<option value="${k}" ${t&&t.bezug===k?"selected":""}>${l}</option>`).join("")}</select></div>
-    <div class="field"><label>Objekt</label><select id="tkHouse">${houseOpts||'<option value="">– kein Objekt –</option>'}</select></div>
-    <div class="field"><label id="tkUnitLbl">Mieteinheit / Aufzug-Bezeichnung (bei Bezug Mieteinheit/Aufzug)</label><input id="tkUnit" placeholder="z. B. WE 12, 3. OG links" value="${t?esc(t.unit):""}"></div>
+    <div class="field"><label>Objekt</label><select id="tkHouse" onchange="gwlPruefe()">${houseOpts||'<option value="">– kein Objekt –</option>'}</select></div>
+    <div class="field"><label id="tkUnitLbl">Mieteinheit / Aufzug-Bezeichnung (bei Bezug Mieteinheit/Aufzug)</label><input id="tkUnit" placeholder="z. B. WE 12, 3. OG links" value="${t?esc(t.unit):""}" oninput="gwlPruefe()"></div>
+    <div id="tkGwl"></div>
     <div class="field"><label>Titel / Mangel</label><input id="tkTitle" placeholder="z. B. Wasserhahn Bad tropft" value="${t?esc(t.title):""}"></div>
     <div class="field"><label>Beschreibung (optional)</label><input id="tkDesc" value="${t?esc(t.description):""}"></div>
     <div class="field"><label>Fotos (optional)</label>
@@ -4975,7 +5782,7 @@ function addTicket(id){
     <div class="field"><label>Notiz (optional)</label><input id="tkNote" value="${t?esc(t.note):""}"></div>
     <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Abbrechen</button>
     <button class="btn primary" onclick="saveTicketForm()">${t?"Speichern":"Erstellen"}</button></div>`);
-  setTimeout(()=>{ tkBezugHint(); renderTkPhotos(); document.getElementById("tkTitle")?.focus(); },50);
+  setTimeout(()=>{ tkBezugHint(); renderTkPhotos(); gwlPruefe(); document.getElementById("tkTitle")?.focus(); },50);
 }
 function tkBezugHint(){
   const sel=document.getElementById("tkBezug"), lbl=document.getElementById("tkUnitLbl"), inp=document.getElementById("tkUnit");
@@ -5282,6 +6089,7 @@ async function openMenu(){
     rows+=row("Wartungsübersicht",I.wrench,"openWartung()",cur==="wartung",cnt(al.wartung));
     rows+=row("Zählerablesung",I.grid,"openAblesung()",cur==="ablesung",cnt(al.zaehler));
     rows+=row("Fristenkalender",I.book,"openFristen()",cur==="fristen",cnt(al.fristen));
+    rows+=row("CO₂-Kostenaufteilung",I.chart||I.grid,"openCO2()",cur==="co2");
   }
   if(canArea("tickets")) rows+=row("Tickets",I.ticket,"openTickets()",cur==="tickets",cnt(al.tickets));
   if(canArea("reinigung")) rows+=row("Hausdienstleister",I.broom,"openReinigung()",cur==="reinigung"||cur==="reinigungObj");
@@ -6095,7 +6903,7 @@ async function loadPerm(){
 }
 function canArea(a){ const p=S.perm||{}; return p.admin || !!p[a]; }
 function allowedView(v){
-  if(["house","editor","viewer","compare","defects","wartung","stammblatt","dokumente","ablesung","etiketten","erfassung","fristen"].includes(v)) return canArea("objekte");
+  if(["house","editor","viewer","compare","defects","wartung","stammblatt","dokumente","ablesung","etiketten","erfassung","fristen","aushang","co2"].includes(v)) return canArea("objekte");
   if(["reinigung","reinigungObj"].includes(v)) return canArea("reinigung");
   if(["aufzuege","aufzug"].includes(v)) return canArea("aufzuege");
   if(v==="sanierung") return canArea("sanierung");
@@ -6114,7 +6922,7 @@ async function onAuth(session){
   netRefresh();
   offRegisterSW();               // App im Gerät ablegen, damit sie ohne Netz startet
   if(istOnline() && offCount()) offSync(true);   // Nachzügler aus der letzten Begehung übertragen
-  zCheckHash();                  // Direkteinstieg per QR-Code (#z=…)
+  if(!zCheckHash()) mCheckHash();  // Direkteinstieg per QR-Code (#z=… Zähler, #m=… Mängelmeldung)
 }
 
 (async function init(){

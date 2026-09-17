@@ -189,7 +189,90 @@ den Bestand erklären muss.
 
 ---
 
-## 7. Objekt-Tagebuch
+## 7. Mängelmeldung für Mieter per QR-Aushang
+
+Aufkleber oder Aushang im Eingangsbereich, Handykamera drauf, fertig – **ohne App, ohne Konto,
+ohne Anmeldung**. Der QR-Code führt in ein Meldeformular für genau dieses Objekt.
+
+**Für den Mieter** (Menü → *Tickets* → *QR-Aushang für Mieter* zeigt den Code, oder direkt
+`…/#m=<Objekt-Kennung>`):
+
+- Ort im Haus aus einer Liste (Treppenhaus, Aufzug, Keller, Hof, eigene Wohnung …), dazu
+  optional die genauere Lage
+- Beschreibung, Dringlichkeit und bis zu drei Fotos direkt aus der Kamera
+- Name, Wohnung und Kontakt sind freiwillig – der Hinweis sagt aber offen, dass ohne Kontaktdaten
+  keine Rückfrage möglich ist
+- Am Ende eine Bestätigung mit Vorgangsnummer, nicht nur ein „Danke“
+- In dieser Ansicht sind Menü, Suche und KI-Assistent ausgeblendet: der Mieter sieht nur das Formular
+
+**Für die Verwaltung**: Aus der Meldung wird unmittelbar ein **Ticket** mit Objektzuordnung,
+Einheit, Priorität, Fotos und dem Vermerk *Eingang über QR-Aushang*. In der Ticketliste ist die
+Herkunft als **Mieter-Meldung (QR)** gekennzeichnet – damit bleibt unterscheidbar, was aus dem Haus
+kommt und was intern erfasst wurde.
+
+**Der Aushang** (gleicher Knopf) ist ein Druckbogen je Objekt: großer QR-Code, drei Sätze Anleitung,
+die Adresse zum Abtippen als Notfallweg und Felder für Notdienst- und Hausmeisternummern, die aus
+den Stammdaten des Objekts vorbefüllt werden.
+
+---
+
+## 8. Gewährleistung an Sanierungen
+
+Je Sanierung werden **Abnahmedatum** und **Gewährleistungsfrist** geführt – das Datum, auf das es
+im Streitfall ankommt. Beim Abschluss einer Maßnahme wird das Abnahmedatum vorbelegt.
+
+- Die Karte zeigt *Gewährleistung läuft* bzw. *läuft aus* mit Enddatum und Restzeit
+- Ablaufende Fristen erscheinen im **Fristenkalender**
+- **Der eigentliche Nutzen**: Wird ein Ticket für eine Einheit mit laufender Gewährleistung
+  angelegt, warnt die Anwendung noch im Formular – mit Abnahmedatum, Frist und ausführender Firma.
+  Auf Knopfdruck entsteht daraus eine **Mängelanzeige unter Gewährleistung** an die Baufirma,
+  fristwahrend formuliert und ohne Anerkennung eigener Kosten.
+
+Das verhindert den Fall, der Geld kostet: eine Wohnung wird auf eigene Rechnung nachgebessert,
+während die Baufirma noch in der Haftung steht.
+
+---
+
+## 9. CO₂-Kostenaufteilung (CO2KostAufG)
+
+**Menü → CO₂-Kostenaufteilung.** Rechner für das Stufenmodell bei Wohngebäuden:
+
+- Brennstoffmenge (Erdgas, Heizöl) oder die CO₂-Menge direkt aus der Rechnung – bei Fernwärme der
+  übliche Weg, dort weist der Versorger die Werte aus
+- Wohn-/Nutzfläche und Heizungsart werden aus den **Stammdaten** des Objekts übernommen, wenn dort
+  gepflegt
+- Ergebnis: spezifischer Ausstoß in kg CO₂ je m² und Jahr, die getroffene **Stufe**, der
+  Vermieteranteil in Prozent **und in Euro**, dazu der umlagefähige Mieteranteil
+- Für Nichtwohngebäude die hälftige Aufteilung
+- Am Ende ein fertiger Textblock mit den **Pflichtangaben für die Heizkostenabrechnung** zum
+  Kopieren, plus ein Schreiben, mit dem die Angaben beim Lieferanten angefordert werden
+
+Hintergrund: Nimmt der Vermieter die Aufteilung nicht vor, darf der Mieter den Heizkostenanteil um
+3 % kürzen. Stufentabelle, Emissionsfaktoren und CO₂-Preis sind Arbeitshilfe, Stand September 2026,
+und vor der Abrechnung gegenzuprüfen.
+
+---
+
+## 10. Eigentümerbericht auf Knopfdruck
+
+Knopf *Eigentümerbericht* auf der Startseite (gesamter Bestand) oder im Objekt. Das PDF enthält:
+
+- **Das Wichtigste in Kürze** – drei Sätze in Klartext, nicht nur Zahlen
+- Kennzahlenkacheln: Mängel, offene Tickets, überfällige Fristen, Termine der nächsten 90 Tage,
+  laufende Sanierungen, Ablesestand
+- **Zustand je Objekt** aus der letzten Begehung mit Datum
+- **Offene Punkte nach Dringlichkeit**, mangelhaft vor eingeschränkt
+- **Fristen**: überfällig und die nächsten 90 Tage
+- **Sanierungen und Kosten** mit Budget, Ist und laufender Gewährleistung
+- **Zähler und Ablesung** mit Hinweis auf abgelaufene Eichfristen
+- optional bis zu sechs **Aufnahmen aus der letzten Begehung**
+
+Empfänger und Berichtszeitraum lassen sich vorab eintragen – der Bericht ist damit ohne Nacharbeit
+versandfertig.
+
+---
+
+## 11. Objekt-Tagebuch
 
 Reiter *Tagebuch* je Objekt: der Verlauf eines Hauses über **alle Bereiche hinweg** in einer
 Zeitschiene, nach Jahren gruppiert und neueste Einträge zuerst.
@@ -208,7 +291,7 @@ Tickets, Mängel und das Adressbuch.
 
 ---
 
-## 8. „Firma anschreiben" — überall dort, wo eine Firma zuständig ist
+## 12. „Firma anschreiben" — überall dort, wo eine Firma zuständig ist
 
 Aus jedem Vorgang lässt sich direkt eine E-Mail an die zuständige Firma erzeugen. Der Text wird
 aus den Daten des Vorgangs vorbefüllt, der **Empfänger automatisch aus dem Adressbuch** aufgelöst,
@@ -227,6 +310,8 @@ und der Vorgang landet auf Wunsch in der Meldungs-Überwachung.
 | **Adressbuch** | direkte E-Mail an einen Kontakt |
 | **Fristenkalender** | Terminanfrage zur überfälligen Frist, Aufzugstermin |
 | **Gesetzliche Pflichten** | vorbereitetes Schreiben je Pflicht, mit Rechtsgrundlage im Text |
+| **Sanierungen** | Mängelanzeige unter laufender Gewährleistung an die Baufirma |
+| **CO₂-Rechner** | Anforderung der CO₂-Angaben beim Brennstofflieferanten |
 
 Der Empfänger wird über den Firmennamen im Adressbuch gesucht — beim Ableseauftrag zusätzlich
 darüber, wer in der Vorperiode tatsächlich abgelesen hat. Ist nichts hinterlegt, bleibt das Feld
@@ -234,7 +319,7 @@ leer und ein Hinweis nennt die Stelle, an der die Adresse ergänzt werden sollte
 
 ---
 
-## 9. Hinweise
+## 13. Hinweise
 
 - **Reine Demo:** Eingaben/Änderungen sind **nicht dauerhaft** – nach dem Neuladen der Seite
   stehen wieder die ursprünglichen Testdaten bereit. Ausnahme: offline erfasste Ablesungen bleiben
@@ -248,7 +333,7 @@ leer und ein Hinweis nennt die Stelle, an der die Adresse ergänzt werden sollte
 
 ---
 
-## 10. Vom Demo zum echten Portal
+## 14. Vom Demo zum echten Portal
 
 Diese Demo nutzt eine eingebettete Testdatenschicht anstelle eines Servers. Für den
 produktiven Mehrbenutzerbetrieb (Login + zentrale Datenbank in Frankfurt, bereichsbasierte
