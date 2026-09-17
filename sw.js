@@ -6,7 +6,7 @@
        (so ist man online immer auf dem aktuellen Stand)
      - Alles andere: erst Cache, sonst Netz und dann ablegen
    ============================================================ */
-const VERSION    = "om-v3";
+const VERSION    = "om-v4";
 const SHELL      = VERSION + "-shell";
 const LAUFZEIT   = VERSION + "-laufzeit";
 
@@ -44,11 +44,14 @@ self.addEventListener("fetch", e => {
   // Anfragen an die Anthropic-API nie abfangen – die brauchen echtes Netz
   if (req.url.indexOf("api.anthropic.com") > -1) return;
 
-  // Seitenaufruf: erst Netz, sonst Cache (QR-Codes mit #z=… landen hier)
+  // Seitenaufruf: erst Netz, sonst Cache (QR-Codes mit #z=… und #m=… landen hier)
   if (req.mode === "navigate") {
     e.respondWith((async () => {
       try {
-        const netz = await fetch(req);
+        // cache:"reload" umgeht den HTTP-Cache des Browsers. GitHub Pages liefert
+        // max-age=600 aus; ohne das hier bekäme man nach einer Aktualisierung
+        // bis zu zehn Minuten lang die alte Fassung.
+        const netz = await fetch(req.url, { cache: "reload", credentials: "same-origin" });
         const c = await caches.open(SHELL);
         c.put("./index.html", netz.clone());
         return netz;
