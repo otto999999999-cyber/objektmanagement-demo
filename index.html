@@ -673,6 +673,24 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   .chip.warte{background:#FDF3E3;color:#8A5A10}
   .chip.warte::before{background:#E0A030}
 
+  /* ---- Objekt-Tagebuch: Zeitstrahl über alle Module ---- */
+  .tb-filter{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 14px}
+  .tb-chip{border:1px solid var(--line2);background:var(--surface);color:var(--muted);border-radius:999px;
+    padding:5px 12px;font:600 12px Inter,Arial,sans-serif;cursor:pointer;white-space:nowrap}
+  .tb-chip.on{background:var(--navy);border-color:var(--navy);color:#F4F2EC}
+  .tb-jahr{display:flex;align-items:center;gap:10px;margin:22px 0 8px;font:700 13px Inter,Arial,sans-serif;color:var(--muted)}
+  .tb-jahr::after{content:"";flex:1;height:1px;background:var(--line2)}
+  .tb-liste{display:flex;flex-direction:column}
+  .tb-e{display:grid;grid-template-columns:5.6rem 1.9rem 1fr;gap:12px;padding:11px 0;border-top:1px solid var(--line);align-items:start}
+  .tb-e:first-child{border-top:none}
+  .tb-d{font:600 12.5px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);padding-top:2px;white-space:nowrap}
+  .tb-i{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;flex:none}
+  .tb-i svg{width:15px;height:15px}
+  .tb-t{min-width:0}
+  .tb-t .h{font-weight:600;font-size:13.5px;line-height:1.35;word-break:break-word}
+  .tb-t .s{font-size:12.5px;color:var(--muted);line-height:1.45;margin-top:2px;word-break:break-word}
+  .tb-t .a{margin-top:7px}
+
   /* ---- Erfassungsbogen für die Ersterfassung vor Ort ---- */
   .erf-kopf{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:14px 0 10px}
   .erf-kopf div{border:1px solid #9AA3B4;border-radius:6px;padding:6px 9px;font-size:11px;color:#4A5266;min-height:40px}
@@ -1219,8 +1237,10 @@ async function openHouse(id){
   S.anlagen=await DB.listAnlagen(id);
   S.zaehler=await DB.listZaehler(id);
   S.ablesungen=(await DB.allAblesungen()).filter(a=>a.houseId===id).concat(offFor(id));
+  if(S._tbHouse!==id){ S._tb=null; S._tbHouse=null; }   // Tagebuch je Objekt neu zusammenstellen
   netRefresh();
   render();
+  if(S.houseTab==="tagebuch" && S._tbHouse!==id){ S._tbHouse=id; openTagebuch(); }
 }
 async function newInspection(){
   const house=S.houses.find(h=>h.id===S.houseId);
@@ -1537,10 +1557,14 @@ function renderHouse(){
     <button class="tab ${tab==='begehungen'?'on':''}" onclick="setHouseTab('begehungen')">${I.book} Begehungen <span class="tabn">${items.length}</span></button>
     <button class="tab ${tab==='wartung'?'on':''}" onclick="setHouseTab('wartung')">${I.wrench} Technik &amp; Wartung <span class="tabn">${(S.anlagen||[]).length}</span>${wartBadge}</button>
     <button class="tab ${tab==='zaehler'?'on':''}" onclick="setHouseTab('zaehler')">${I.grid} Zähler &amp; Ablesung <span class="tabn">${zList.length}</span>${zBadge}</button>
+    <button class="tab ${tab==='tagebuch'?'on':''}" onclick="setHouseTab('tagebuch')">${I.clock} Tagebuch${(S._tb&&S._tb.length)?` <span class="tabn">${S._tb.length}</span>`:""}</button>
   </div>`;
 
   let content, toolbar;
-  if(tab==="zaehler"){
+  if(tab==="tagebuch"){
+    toolbar=`<button class="btn" onclick="openStammblatt()">${I.book} Stammblatt</button><button class="btn" onclick="exportObjektakte()">${I.pdf} Objektakte</button>`;
+    content=houseTagebuchHTML();
+  } else if(tab==="zaehler"){
     toolbar=`<button class="btn" onclick="openStammblatt()">${I.book} Stammblatt</button>${zList.length?`<button class="btn" onclick="mailAbleseauftrag('house')">${I.mail} Ableseauftrag</button><button class="btn" onclick="openEtiketten()">${I.grid} QR-Etiketten</button>`:""}<button class="btn" onclick="openErfassung()">${I.clip} Erfassungsbogen</button>${zList.length?`<button class="btn" onclick="exportZaehlerCSV('house')">${I.download} CSV</button>`:""}<button class="btn primary" onclick="addZaehler()">${I.plus} Zähler anlegen</button>`;
     content=houseZaehlerHTML();
   } else if(tab==="wartung"){
@@ -1564,7 +1588,11 @@ function renderHouse(){
     ${content}`;
   if(tab==="wartung") loadThumbs();
 }
-function setHouseTab(t){ S.houseTab=t; renderHouse(); }
+function setHouseTab(t){
+  S.houseTab=t;
+  if(t==="tagebuch" && S._tbHouse!==S.houseId){ S._tbHouse=S.houseId; return openTagebuch(); }
+  renderHouse();
+}
 
 function houseBegehungenHTML(items){
   let tl;
@@ -2351,6 +2379,126 @@ function offRegisterSW(){
 }
 window.addEventListener("online", ()=>{ netRefresh(); toast("Verbindung wieder da – übertrage…"); offSync(true).then(n=>{ if(n) toast(n===1?"1 Ablesung übertragen.":`${n} Ablesungen übertragen.`); }); });
 window.addEventListener("offline", ()=>{ netRefresh(); toast("Keine Verbindung – Ablesungen werden im Gerät gespeichert."); });
+
+/* ===================== Objekt-Tagebuch =====================
+   Ein Zeitstrahl je Haus, in den alle Module einlaufen. Antwortet
+   auf die Frage, die sonst zwanzig Minuten Suche kostet:
+   was ist an diesem Objekt in den letzten Jahren passiert?
+   ============================================================ */
+const TB_ARTEN=[
+  ["begehung","Begehungen",  I.book,   "var(--navy)",  "var(--navy-soft)"],
+  ["wartung", "Wartung",     I.wrench, "var(--good)",  "var(--good-bg)"],
+  ["zaehler", "Ablesungen",  I.grid,   "var(--navy)",  "var(--bg2)"],
+  ["ticket",  "Tickets",     I.ticket, "var(--mid)",   "var(--mid-bg)"],
+  ["sanierung","Sanierungen",I.hammer, "var(--navy)",  "var(--navy-soft)"],
+  ["schreiben","Schreiben",  I.mail,   "var(--muted)", "var(--bg2)"],
+  ["dokument","Dokumente",   I.file,   "var(--muted)", "var(--bg2)"]
+];
+function tbMeta(art){ return TB_ARTEN.find(x=>x[0]===art)||TB_ARTEN[0]; }
+
+async function openTagebuch(){
+  S.houseTab="tagebuch";
+  const o=(S.houses||[]).find(x=>x.id===S.houseId);
+  if(!o) return goHome();
+  S._tbLade=true; renderHouse();
+  const ein=[];
+  const add=(datum,art,h,s,aktion)=>{ if(datum) ein.push({datum,art,h,s,aktion:aktion||""}); };
+
+  try{
+    // Begehungen
+    (S.hidx||[]).forEach(it=>{
+      const c=it.counts||{}; const teile=[];
+      if(c.mangelhaft) teile.push(c.mangelhaft+" Mangel");
+      if(c.mittel) teile.push(c.mittel+" mittel");
+      if(c.gut) teile.push(c.gut+" gut");
+      add(it.date,"begehung","Objektbegehung",
+        (it.inspector||"ohne Begeher")+(teile.length?" · "+teile.join(", "):"")+(it.finalized?" · abgeschlossen":""),
+        `editInspection('${it.id}',true)`);
+    });
+
+    // Wartungen aus der Historie
+    for(const a of (S.anlagen||[])){
+      const log=await DB.listWartungLog(a.id);
+      log.forEach(w=>add(w.date,"wartung",a.name+" durchgeführt",
+        [w.firm,w.note].filter(Boolean).join(" · ")||"—"));
+    }
+
+    // Ablesungen
+    const zn={}; (S.zaehler||[]).forEach(z=>zn[z.id]=z);
+    (S.ablesungen||[]).forEach(a=>{
+      const z=zn[a.zaehlerId]; if(!z) return;
+      add(a.datum,"zaehler",
+        (z.bezeichnung||z.nummer)+": "+(a.status==="abgelesen"?zNum(a.stand)+" "+zEinheit(z):a.status),
+        [a.ableser,a.quelle,a.pending?"wartet auf Übertragung":""].filter(Boolean).join(" · "),
+        `openZHist('${z.id}')`);
+    });
+
+    // Sanierungen
+    const san=(await DB.listSanierungen()).filter(s=>s.houseId===S.houseId);
+    san.forEach(s=>{
+      add(s.start,"sanierung","Sanierung begonnen: "+s.title,[s.wohnung,s.firm].filter(Boolean).join(" · "));
+      if(s.end) add(s.end,"sanierung","Sanierung abgeschlossen: "+s.title,
+        [s.wohnung,s.firm,(s.cost!==""&&s.cost!=null)?Number(s.cost).toLocaleString("de-DE")+" €":""].filter(Boolean).join(" · "));
+    });
+
+    // Tickets
+    const tk=(await DB.listTickets()).filter(t=>t.houseId===S.houseId);
+    tk.forEach(t=>{
+      add(t.createdDate,"ticket","Ticket angelegt: "+t.title,
+        [bezugLbl(t.bezug)+" "+tkRef(t), t.prio?"Prio "+t.prio:"", t.status].filter(Boolean).join(" · "));
+      if(t.sentDate) add(t.sentDate,"schreiben","Ticket versandt: "+t.title,[t.firm,t.sentTo].filter(Boolean).join(" · "));
+    });
+
+    // Versandte Schreiben aus der Meldungs-Überwachung
+    const ml=(await DB.listMeldungenLog()).filter(m=>m.houseId===S.houseId);
+    ml.forEach(m=>add(m.sentDate,"schreiben",m.subject||"Schreiben versandt",
+      [m.recipient,m.dueDate?"Frist "+fmtShort(m.dueDate):"",m.status].filter(Boolean).join(" · ")));
+
+    // Dokumente
+    const dok=await DB.listDocuments(S.houseId);
+    dok.forEach(d=>add((d.createdAt||"").slice(0,10),"dokument","Dokument abgelegt: "+d.name,
+      [d.category,d.unit,d.note].filter(Boolean).join(" · "),`openDokumente()`));
+  }catch(e){ console.error(e); }
+
+  ein.sort((a,b)=>(b.datum||"").localeCompare(a.datum||""));
+  S._tb=ein; S._tbLade=false; S.tbArt=S.tbArt||"";
+  renderHouse();
+}
+
+function houseTagebuchHTML(){
+  if(S._tbLade) return `<div class="empty card" style="border-style:dashed">${I.clock}<h3>Tagebuch wird zusammengestellt…</h3><p>Alle Module werden durchgesehen.</p></div>`;
+  const alle=S._tb||[];
+  if(!alle.length){
+    return `<div class="empty card" style="border-style:dashed">${I.book}<h3>Noch keine Einträge</h3>
+      <p>Sobald Begehungen, Wartungen, Ablesungen, Tickets oder Schreiben erfasst sind, erscheinen sie hier als Verlauf.</p></div>`;
+  }
+  const vorhanden=TB_ARTEN.filter(([k])=>alle.some(e=>e.art===k));
+  const f=S.tbArt||"";
+  const chips=`<div class="tb-filter">
+    <button class="tb-chip ${f===""?"on":""}" onclick="S.tbArt='';renderHouse()">Alles <span style="opacity:.65">${alle.length}</span></button>
+    ${vorhanden.map(([k,l])=>{
+      const n=alle.filter(e=>e.art===k).length;
+      return `<button class="tb-chip ${f===k?"on":""}" onclick="S.tbArt='${k}';renderHouse()">${esc(l)} <span style="opacity:.65">${n}</span></button>`;
+    }).join("")}
+  </div>`;
+  const liste=f? alle.filter(e=>e.art===f) : alle;
+  let html=chips, jahr="";
+  liste.forEach(e=>{
+    const j=(e.datum||"").slice(0,4);
+    if(j!==jahr){ jahr=j; html+=`<div class="tb-jahr">${esc(j||"ohne Datum")}</div><div class="tb-liste">`; }
+    const [,,ic,farbe,bg]=tbMeta(e.art);
+    html+=`<div class="tb-e">
+      <div class="tb-d">${esc(fmtShort(e.datum))}</div>
+      <div class="tb-i" style="background:${bg};color:${farbe}">${ic}</div>
+      <div class="tb-t">
+        <div class="h">${esc(e.h)}</div>
+        ${e.s?`<div class="s">${esc(e.s)}</div>`:""}
+        ${e.aktion?`<div class="a"><button class="btn sm" onclick="${e.aktion}">Öffnen</button></div>`:""}
+      </div></div>`;
+  });
+  html+=`</div>`;
+  return `<div class="hint">${I.info}<div>Der Verlauf dieses Objekts über alle Bereiche hinweg — Begehungen, Wartungen, Ablesungen, Tickets, Schreiben und Dokumente in einer Zeitschiene. Über die Filter oben lässt sich auf eine Art einschränken.</div></div>${html}`;
+}
 
 /* ---------- Erfassungsbogen für die Ersterfassung vor Ort ---------- */
 function openErfassung(){ S.view="erfassung"; renderErfassung(); }
@@ -4264,7 +4412,7 @@ async function openSearch(){
   closeSearch();
   const bg=document.createElement("div"); bg.className="search-bg"; bg.id="searchBg"; bg.onclick=closeSearch;
   const box=document.createElement("div"); box.className="search-box"; box.onclick=e=>e.stopPropagation();
-  box.innerHTML=`<div class="search-head">${I.search}<input id="searchInput" placeholder="Objekt, Ticket oder Mangel suchen…" autocomplete="off"><button class="icon-btn" onclick="closeSearch()">${I.x}</button></div>
+  box.innerHTML=`<div class="search-head">${I.search}<input id="searchInput" placeholder="Objekt, Zähler, Anlage, Ticket, Firma…" autocomplete="off"><button class="icon-btn" onclick="closeSearch()">${I.x}</button></div>
     <div id="searchResults" class="search-res"><div class="search-hint">Lade Suchdaten…</div></div>`;
   bg.appendChild(box); document.body.appendChild(bg);
   const inp=document.getElementById("searchInput"); inp.focus();
@@ -4273,6 +4421,13 @@ async function openSearch(){
   try{
     if(canArea("tickets") && !S.tickets) S.tickets=await DB.listTickets();
     if(canArea("objekte")) S._searchDefects=await collectDefects();
+    if(canArea("objekte")){
+      S._sZaehler=await DB.allZaehler();
+      S._sAnlagen=await DB.allAnlagen();
+      S._sSan=await DB.listSanierungen();
+    }
+    if(canArea("aufzuege")) S._sAufz=await DB.listAufzuege();
+    if(!S.kontakte) S.kontakte=await DB.listKontakte();
   }catch(e){}
   S._searchReady=true;
   runSearch(inp.value);
@@ -4300,6 +4455,34 @@ function runSearch(q){
     S._searchDefects.forEach(g=>g.defs.forEach(d=>{ const txt=d.area+" "+d.fields.map(f=>f.val).join(" "); if(hit(txt)) md.push({g,d}); }));
     if(md.length) html+=searchSec("Mängel")+md.slice(0,10).map(({g,d})=>searchItem(I.alert,esc(d.area),esc(g.house.name+" · "+((d.fields[0]&&d.fields[0].val)||d.cond)),`closeSearch();openDefects()`)).join("");
   }
+  const hn={}; (S.houses||[]).forEach(h=>hn[h.id]=h.name);
+  if(canArea("objekte")){
+    const hz=(S._sZaehler||[]).filter(z=>hit(z.nummer)||hit(z.bezeichnung)||hit(z.medium)||hit(zStandort(z))||hit(z.msb)).slice(0,8);
+    if(hz.length) html+=searchSec("Zähler")+hz.map(z=>searchItem(I.grid,esc(z.bezeichnung||z.nummer),
+      esc([hn[z.houseId],"Nr. "+(z.nummer||"—"),zStandort(z)].filter(Boolean).join(" · ")),
+      `closeSearch();openHouseZaehler('${z.houseId}')`)).join("");
+
+    const ha=(S._sAnlagen||[]).filter(a=>hit(a.name)||hit(a.art)||hit(a.firm)||hit(a.note)).slice(0,6);
+    if(ha.length) html+=searchSec("Anlagen & Prüfpflichten")+ha.map(a=>{
+      const s=wartStatus(a);
+      return searchItem(I.wrench,esc(a.name),esc([hn[a.houseId],a.art,s.next?"nächste "+fmtShort(s.next):""].filter(Boolean).join(" · ")),
+        `closeSearch();openHouseWart('${a.houseId}')`);
+    }).join("");
+
+    const hs=(S._sSan||[]).filter(s=>hit(s.title)||hit(s.wohnung)||hit(s.firm)||hit(s.note)).slice(0,6);
+    if(hs.length) html+=searchSec("Sanierungen")+hs.map(s=>searchItem(I.hammer,esc(s.title),
+      esc([hn[s.houseId],s.wohnung,s.status,s.firm].filter(Boolean).join(" · ")),`closeSearch();openSanierung()`)).join("");
+  }
+  if(canArea("aufzuege")){
+    const hl=(S._sAufz||[]).filter(a=>hit(a.name)||hit(a.fabriknr)||hit(a.firm)).slice(0,6);
+    if(hl.length) html+=searchSec("Aufzüge")+hl.map(a=>searchItem(I.lift,esc(a.name),
+      esc([hn[a.houseId],a.fabriknr?"Fabrik-Nr. "+a.fabriknr:"",a.firm].filter(Boolean).join(" · ")),
+      `closeSearch();openAufzuege()`)).join("");
+  }
+  const hk=(S.kontakte||[]).filter(k=>hit(k.name)||hit(k.gewerk)||hit(k.person)||hit(k.email)||hit(k.phone)).slice(0,6);
+  if(hk.length) html+=searchSec("Adressbuch")+hk.map(k=>searchItem(I.key,esc(k.name),
+    esc([k.gewerk,k.person,k.phone].filter(Boolean).join(" · ")),`closeSearch();openKontakte()`)).join("");
+
   res.innerHTML = html || `<div class="search-hint">Keine Treffer für „${esc(q)}".</div>`;
 }
 

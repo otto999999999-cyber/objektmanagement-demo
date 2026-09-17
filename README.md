@@ -120,7 +120,26 @@ Ablesedienstleister freischalten – dann liest dieser direkt in die Plattform e
 
 ---
 
-## 4. „Firma anschreiben" — überall dort, wo eine Firma zuständig ist
+## 4. Objekt-Tagebuch
+
+Reiter *Tagebuch* je Objekt: der Verlauf eines Hauses über **alle Bereiche hinweg** in einer
+Zeitschiene, nach Jahren gruppiert und neueste Einträge zuerst.
+
+Es laufen ein: Objektbegehungen (mit Zustandsbilanz), durchgeführte Wartungen aus der Historie,
+Zählerablesungen, angelegte und versandte Tickets, Sanierungsbeginn und -abschluss, versandte
+Schreiben aus der Meldungs-Überwachung sowie abgelegte Dokumente. Über die Filterleiste lässt sich
+auf eine Art einschränken; viele Einträge führen per Knopf direkt zum Vorgang.
+
+Damit beantwortet die App die Frage, die sonst Suchen in sechs Listen bedeutet: *Was ist an diesem
+Objekt in den letzten Jahren eigentlich passiert?*
+
+Die **globale Suche** (Lupe in der Kopfzeile) deckt jetzt ebenfalls alle Bereiche ab: Objekte,
+Zähler (auch nach Zählernummer und Standort), Anlagen und Prüfpflichten, Aufzüge, Sanierungen,
+Tickets, Mängel und das Adressbuch.
+
+---
+
+## 5. „Firma anschreiben" — überall dort, wo eine Firma zuständig ist
 
 Aus jedem Vorgang lässt sich direkt eine E-Mail an die zuständige Firma erzeugen. Der Text wird
 aus den Daten des Vorgangs vorbefüllt, der **Empfänger automatisch aus dem Adressbuch** aufgelöst,
@@ -144,7 +163,7 @@ leer und ein Hinweis nennt die Stelle, an der die Adresse ergänzt werden sollte
 
 ---
 
-## 5. Hinweise
+## 6. Hinweise
 
 - **Reine Demo:** Eingaben/Änderungen sind **nicht dauerhaft** – nach dem Neuladen der Seite
   stehen wieder die ursprünglichen Testdaten bereit. Ausnahme: offline erfasste Ablesungen bleiben
@@ -158,7 +177,7 @@ leer und ein Hinweis nennt die Stelle, an der die Adresse ergänzt werden sollte
 
 ---
 
-## 6. Vom Demo zum echten Portal
+## 7. Vom Demo zum echten Portal
 
 Diese Demo nutzt eine eingebettete Testdatenschicht anstelle eines Servers. Für den
 produktiven Mehrbenutzerbetrieb (Login + zentrale Datenbank in Frankfurt, bereichsbasierte
