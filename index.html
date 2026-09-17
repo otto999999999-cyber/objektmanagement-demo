@@ -162,7 +162,13 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       {id:"do2", house_id:"h1", unit:"", category:"Versicherung", name:"Gebäudeversicherung_Police.pdf", path:"h1/police.pdf", mime:"application/pdf", size:240000, note:"Muster Versicherung AG GV-88 44 21", created_by:"admin@demo.de", created_at:NOW},
       {id:"do3", house_id:"h1", unit:"WE 3", category:"Mietverträge", name:"Mietvertrag_WE3.pdf", path:"h1/mv3.pdf", mime:"application/pdf", size:320000, note:"", created_by:"admin@demo.de", created_at:NOW},
       {id:"do4", house_id:"h3", unit:"", category:"Pläne / Grundrisse", name:"Grundriss_EG_Gewerbe.pdf", path:"h3/gr.pdf", mime:"application/pdf", size:890000, note:"", created_by:"admin@demo.de", created_at:NOW},
-      {id:"do5", house_id:"h3", unit:"", category:"Abrechnungen", name:"Betriebskosten_2024.pdf", path:"h3/bk24.pdf", mime:"application/pdf", size:410000, note:"", created_by:"admin@demo.de", created_at:NOW}
+      {id:"do5", house_id:"h3", unit:"", category:"Abrechnungen", name:"Betriebskosten_2024.pdf", path:"h3/bk24.pdf", mime:"application/pdf", size:410000, note:"", created_by:"admin@demo.de", created_at:NOW},
+      {id:"do6", house_id:"h1", unit:"", category:"Zähler", name:"Zaehlerschrank_Aufgang_A.pdf", path:"h1/z-schrank-a.pdf", mime:"application/pdf", size:320000, note:"Schrankbelegung und Zuordnung der Unterzähler", created_by:"admin@demo.de", created_at:NOW, ref_art:"zaehler", ref_id:"z1"},
+      {id:"do7", house_id:"h1", unit:"", category:"Zähler", name:"Eichschein_UZ-44_118.pdf", path:"h1/eichschein-uz44118.pdf", mime:"application/pdf", size:98000, note:"Eichschein des Messstellenbetreibers", created_by:"admin@demo.de", created_at:NOW, ref_art:"zaehler", ref_id:"z2"},
+      {id:"do8", house_id:"h1", unit:"", category:"Wartung & Prüfung", name:"Legionellen_Pruefbericht.pdf", path:"h1/legionellen.pdf", mime:"application/pdf", size:520000, note:"Letzter Prüfbericht, Maßnahmenwert eingehalten", created_by:"admin@demo.de", created_at:NOW, ref_art:"anlage", ref_id:"a2"},
+      {id:"do9", house_id:"h1", unit:"", category:"Wartung & Prüfung", name:"DGUV_V3_Pruefprotokoll.pdf", path:"h1/dguv-v3.pdf", mime:"application/pdf", size:760000, note:"Mängelliste mit Fristenkategorien", created_by:"admin@demo.de", created_at:NOW, ref_art:"anlage", ref_id:"a4"},
+      {id:"do10", house_id:"h3", unit:"", category:"Aufzug", name:"ZUES_Pruefbescheinigung.pdf", path:"h3/zues.pdf", mime:"application/pdf", size:410000, note:"Wiederkehrende Prüfung, ohne Mängel", created_by:"admin@demo.de", created_at:NOW, ref_art:"aufzug", ref_id:"az1"},
+      {id:"do11", house_id:"h1", unit:"WE 7", category:"Sanierung", name:"Angebot_Bad_WE7.pdf", path:"h1/angebot-bad-we7.pdf", mime:"application/pdf", size:280000, note:"Angebot Sanitär Beispiel GmbH", created_by:"admin@demo.de", created_at:NOW, ref_art:"sanierung", ref_id:"s1"}
     ],
 
     kontakte: [
@@ -504,6 +510,24 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 
   .chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 9px;border-radius:7px;font-size:12px;font-weight:600;background:var(--bg2);color:var(--muted)}
   .chip::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--faint);flex:none}
+  .fr-mon{display:flex;align-items:baseline;justify-content:space-between;margin:22px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line2)}
+  .fr-mon h3{font-size:16px}
+  .fr-mon span{font-size:12.5px;color:var(--muted);font-weight:600}
+  .fr-item{margin-bottom:9px}
+  .gz-list{max-height:52vh;overflow:auto;margin:6px 0 4px;border:1px solid var(--line);border-radius:var(--r-sm)}
+  .gz-grp{background:var(--bg2);padding:7px 12px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--navy)}
+  .gz-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border-top:1px solid var(--line);cursor:pointer}
+  .gz-row:hover{background:var(--navy-soft)}
+  .gz-t{font-weight:700;font-size:14px}
+  .gz-s{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .gz-head{display:flex;gap:7px;flex-wrap:wrap;margin:2px 0 12px}
+  .gz-blk{margin-bottom:12px}
+  .gz-blk>b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--navy);margin-bottom:3px}
+  .gz-blk>p{margin:0;font-size:13.5px;line-height:1.55}
+  .gz-blk>ol{margin:4px 0 0 18px;padding:0;font-size:13.5px;line-height:1.55}
+  .gz-blk>ol li{margin-bottom:5px}
+  .gz-folge{background:var(--bad-bg);border-radius:var(--r-sm);padding:10px 12px}
+  .gz-folge>b{color:#C32B45}
   .chip.good{color:#0B7A55}
   .chip.good::before{background:var(--good)}
   .chip.mid{color:#A86400}
@@ -807,10 +831,11 @@ const DB = {
   async listDocuments(houseId){
     const { data, error } = await sb.from('documents').select('*').eq('house_id',houseId).order('created_at',{ascending:false});
     if(error){ console.error(error); return []; }
-    return (data||[]).map(d=>({id:d.id,houseId:d.house_id,unit:d.unit||"",category:d.category||"Sonstiges",name:d.name||"",path:d.path||"",mime:d.mime||"",size:d.size||0,note:d.note||"",createdBy:d.created_by||"",createdAt:d.created_at||""}));
+    return (data||[]).map(d=>({id:d.id,houseId:d.house_id,unit:d.unit||"",category:d.category||"Sonstiges",name:d.name||"",path:d.path||"",mime:d.mime||"",size:d.size||0,note:d.note||"",createdBy:d.created_by||"",createdAt:d.created_at||"",refArt:d.ref_art||"",refId:d.ref_id||""}));
   },
   async saveDocument(d){
-    const row={ id:d.id, house_id:d.houseId, unit:d.unit||null, category:d.category||null, name:d.name||null, path:d.path||null, mime:d.mime||null, size:d.size||null, note:d.note||null, created_by:d.createdBy||null };
+    const row={ id:d.id, house_id:d.houseId, unit:d.unit||null, category:d.category||null, name:d.name||null, path:d.path||null, mime:d.mime||null, size:d.size||null, note:d.note||null, created_by:d.createdBy||null,
+      ref_art:d.refArt||null, ref_id:d.refId||null, created_at:d.createdAt||new Date().toISOString() };
     const { error } = await sb.from('documents').upsert(row); if(error){ console.error(error); throw error; }
   },
   async deleteDocument(id){ const { error }=await sb.from('documents').delete().eq('id',id); if(error) console.error(error); },
@@ -1115,17 +1140,38 @@ const monthsSince = iso => { if(!iso) return 9999; const d=new Date(iso+"T00:00:
 function addMonthsISO(iso, months){ if(!iso||!months) return ""; const d=new Date(iso+"T00:00:00"); d.setMonth(d.getMonth()+Number(months)); return d.toISOString().slice(0,10); }
 function daysUntil(iso){ if(!iso) return null; const d=new Date(iso+"T00:00:00"), n=new Date(); n.setHours(0,0,0,0); return Math.round((d-n)/86400000); }
 const DUE_SOON_DAYS = 30;
-function wartStatus(a){
-  // -> {next, days, level: 'overdue'|'soon'|'ok'|'none', label}
-  if(!a.interval || !a.lastDate) return {next:"", days:null, level:"none", label:"kein Intervall"};
-  const next=addMonthsISO(a.lastDate, a.interval);
-  const d=daysUntil(next);
-  let level="ok", label="planmäßig";
-  if(d<0){ level="overdue"; label="überfällig"; }
-  else if(d<=DUE_SOON_DAYS){ level="soon"; label="bald fällig"; }
-  return {next, days:d, level, label};
+
+/* ===================== Fristen – eine gemeinsame Logik =====================
+   Alle Fälligkeiten der App (Wartung, gesetzliche Prüfung, Eichfrist, Aufzug,
+   TÜV, Ticketfrist, Meldungsfrist, gesetzliche Stichtage) laufen über
+   fristAus() bzw. fristIntervall(). Damit gilt überall dieselbe Einstufung:
+   overdue | soon | ok | none.
+------------------------------------------------------------------------- */
+function fristAus(nextISO, opts){
+  opts=opts||{};
+  if(!nextISO) return {next:"", days:null, level:"none", label:opts.keinLabel||"kein Termin"};
+  const d=daysUntil(nextISO);
+  const soon=opts.soon!=null?opts.soon:DUE_SOON_DAYS;
+  if(d<0)      return {next:nextISO, days:d, level:"overdue", label:opts.overdueLabel||"überfällig"};
+  if(d<=soon)  return {next:nextISO, days:d, level:"soon",    label:opts.soonLabel||"bald fällig"};
+  return {next:nextISO, days:d, level:"ok", label:opts.okLabel||"planmäßig"};
 }
+function fristIntervall(lastDate, monate, opts){
+  opts=opts||{};
+  if(!monate || !lastDate) return {next:"", days:null, level:"none", label:opts.keinLabel||"kein Intervall"};
+  return fristAus(addMonthsISO(lastDate, monate), opts);
+}
+/* einheitliche Textform der Restzeit – vorher an sieben Stellen einzeln gebaut */
+function fristText(s){
+  if(!s || s.days==null) return s&&s.label?s.label:"–";
+  if(s.days<0) return Math.abs(s.days)+" Tage überfällig";
+  if(s.days===0) return "heute fällig";
+  if(s.days===1) return "morgen fällig";
+  return "in "+s.days+" Tagen";
+}
+function wartStatus(a){ return fristIntervall(a.lastDate, a.interval); }
 function wartClass(l){ return l==="overdue"?"bad":l==="soon"?"mid":l==="ok"?"good":"na"; }
+const fristClass=wartClass;
 
 /* ===================== App-State ===================== */
 const S = { view:"home", houses:[], houseId:null, hidx:[], insp:null, readonly:false, prevMap:{}, cmp:[], imgCache:{} };
@@ -1210,7 +1256,7 @@ function countCond(insp){
 async function goHome(){ S.view="home"; S.houses=await DB.listHouses(); render(); }
 async function doLogout(){ try{ await sb.auth.signOut(); }catch(e){} location.reload(); }
 async function loadAlerts(){
-  const a={tickets:0,meldungen:0,wartung:0,aufzug:0,zaehler:0,total:0};
+  const a={tickets:0,meldungen:0,wartung:0,aufzug:0,zaehler:0,fristen:0,total:0};
   try{
     if(canArea("tickets")){ const t=await DB.listTickets(); a.tickets=t.filter(tkOverdue).length; }
     if(canArea("objekte")||canArea("aufzuege")){ const l=await DB.listMeldungenLog(); a.meldungen=l.filter(logOverdue).length; }
@@ -1221,6 +1267,7 @@ async function loadAlerts(){
       a.zaehler=zz.filter(z=>!aa.some(x=>x.zaehlerId===z.id && (x.datum||"").slice(0,4)===per && x.status==="abgelesen")).length;
     }
   }catch(e){}
+  a.fristen=a.wartung+a.aufzug;
   a.total=a.tickets+a.meldungen+a.wartung+a.aufzug;
   S.alerts=a; refreshMenuBadge();
 }
@@ -1237,6 +1284,7 @@ async function openHouse(id){
   S.anlagen=await DB.listAnlagen(id);
   S.zaehler=await DB.listZaehler(id);
   S.ablesungen=(await DB.allAblesungen()).filter(a=>a.houseId===id).concat(offFor(id));
+  await anhLaden(id);
   if(S._tbHouse!==id){ S._tb=null; S._tbHouse=null; }   // Tagebuch je Objekt neu zusammenstellen
   netRefresh();
   render();
@@ -1307,6 +1355,7 @@ function render(){
   if(S.view==="tickets") return openTickets();
   if(S.view==="kontakte") return renderKontakte();
   if(S.view==="ablesung") return renderAblesung();
+  if(S.view==="fristen") return renderFristen();
   if(S.view==="etiketten") return renderEtiketten();
   if(S.view==="erfassung") return renderErfassung();
 }
@@ -1483,6 +1532,7 @@ function renderDashCards(d){
   if(canArea("reinigung")) cards.push(dashCard(I.broom,"Reinigung heute",d.rToday??0, d.rLaufend?`${d.rLaufend} laufend`:"keine laufend", d.rLaufend?"accent-mid":"", "openReinigung()"));
   if(canArea("sanierung")) cards.push(dashCard(I.hammer,"Sanierungen laufend",d.sLauf??0, d.sLauf?"in Bearbeitung":"keine laufend", "", "openSanierung()"));
   if(canArea("objekte")||canArea("aufzuege")) cards.push(dashCard(I.bell,"Meldungen überfällig",d.mlOver??0, `${d.mlOpen||0} offen gesamt`, d.mlOver?"accent-bad":"", "openMeldungen()"));
+  if(canArea("objekte")) cards.push(dashCard(I.book,"Fristen überfällig",d.frOver??0, `${d.frSoon||0} in den nächsten 30 Tagen`, d.frOver?"accent-bad":(d.frSoon?"accent-mid":""), "openFristen()"));
   if(canArea("objekte")) cards.push(dashCard(I.grid,"Zähler abzulesen",d.zOffen??0, `${d.zGesamt||0} Zähler · <span class="${d.zProblem?"dc-bad":""}">${d.zProblem||0} Problemfälle</span>`, d.zProblem?"accent-bad":(d.zOffen?"accent-mid":""), "openAblesung()"));
   return cards.join("");
 }
@@ -1491,7 +1541,8 @@ async function fillDashboard(){
   el.innerHTML=`<div class="dash-load">Übersicht wird geladen…</div>`;
   const d={};
   try{
-    if(canArea("tickets")){ const t=S.tickets&&S.tickets.length!==undefined?S.tickets:(S.tickets=await DB.listTickets()); d.tkOpen=t.filter(x=>x.status!=="erledigt").length; d.tkOver=t.filter(tkOverdue).length; }
+    if(canArea("tickets")){ const t=S.tickets&&S.tickets.length!==undefined?S.tickets:(S.tickets=await DB.listTickets()); d.tkOpen=t.filter(x=>x.status!=="erledigt").length; d.tkOver=t.filter(tkOverdue).length;
+      d.tkSoon=t.filter(x=>x.status!=="erledigt"&&fristAus(x.dueDate).level==="soon").length; }
     if(canArea("objekte")){
       const an=await DB.allAnlagen();
       d.wOver=an.filter(x=>wartStatus(x).level==="overdue").length;
@@ -1510,20 +1561,27 @@ async function fillDashboard(){
       d.zGesamt=zz.length;
       d.zOffen=zz.filter(z=>!cur(z)).length;
       d.zProblem=zz.filter(z=>{ const c=cur(z); return c && c.status!=="abgelesen"; }).length;
+      d.eichOver=zz.filter(z=>eichStatus(z).level==="overdue").length;
+      d.eichSoon=zz.filter(z=>eichStatus(z).level==="soon").length;
     }
     if(canArea("aufzuege")){
       const az=await DB.listAufzuege();
       d.azOver=az.filter(x=>liftWart(x).level==="overdue"||liftTuev(x).level==="overdue").length;
+      d.azSoon=az.filter(x=>liftWart(x).level==="soon"||liftTuev(x).level==="soon").length;
       const meta=await DB.allMeldungenMeta();
       d.azMeld=meta.filter(m=>m.status!=="behoben").length;
     }
     if(canArea("reinigung")){ const rs=await DB.reinigungStats(); d.rToday=rs.today; d.rLaufend=rs.laufend; }
     if(canArea("sanierung")){ const sa=await DB.listSanierungen(); d.sLauf=sa.filter(x=>x.status==="laufend").length; }
-    if(canArea("objekte")||canArea("aufzuege")){ const l=await DB.listMeldungenLog(); d.mlOver=l.filter(logOverdue).length; d.mlOpen=l.filter(x=>x.status!=="erledigt").length; }
+    if(canArea("objekte")||canArea("aufzuege")){ const l=await DB.listMeldungenLog(); d.mlOver=l.filter(logOverdue).length; d.mlOpen=l.filter(x=>x.status!=="erledigt").length;
+      d.mlSoon=l.filter(x=>x.status==="offen"&&fristAus(x.dueDate).level==="soon").length; }
   }catch(e){ console.error(e); }
+  d.frOver=(d.wOver||0)+(d.azOver||0)+(d.eichOver||0)+(d.tkOver||0)+(d.mlOver||0);
+  d.frSoon=(d.wSoon||0)+(d.azSoon||0)+(d.eichSoon||0)+(d.tkSoon||0)+(d.mlSoon||0);
   S.dash=d;
   // Menü-Badge konsistent aus denselben Zahlen
-  S.alerts={ tickets:d.tkOver||0, meldungen:d.mlOver||0, wartung:d.wOver||0, aufzug:d.azOver||0, total:(d.tkOver||0)+(d.mlOver||0)+(d.wOver||0)+(d.azOver||0) };
+  S.alerts={ tickets:d.tkOver||0, meldungen:d.mlOver||0, wartung:d.wOver||0, aufzug:d.azOver||0, zaehler:d.zOffen||0,
+    fristen:d.frOver||0, total:(d.tkOver||0)+(d.mlOver||0)+(d.wOver||0)+(d.azOver||0) };
   refreshMenuBadge();
   if(document.getElementById("dashCards")) document.getElementById("dashCards").innerHTML=renderDashCards(d);
 }
@@ -1646,6 +1704,7 @@ function houseWartungHTML(){
         <div style="display:flex;gap:7px;margin-top:9px;flex-wrap:wrap">
           <button class="btn sm" onclick="wartungDone('${a.id}')">${I.done} Wartung heute erledigt</button>
           <button class="btn sm" onclick="mailAnlage('${a.id}')">${I.mail} Firma anschreiben</button>
+          ${anhKnopf('anlage',a.id)}
           <button class="btn sm" onclick="openWartHist('${a.id}')">${I.book} Historie</button>
           <button class="btn sm" onclick="addAnlage('${a.id}')">${I.edit} Bearbeiten</button>
           <button class="btn sm danger" onclick="delAnlage('${a.id}')">${I.trash}</button>
@@ -1845,11 +1904,8 @@ function zStandort(z){
   return p.length? p.join(" · ") : "";
 }
 function eichStatus(z){
-  if(!z.eichBis) return {level:"none", label:"Eichfrist nicht erfasst", days:null};
-  const d=daysUntil(z.eichBis);
-  if(d<0)   return {level:"overdue", label:"Eichfrist abgelaufen", days:d};
-  if(d<=180)return {level:"soon",    label:"Eichfrist läuft aus",  days:d};
-  return {level:"ok", label:"geeicht", days:d};
+  return fristAus(z.eichBis, {soon:180, keinLabel:"Eichfrist nicht erfasst",
+    overdueLabel:"Eichfrist abgelaufen", soonLabel:"Eichfrist läuft aus", okLabel:"geeicht"});
 }
 function abPeriode(){ return S.zPeriode || String(new Date().getFullYear()); }
 function zLetzte(zid, bisPeriode){
@@ -1930,6 +1986,7 @@ function houseZaehlerHTML(){
         <div style="display:flex;gap:7px;margin-top:9px;flex-wrap:wrap">
           <button class="btn sm primary" onclick="ableseModal('${z.id}')">${I.pen} Ablesen</button>
           <button class="btn sm" onclick="mailZaehler('${z.id}')">${I.mail} Firma anschreiben</button>
+          ${anhKnopf('zaehler',z.id)}
           <button class="btn sm" onclick="openZHist('${z.id}')">${I.book} Historie</button>
           <button class="btn sm" onclick="addZaehler('${z.id}')">${I.edit} Bearbeiten</button>
           <button class="btn sm danger" onclick="delZaehler('${z.id}')">${I.trash}</button>
@@ -2235,6 +2292,547 @@ function renderAblesung(){
 }
 function openHouseZaehler(id){ S.houseTab="zaehler"; openHouse(id); }
 
+/* ===================== Fristenkalender & Gesetzesvorlagen =====================
+   Alle Fälligkeiten der Anwendung an einer Stelle: die operativen Fristen aus den
+   eigenen Daten (Wartung, gesetzliche Prüfung, Aufzug, TÜV, Eichfrist, Ablesung,
+   Tickets, Meldungen) und die gesetzlichen Stichtage aus einer gepflegten
+   Vorlagenliste – jeweils mit Rechtsgrundlage und Folge einer Versäumnis.
+   Einstufung überall über fristAus()/fristIntervall().
+   Hinweis: Die Rechtsangaben sind Orientierung, Stand September 2026, und keine
+   Rechtsberatung.
+---------------------------------------------------------------------------- */
+const GESETZ_STAND="September 2026";
+const GESETZ_FRISTEN=[
+  {
+    id:"hkvo-fern", titel:"Fernablesbare Erfassungsgeräte nachrüsten",
+    datum:"2031-12-31", gruppe:"Heizung & Abrechnung",
+    grundlage:"§ 5 Abs. 2 HeizkostenV",
+    betrifft:"Alle Objekte mit Heizkostenverteilern, Wärme- oder Warmwasserzählern, die nicht fernablesbar sind.",
+    folge:"Ohne fernablesbare Ausstattung ist die monatliche Verbrauchsinformation nach § 6a HeizkostenV nicht möglich. Der Mieter darf den Heizkostenanteil dann um 3 % kürzen (§ 12 Abs. 1 HeizkostenV).",
+    schritte:[
+      "Bestand je Objekt erfassen: welche Geräte sind fernablesbar, welche nicht (Reiter Zähler & Ablesung, Kennzeichen „fernauslesbar“).",
+      "Austauschplan mit dem Messdienstleister abstimmen – gestaffelt über die ohnehin anstehenden Eichfristen, nicht auf den letzten Termin.",
+      "Bei jedem Neueinbau und jedem Austausch ausschließlich fernablesbare Geräte bestellen; das gilt bereits seit dem 01.12.2021.",
+      "Kosten der Umstellung vorab kaufmännisch klären – Miete und Kauf werden betriebskostenseitig unterschiedlich behandelt."
+    ],
+    vorlage:{
+      betreff:"Umstellung auf fernablesbare Erfassungsgeräte – Bestandsaufnahme und Austauschplan",
+      text:"Sehr geehrte Damen und Herren,\n\nnach § 5 Abs. 2 HeizkostenV sind nicht fernablesbare Erfassungsgeräte bis zum 31.12.2031 nachzurüsten oder auszutauschen; bei Neuinstallationen ist die Fernablesbarkeit bereits seit dem 01.12.2021 vorgeschrieben.\n\nWir bitten Sie daher um:\n\n1. eine Aufstellung der in unseren Objekten verbauten Erfassungsgeräte mit Angabe, welche davon fernablesbar sind,\n2. einen Vorschlag für einen gestaffelten Austauschplan, sinnvollerweise gekoppelt an die jeweils anstehenden Eichfristen,\n3. ein Angebot getrennt nach Kauf und Miete der Geräte sowie die laufenden Kosten für die monatliche Verbrauchsinformation nach § 6a HeizkostenV.\n\nBitte weisen Sie in der Aufstellung auch die Objekte aus, in denen die monatliche Verbrauchsinformation derzeit nicht bereitgestellt werden kann."
+    }
+  },
+  {
+    id:"hkvo-uvi", titel:"Monatliche Verbrauchsinformation (UVI)",
+    datum:"", rhythmus:"laufend, monatlich", gruppe:"Heizung & Abrechnung",
+    grundlage:"§ 6a HeizkostenV",
+    betrifft:"Objekte mit fernablesbarer Ausstattung – dort ist die Information über Verbrauch und Kosten monatlich bereitzustellen.",
+    folge:"Wird die Information nicht bereitgestellt, darf der Mieter den Heizkostenanteil um 3 % kürzen (§ 12 Abs. 1 HeizkostenV).",
+    schritte:[
+      "Je Objekt prüfen, ob der Messdienstleister die monatliche Information tatsächlich bereitstellt – und wie sie beim Mieter ankommt.",
+      "Nachweis der Bereitstellung beim Objekt ablegen; im Streitfall trägt der Vermieter die Darlegungslast.",
+      "Bei fehlender Bereitstellung den Dienstleister schriftlich in Verzug setzen – die Kürzung trifft zuerst uns."
+    ],
+    vorlage:{
+      betreff:"Monatliche Verbrauchsinformation nach § 6a HeizkostenV – Nachweis der Bereitstellung",
+      text:"Sehr geehrte Damen und Herren,\n\nfür die Objekte mit fernablesbarer Ausstattung ist die Verbrauchsinformation nach § 6a HeizkostenV monatlich bereitzustellen. Wird sie nicht bereitgestellt, steht dem Mieter nach § 12 Abs. 1 HeizkostenV eine Kürzung von 3 % zu.\n\nWir bitten um eine Aufstellung, für welche unserer Objekte die monatliche Information im laufenden Abrechnungszeitraum bereitgestellt wurde, auf welchem Weg sie den Mietern zugegangen ist und ab wann dies jeweils der Fall war.\n\nFür Objekte ohne Bereitstellung bitten wir um Mitteilung des Grundes und um einen Termin, ab dem die Bereitstellung erfolgt."
+    }
+  },
+  {
+    id:"co2", titel:"CO₂-Kosten aufteilen (Zehn-Stufen-Modell)",
+    datum:"", rhythmus:"mit jeder Heizkostenabrechnung", gruppe:"Heizung & Abrechnung",
+    grundlage:"CO2KostAufG, für Wohngebäude das Stufenmodell nach § 5 ff.",
+    betrifft:"Alle Objekte mit Heizung über Erdgas oder Heizöl.",
+    folge:"Nimmt der Vermieter die Aufteilung nicht vor, darf der Mieter den Heizkostenanteil um 3 % kürzen (§ 7 Abs. 4 CO2KostAufG).",
+    schritte:[
+      "Aus der Brennstoffrechnung die CO₂-Menge und den CO₂-Kostenanteil je Objekt entnehmen – der Lieferant muss diese Angaben ausweisen.",
+      "Den spezifischen Ausstoß in kg CO₂ je m² Wohnfläche und Jahr berechnen und damit die Stufe bestimmen.",
+      "Vermieteranteil in der Heizkostenabrechnung offen ausweisen, nicht nur saldieren – die Aufteilung muss nachvollziehbar sein.",
+      "Für Objekte mit hoher Stufe die Sanierungsplanung koppeln; der Vermieteranteil steigt mit dem Ausstoß."
+    ],
+    vorlage:{
+      betreff:"CO₂-Kostenaufteilung nach CO2KostAufG – Angaben für die Heizkostenabrechnung",
+      text:"Sehr geehrte Damen und Herren,\n\nfür die Aufteilung der CO₂-Kosten nach dem CO2KostAufG benötigen wir je Objekt und Abrechnungszeitraum:\n\n1. die gelieferte Brennstoffmenge,\n2. die zugehörige CO₂-Menge in Kilogramm,\n3. den auf die Lieferung entfallenden CO₂-Kostenanteil in Euro.\n\nSofern Sie die Aufteilung nach dem Stufenmodell für Wohngebäude bereits selbst vornehmen, bitten wir um die Angabe der ermittelten Stufe und des Vermieteranteils je Objekt.\n\nHintergrund: Ohne die Aufteilung steht dem Mieter nach § 7 Abs. 4 CO2KostAufG eine Kürzung von 3 % des Heizkostenanteils zu."
+    }
+  },
+  {
+    id:"geg60b", titel:"Heizungsprüfung und Optimierung (Bestandsanlagen)",
+    datum:"2027-09-30", gruppe:"Heizung & Abrechnung",
+    grundlage:"§ 60b GEG",
+    betrifft:"Gebäude mit Wasser als Wärmeträger und einer Heizungsanlage, die vor dem 01.10.2024 eingebaut wurde.",
+    folge:"Die Prüfung ist Betreiberpflicht; ein Verstoß kann als Ordnungswidrigkeit nach § 108 GEG mit einem Bußgeld geahndet werden (Rahmen bis 5.000 €).",
+    schritte:[
+      "Bestand sortieren: Baujahr der Wärmeerzeuger je Objekt, danach richtet sich die Frist.",
+      "Prüfung mit der ohnehin fälligen Wartung oder dem Schornsteinfegertermin bündeln – zwei Anfahrten für einen Vorgang sind vermeidbar.",
+      "Prüfbericht und die empfohlenen Optimierungsmaßnahmen beim Objekt ablegen; die Empfehlungen sind der Einstieg in den hydraulischen Abgleich.",
+      "Umsetzung der Maßnahmen terminieren – der Bericht allein erfüllt die Pflicht, spart aber keine Energie."
+    ],
+    vorlage:{
+      betreff:"Heizungsprüfung nach § 60b GEG – Terminanfrage und Angebot",
+      text:"Sehr geehrte Damen und Herren,\n\nfür unsere Objekte mit wassergeführter Heizungsanlage ist die Prüfung und Optimierung nach § 60b GEG durchzuführen; für Anlagen, die vor dem 01.10.2024 eingebaut wurden, endet die Frist am 30.09.2027.\n\nWir bitten um ein Angebot und Terminvorschläge für die Prüfung, möglichst gebündelt mit der jeweils anstehenden Wartung. Bitte geben Sie zusätzlich an:\n\n1. welche Unterlagen Sie je Objekt vorab benötigen,\n2. ob der hydraulische Abgleich mitangeboten werden kann,\n3. in welcher Form Sie den Prüfbericht übergeben.\n\nEine Objektliste mit Baujahr und Art der Wärmeerzeuger stellen wir Ihnen auf Wunsch zur Verfügung."
+    }
+  },
+  {
+    id:"trinkw", titel:"Legionellenprüfung Trinkwasser",
+    datum:"", rhythmus:"alle 3 Jahre je Anlage", gruppe:"Betrieb & Sicherheit",
+    grundlage:"TrinkwV (Untersuchungspflicht für Großanlagen zur Trinkwassererwärmung bei Vermietung)",
+    betrifft:"Objekte mit zentraler Warmwasserbereitung: Speicher über 400 Liter oder mehr als 3 Liter Inhalt in einer Leitung zwischen Erwärmer und Entnahmestelle.",
+    folge:"Unterlassene Untersuchung ist eine Ordnungswidrigkeit; der Bußgeldrahmen der TrinkwV reicht bis 25.000 €. Bei einer Erkrankung kommt die Haftungsfrage hinzu.",
+    schritte:[
+      "Anlagen identifizieren, die unter die Untersuchungspflicht fallen – nicht jede Warmwasserbereitung ist eine Großanlage.",
+      "Probenahmestellen am Speicher und an den Steigsträngen dauerhaft einrichten, sonst wird jede Beprobung zur Bastelei.",
+      "Untersuchung durch ein akkreditiertes Labor beauftragen und die Frist je Anlage im Objekt hinterlegen.",
+      "Bei Überschreitung des technischen Maßnahmenwerts: Gesundheitsamt anzeigen, Gefährdungsanalyse veranlassen, Mieter informieren."
+    ],
+    vorlage:{
+      betreff:"Trinkwasseruntersuchung auf Legionellen – Beauftragung und Terminplanung",
+      text:"Sehr geehrte Damen und Herren,\n\nfür unsere Objekte mit zentraler Trinkwassererwärmung ist die Untersuchung auf Legionellen im Dreijahresrhythmus durchzuführen.\n\nWir bitten um ein Angebot für die Beprobung und Analyse, einschließlich:\n\n1. Anzahl und Lage der erforderlichen Probenahmestellen je Objekt,\n2. Aufwand für das Nachrüsten fehlender Probenahmestellen,\n3. Bearbeitungszeit bis zum Prüfbericht,\n4. Vorgehen bei Überschreitung des technischen Maßnahmenwerts.\n\nBitte teilen Sie uns außerdem mit, welche Angaben zur Anlage (Speichervolumen, Leitungsvolumen, Betriebstemperaturen) Sie vorab benötigen."
+    }
+  },
+  {
+    id:"aufzug-zues", titel:"Wiederkehrende Prüfung Aufzugsanlagen (ZÜS)",
+    datum:"", rhythmus:"Haupt- und Zwischenprüfung im Wechsel, längstens alle 2 Jahre", gruppe:"Betrieb & Sicherheit",
+    grundlage:"BetrSichV, Anhang 2 Abschnitt 2 (Prüfung durch zugelassene Überwachungsstelle)",
+    betrifft:"Alle Aufzugsanlagen im Bestand.",
+    folge:"Ohne gültige Prüfung darf die Anlage nicht weiterbetrieben werden; der Betrieb ohne Prüfung ist bußgeldbewehrt. Hinzu kommt die Pflicht zur jederzeitigen Notbefreiung mit einer Notrufverbindung zu einer ständig besetzten Stelle.",
+    schritte:[
+      "Prüftermine je Anlage im Reiter Aufzüge führen – Wartung und ZÜS-Prüfung sind zwei verschiedene Termine mit zwei verschiedenen Fristen.",
+      "Prüfbescheinigung und Prüfbuch am Aufzug und digital beim Objekt vorhalten.",
+      "Festgestellte Mängel nach Fristsetzung abarbeiten und die Beseitigung dokumentieren.",
+      "Notrufverbindung und Befreiungsanleitung regelmäßig gegenprüfen – das ist der Punkt, an dem es im Ernstfall hängt."
+    ],
+    vorlage:{
+      betreff:"Wiederkehrende Prüfung der Aufzugsanlage – Terminanfrage",
+      text:"Sehr geehrte Damen und Herren,\n\nfür die nachstehende Aufzugsanlage steht die wiederkehrende Prüfung nach BetrSichV an. Wir bitten um einen Terminvorschlag und um Mitteilung, welche Unterlagen Sie vorab benötigen.\n\nBitte geben Sie zugleich an, ob eine Haupt- oder eine Zwischenprüfung fällig ist und welche Vorbereitungen wir vor Ort treffen sollen (Zugang Triebwerksraum, Anwesenheit der Wartungsfirma, Freihalten der Schachtgrube)."
+    }
+  },
+  {
+    id:"eich", titel:"Eichfristen der Messgeräte",
+    datum:"", rhythmus:"je Gerätetyp: Strom elektronisch 8 Jahre, Ferraris 16 Jahre, Kaltwasser 6 Jahre, Warmwasser und Wärme 5 Jahre", gruppe:"Betrieb & Sicherheit",
+    grundlage:"MessEG in Verbindung mit MessEV (Eichgültigkeitsdauern)",
+    betrifft:"Alle Zähler, deren Werte in die Betriebskostenabrechnung einfließen.",
+    folge:"Werte eines Geräts mit abgelaufener Eichfrist sind angreifbar: der Mieter kann die auf diesen Zähler gestützte Abrechnungsposition bestreiten, und der Nachweis des tatsächlichen Verbrauchs liegt dann bei uns. Zusätzlich ist die Verwendung nicht geeichter Messgeräte im geschäftlichen Verkehr bußgeldbewehrt.",
+    schritte:[
+      "Eichfrist je Zähler im Reiter Zähler & Ablesung hinterlegen – ohne diese Angabe warnt die Anwendung nicht.",
+      "Auslaufende Fristen gebündelt zum Austausch anmelden, statt jeden Zähler einzeln.",
+      "Beim Wechsel Ausbau- und Einbaustand dokumentieren; ohne beide Werte ist die Periode nicht abrechenbar.",
+      "Austausch als Gelegenheit nutzen, auf fernablesbare Geräte umzustellen (§ 5 Abs. 2 HeizkostenV)."
+    ],
+    vorlage:{
+      betreff:"Zählerwechsel wegen abgelaufener Eichfrist",
+      text:"Sehr geehrte Damen und Herren,\n\nbei den nachstehenden Zählern ist die Eichfrist abgelaufen oder läuft in den kommenden Monaten ab. Da die Werte in die Betriebskostenabrechnung einfließen, bitten wir um den Austausch beziehungsweise die Nacheichung.\n\nBitte teilen Sie uns mit:\n\n1. den möglichen Termin je Objekt,\n2. ob der Austausch gebündelt erfolgen kann,\n3. ob fernablesbare Geräte eingebaut werden können,\n4. in welcher Form Sie Ausbau- und Einbaustände dokumentieren.\n\nDie Ausbau- und Einbaustände benötigen wir zwingend schriftlich, da die Abrechnungsperiode sonst nicht abgegrenzt werden kann."
+    }
+  },
+  {
+    id:"bk556", titel:"Betriebskostenabrechnung zustellen",
+    datum:"", dynamisch:"bk", gruppe:"Recht & Abrechnung",
+    grundlage:"§ 556 Abs. 3 BGB",
+    betrifft:"Alle Mietverhältnisse mit Betriebskostenvorauszahlungen.",
+    folge:"Nach Ablauf von zwölf Monaten seit Ende des Abrechnungszeitraums ist eine Nachforderung ausgeschlossen – das Guthaben des Mieters bleibt bestehen. Die Frist ist nicht verlängerbar; verspätete Abrechnung heißt endgültiger Verlust der Nachzahlung.",
+    schritte:[
+      "Rückwärts planen: Zustellung der Abrechnung spätestens zum 31.12. des Folgejahres, also Ablesung und Rechnungseingang deutlich früher.",
+      "Zählerstände zum Stichtag vollständig erfassen – die Ableseliste in dieser Anwendung zeigt, was fehlt.",
+      "Fehlende Lieferantenrechnungen rechtzeitig anmahnen; sie sind der häufigste Grund für eine verspätete Abrechnung.",
+      "Zustellung dokumentieren. Im Streit zählt der Zugang, nicht das Erstellungsdatum."
+    ],
+    vorlage:{
+      betreff:"Unterlagen für die Betriebskostenabrechnung – Frist nach § 556 Abs. 3 BGB",
+      text:"Sehr geehrte Damen und Herren,\n\nfür die Betriebskostenabrechnung des abgelaufenen Abrechnungszeitraums benötigen wir Ihre Abrechnung beziehungsweise die Verbrauchswerte.\n\nHintergrund der Eile: Nach § 556 Abs. 3 BGB muss die Abrechnung den Mietern binnen zwölf Monaten nach Ende des Abrechnungszeitraums zugehen. Danach ist eine Nachforderung ausgeschlossen.\n\nWir bitten daher um Zusendung bis spätestens [Datum eintragen] und um kurze Mitteilung, falls Werte oder Zugänge fehlen."
+    }
+  },
+  {
+    id:"erechnung", titel:"E-Rechnung: Ausstellungspflicht",
+    datum:"2028-01-01", gruppe:"Recht & Abrechnung",
+    grundlage:"§ 14 UStG in der Fassung des Wachstumschancengesetzes",
+    betrifft:"Rechnungen zwischen Unternehmen im Inland. Empfangsbereitschaft besteht bereits seit dem 01.01.2025; die Ausstellungspflicht greift ab dem 01.01.2027 für Unternehmen mit mehr als 800.000 € Vorjahresumsatz und ab dem 01.01.2028 für alle.",
+    folge:"Eine nicht formgerechte Rechnung ist kein ordnungsgemäßer Beleg. Das gefährdet den Vorsteuerabzug und führt bei Prüfungen zu Rückfragen und Korrekturen.",
+    schritte:[
+      "Prüfen, in welchem Format eingehende Rechnungen bereits kommen (XRechnung, ZUGFeRD) und ob sie maschinell verarbeitet werden können.",
+      "Ausgangsrechnungen an gewerbliche Mieter und an Eigentümer auf ein strukturiertes Format umstellen.",
+      "Archivierung klären: es ist das strukturierte Original aufzubewahren, nicht nur das PDF-Abbild.",
+      "Dienstleister und Handwerker frühzeitig auf das Format hinweisen – jede Papierrechnung wird sonst zum Einzelfall."
+    ],
+    vorlage:{
+      betreff:"Umstellung auf elektronische Rechnungen – Format und Zeitpunkt",
+      text:"Sehr geehrte Damen und Herren,\n\nnach § 14 UStG sind Rechnungen zwischen Unternehmen im Inland als strukturierte elektronische Rechnung auszustellen; die Ausstellungspflicht greift spätestens ab dem 01.01.2028, für größere Unternehmen bereits ab dem 01.01.2027.\n\nWir bitten Sie mitzuteilen:\n\n1. ab welchem Zeitpunkt Sie Rechnungen an uns als E-Rechnung ausstellen,\n2. welches Format Sie verwenden (XRechnung oder ZUGFeRD),\n3. an welche Adresse die Rechnungen übermittelt werden sollen.\n\nUnsere Empfangsadresse für elektronische Rechnungen lautet: [E-Mail-Adresse für Rechnungseingang eintragen]."
+    }
+  },
+  {
+    id:"mietpreisbremse", titel:"Mietpreisbremse: Geltung bis 31.12.2029",
+    datum:"2029-12-31", gruppe:"Recht & Abrechnung",
+    grundlage:"§ 556d BGB (Verlängerung der Ermächtigung für Gebiete mit angespanntem Wohnungsmarkt)",
+    betrifft:"Neuvermietungen in Gebieten mit angespanntem Wohnungsmarkt – für Berlin einschlägig.",
+    folge:"Eine überhöhte Miete ist in Höhe der Überschreitung unwirksam. Der Mieter kann rügen und Überzahlungen zurückfordern; ohne die vorvertragliche Auskunft nach § 556g Abs. 1a BGB entfällt zudem die Berufung auf eine Ausnahme.",
+    schritte:[
+      "Bei jeder Neuvermietung die zulässige Miete aus dem Mietspiegel herleiten und die Herleitung zur Akte nehmen.",
+      "Ausnahmetatbestand prüfen: Vormiete, umfassende Modernisierung, Neubau ab 01.10.2014 – und die dafür nötige Auskunft vor Vertragsschluss unaufgefordert erteilen.",
+      "Die Auskunft nachweisbar zustellen; sie ist die Voraussetzung dafür, sich später auf die Ausnahme berufen zu können.",
+      "Modernisierungen dokumentieren, solange die Belege noch vorliegen – im Streit ist die Kostendarlegung der Knackpunkt."
+    ],
+    vorlage:{
+      betreff:"Zulässige Miete bei Neuvermietung – Prüfung der Mietpreisbremse",
+      text:"Sehr geehrte Damen und Herren,\n\nfür die Neuvermietung der nachstehenden Wohnung bitten wir um Prüfung der zulässigen Miete nach §§ 556d ff. BGB.\n\nBeigefügt bzw. nachstehend die Angaben zur Wohnung: Lage, Fläche, Baujahr, Ausstattung, letzte Modernisierungen mit Kosten und Datum sowie die Vormiete mit Beginn und Ende des Vormietverhältnisses.\n\nWir benötigen:\n\n1. die zulässige Miete mit Herleitung aus dem Mietspiegel,\n2. eine Aussage, ob ein Ausnahmetatbestand vorliegt,\n3. sofern ja: den Text der vorvertraglichen Auskunft nach § 556g Abs. 1a BGB."
+    }
+  },
+  {
+    id:"rwm", titel:"Rauchwarnmelder prüfen",
+    datum:"", rhythmus:"jährlich je Gerät", gruppe:"Betrieb & Sicherheit",
+    grundlage:"Landesbauordnung (für Berlin § 48 BauO Bln) in Verbindung mit DIN 14676",
+    betrifft:"Alle Wohnungen; in Berlin besteht die Pflicht auch für den Bestand.",
+    folge:"Die Prüfung ist Betreiberpflicht. Im Brandfall stellt sich die Frage der Verkehrssicherungspflicht, und der Versicherungsschutz kann bei fehlendem Nachweis in Frage stehen.",
+    schritte:[
+      "Prüfprotokolle vom Dienstleister einfordern und beim Objekt ablegen – ohne Protokoll ist die Prüfung im Streitfall nicht erfolgt.",
+      "Nicht zugängliche Wohnungen nachverfolgen statt abschreiben; die Nachbegehung ist der eigentliche Aufwand.",
+      "Austauschzyklus der Geräte im Blick halten (Herstellerangabe, in der Regel 10 Jahre).",
+      "Mieter über Zutrittstermine rechtzeitig und nachweisbar informieren."
+    ],
+    vorlage:{
+      betreff:"Jährliche Prüfung der Rauchwarnmelder – Terminplanung und Protokolle",
+      text:"Sehr geehrte Damen und Herren,\n\nfür die nachstehenden Objekte steht die jährliche Prüfung der Rauchwarnmelder an.\n\nWir bitten um Terminvorschläge sowie um Mitteilung, wie Sie mit nicht zugänglichen Wohnungen umgehen und in welcher Form wir die Prüfprotokolle erhalten.\n\nBitte weisen Sie in der Rückmeldung auch die Geräte aus, bei denen nach Herstellerangabe der Austausch ansteht."
+    }
+  },
+  {
+    id:"elektro", titel:"Prüfung der ortsfesten elektrischen Anlagen",
+    datum:"", rhythmus:"Richtwert alle 4 Jahre für allgemeine Bereiche", gruppe:"Betrieb & Sicherheit",
+    grundlage:"DGUV Vorschrift 3 in Verbindung mit DIN VDE 0105-100",
+    betrifft:"Allgemeinstrom, Treppenhausbeleuchtung, Keller, Garagen, Waschküchen, Außenanlagen.",
+    folge:"Bei einem Schaden ohne aktuelle Prüfung stellt sich die Frage der Verkehrssicherungspflicht. Versicherer kürzen die Leistung bei fehlendem Nachweis regelmäßig.",
+    schritte:[
+      "Prüfumfang je Objekt festlegen: Verteilungen, Steigleitungen, Beleuchtung, Steckdosen im Allgemeinbereich.",
+      "Prüfbericht mit Mängelliste und Fristen beim Objekt ablegen, nicht nur den Prüfaufkleber am Verteiler.",
+      "Mängel der Kategorie „sofort“ getrennt nachverfolgen; dafür ein Ticket anlegen.",
+      "Nächsten Prüftermin als Anlage im Reiter Technik & Wartung mit Intervall hinterlegen."
+    ],
+    vorlage:{
+      betreff:"Prüfung der ortsfesten elektrischen Anlagen – Angebot und Termin",
+      text:"Sehr geehrte Damen und Herren,\n\nfür die Allgemeinbereiche der nachstehenden Objekte steht die wiederkehrende Prüfung der ortsfesten elektrischen Anlagen nach DGUV Vorschrift 3 in Verbindung mit DIN VDE 0105-100 an.\n\nWir bitten um ein Angebot mit Angabe des Prüfumfangs (Verteilungen, Steigleitungen, Allgemeinbeleuchtung, Steckdosen der Allgemeinbereiche) und um Terminvorschläge.\n\nBitte teilen Sie uns außerdem mit, in welcher Form Sie den Prüfbericht und die Mängelliste mit Fristenkategorien übergeben."
+    }
+  }
+];
+function gesetzById(id){ return GESETZ_FRISTEN.find(g=>g.id===id)||null; }
+/* dynamisch berechnete Stichtage */
+function gesetzDatum(g){
+  if(g.dynamisch==="bk"){ const j=new Date().getFullYear(); return (j)+"-12-31"; }
+  return g.datum||"";
+}
+function gesetzZusatz(g){
+  if(g.dynamisch==="bk"){ const j=new Date().getFullYear(); return `Abrechnungszeitraum ${j-1} – Zustellung bis 31.12.${j}`; }
+  return "";
+}
+/* Ordnet einer Anlage die passende Gesetzesvorlage zu (heuristisch über den Namen) */
+function gesetzFuerAnlage(a){
+  const t=((a.name||"")+" "+(a.art||"")).toLowerCase();
+  if(/legionell|trinkwasser/.test(t)) return "trinkw";
+  if(/rauchwarn|rauchmelder/.test(t)) return "rwm";
+  if(/elektro|dguv|vde/.test(t)) return "elektro";
+  if(/heizung|therme|kessel|brennwert/.test(t)) return "geg60b";
+  return "";
+}
+
+/* ---------- Fristen aus den eigenen Daten sammeln ---------- */
+function fristenSammeln(){
+  const d=S._fr||{}; const houses={}; (S.houses||[]).forEach(h=>houses[h.id]=h);
+  const out=[];
+  const add=e=>{ if(e && e.datum) out.push(e); };
+
+  (d.anl||[]).forEach(a=>{
+    const h=houses[a.houseId]; if(!h) return;
+    const s=wartStatus(a); if(s.level==="none") return;
+    const gesetzlich=/gesetz|tüv|prüf/i.test(a.art||"");
+    add({ datum:s.next, level:s.level, gruppe:gesetzlich?"pflicht":"wartung",
+      artLbl:a.art||"Wartung", titel:a.name||"(ohne Bezeichnung)",
+      houseId:h.id, objekt:objZeile(h),
+      info:`Intervall alle ${a.interval} Monate · letzte Durchführung ${a.lastDate?fmtShort(a.lastDate):"nicht dokumentiert"}${a.firm?" · "+a.firm:""}`,
+      mail:`mailAnlage('${a.id}','${h.id}')`, ziel:`openHouseWart('${h.id}')`, gesetz:gesetzFuerAnlage(a) });
+  });
+
+  (d.auf||[]).forEach(a=>{
+    const h=houses[a.houseId]; if(!h) return;
+    const w=liftWart(a), t=liftTuev(a);
+    if(w.level!=="none") add({ datum:w.next, level:w.level, gruppe:"aufzug", artLbl:"Aufzug – Wartung",
+      titel:a.name||"Aufzug", houseId:h.id, objekt:objZeile(h),
+      info:`Intervall alle ${a.interval} Monate${a.firm?" · "+a.firm:""}${a.fabriknr?" · Fabriknr. "+a.fabriknr:""}`,
+      mail:`openAufzugMail('${a.id}')`, ziel:`openAufzug('${a.id}')` });
+    if(t.level!=="none") add({ datum:t.next, level:t.level, gruppe:"aufzug", artLbl:"Aufzug – wiederkehrende Prüfung",
+      titel:a.name||"Aufzug", houseId:h.id, objekt:objZeile(h),
+      info:`Prüfintervall alle ${a.tuevInterval} Monate · letzte Prüfung ${a.tuevLast?fmtShort(a.tuevLast):"nicht dokumentiert"}`,
+      mail:`openAufzugMail('${a.id}')`, ziel:`openAufzug('${a.id}')`, gesetz:"aufzug-zues" });
+  });
+
+  (d.zz||[]).forEach(z=>{
+    const h=houses[z.houseId]; if(!h) return;
+    const e=eichStatus(z);
+    if(e.level!=="none") add({ datum:e.next, level:e.level, gruppe:"eich", artLbl:"Eichfrist",
+      titel:`${z.bezeichnung||z.nummer||"Zähler"}`, houseId:h.id, objekt:objZeile(h),
+      info:`${z.medium||""} · Nr. ${z.nummer||"–"}${zStandort(z)?" · "+zStandort(z):""}`,
+      mail:`mailZaehlerAusFristen('${z.id}','${h.id}')`, ziel:`openHouseZaehler('${h.id}')`, gesetz:"eich" });
+  });
+
+  (d.tk||[]).forEach(t=>{
+    if(t.status==="erledigt" || !t.dueDate) return;
+    const h=houses[t.houseId];
+    const s=fristAus(t.dueDate);
+    add({ datum:t.dueDate, level:s.level, gruppe:"ticket", artLbl:"Ticket",
+      titel:t.title||"(ohne Titel)", houseId:h?h.id:"", objekt:h?objZeile(h):"–",
+      info:`${t.status}${t.prio?" · Prio "+t.prio:""}${t.firm?" · "+t.firm:""}`,
+      ziel:`openTickets()` });
+  });
+
+  (d.log||[]).forEach(l=>{
+    if(l.status!=="offen" || !l.dueDate) return;
+    const h=houses[l.houseId];
+    const s=fristAus(l.dueDate);
+    add({ datum:l.dueDate, level:s.level, gruppe:"meldung", artLbl:"Meldung – Wiedervorlage",
+      titel:l.subject||"(ohne Betreff)", houseId:h?h.id:"", objekt:h?objZeile(h):"–",
+      info:`an ${l.recipient||"–"} · versandt ${l.sentDate?fmtShort(l.sentDate):"–"}`,
+      ziel:`openMeldungen()` });
+  });
+
+  /* Ablesung: Stichtag ist das Jahresende der laufenden Periode */
+  const per=abPeriode();
+  const offene=(d.zz||[]).filter(z=>houses[z.houseId] &&
+    !(d.aa||[]).some(x=>x.zaehlerId===z.id && (x.datum||"").slice(0,4)===per && x.status==="abgelesen"));
+  const nachObjekt={};
+  offene.forEach(z=>{ (nachObjekt[z.houseId]=nachObjekt[z.houseId]||[]).push(z); });
+  Object.keys(nachObjekt).forEach(hid=>{
+    const h=houses[hid], n=nachObjekt[hid].length;
+    const stich=per+"-12-31", s=fristAus(stich,{soon:90});
+    add({ datum:stich, level:s.level, gruppe:"ablesung", artLbl:"Zählerablesung",
+      titel:`${n} Zähler noch abzulesen`, houseId:hid, objekt:objZeile(h),
+      info:`Periode ${per} · Stichtag für die Betriebskostenabrechnung`,
+      mail:`mailAbleseauftrag('all')`, ziel:`openHouseZaehler('${hid}')`, gesetz:"bk556" });
+  });
+
+  /* Gesetzliche Stichtage mit festem Datum laufen in denselben Kalender ein */
+  GESETZ_FRISTEN.forEach(g=>{
+    const dat=gesetzDatum(g); if(!dat) return;
+    const s=fristAus(dat,{soon:120});
+    add({ datum:dat, level:s.level, gruppe:"gesetz", artLbl:g.gruppe,
+      titel:g.titel, houseId:"", objekt:"bestandsweit",
+      info:`${g.grundlage}${gesetzZusatz(g)?" · "+gesetzZusatz(g):""}`,
+      gesetz:g.id });
+  });
+
+  out.sort((a,b)=>(a.datum||"").localeCompare(b.datum||""));
+  return out;
+}
+
+async function openFristen(){
+  if(!canArea("objekte")) return goHome();
+  S.view="fristen";
+  view.innerHTML=`<div class="crumb"><a onclick="goHome()">Objekte</a><span class="sep">/</span>Fristenkalender</div>
+    <div class="page-head"><div><h2>Fristenkalender</h2><div class="lead">Lade Fristen…</div></div></div>`;
+  try{
+    const [anl,auf,tk,log,zz,aa]=await Promise.all([
+      DB.allAnlagen(), DB.listAufzuege(), DB.listTickets(), DB.listMeldungenLog(), DB.allZaehler(), DB.allAblesungen() ]);
+    S._fr={anl,auf,tk,log,zz,aa:aa.concat(offAll())};
+  }catch(e){ showError("Fristen konnten nicht geladen werden", e); S._fr={}; }
+  S.frFilter=S.frFilter||"offen";
+  S.frObjekt=S.frObjekt||"";
+  renderFristen();
+}
+const FR_GRUPPEN={ wartung:"Wartung", pflicht:"Gesetzliche Prüfung", aufzug:"Aufzug", eich:"Eichfrist",
+  ablesung:"Ablesung", ticket:"Ticket", meldung:"Meldung", gesetz:"Gesetzlicher Stichtag" };
+function frMonatLbl(iso){
+  const M=["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+  const j=iso.slice(0,4), m=Number(iso.slice(5,7))-1;
+  return M[m]+" "+j;
+}
+function renderFristen(){
+  const alle=fristenSammeln();
+  const f=S.frFilter||"offen";
+  const objFilter=S.frObjekt||"";
+  const ueber=alle.filter(x=>x.level==="overdue");
+  const d30=alle.filter(x=>x.level!=="overdue" && x.datum && daysUntil(x.datum)<=30);
+  const d90=alle.filter(x=>x.level!=="overdue" && x.datum && daysUntil(x.datum)<=90);
+  const ges=alle.filter(x=>x.gruppe==="gesetz");
+  let rows = f==="ueber"?ueber : f==="30"?d30 : f==="90"?d90 : f==="gesetz"?ges : f==="offen"?ueber.concat(d90) : alle;
+  if(objFilter) rows=rows.filter(x=>x.houseId===objFilter || x.gruppe==="gesetz");
+  const tabBtn=(k,label,n)=>`<button class="tab ${f===k?'on':''}" onclick="S.frFilter='${k}';renderFristen()">${label} <span class="tabn">${n}</span></button>`;
+
+  const monate={};
+  rows.forEach(x=>{ const k=(x.datum||"").slice(0,7); (monate[k]=monate[k]||[]).push(x); });
+  const body=Object.keys(monate).sort().map(k=>{
+    const items=monate[k].map(x=>{
+      const s=fristAus(x.datum,{soon:x.gruppe==="gesetz"?120:x.gruppe==="ablesung"?90:30});
+      const cls=fristClass(s.level);
+      const g=x.gesetz?gesetzById(x.gesetz):null;
+      return `<div class="def card fr-item" style="border-left-color:var(--${cls})">
+        <div class="body">
+          <div class="area">${esc(x.titel)}
+            <span class="chip ${cls}">${esc(fmtShort(x.datum))} · ${esc(fristText(s))}</span>
+            <span class="chip na">${esc(x.artLbl||FR_GRUPPEN[x.gruppe]||"")}</span>
+            ${g?`<span class="chip" style="background:var(--navy-soft);color:var(--navy)">Rechtsgrundlage hinterlegt</span>`:""}</div>
+          <div class="kv"><b>Objekt:</b> ${esc(x.objekt||"–")}</div>
+          ${x.info?`<div class="kv" style="color:var(--muted)">${esc(x.info)}</div>`:""}
+          <div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap">
+            ${x.ziel?`<button class="btn sm" onclick="${x.ziel}">Zum Vorgang</button>`:""}
+            ${x.mail?`<button class="btn sm" onclick="${x.mail}">${I.mail} Firma anschreiben</button>`:""}
+            ${g?`<button class="btn sm" onclick="openGesetz('${g.id}')">${I.book} Grundlage &amp; Folge</button>`:""}
+          </div>
+        </div></div>`;
+    }).join("");
+    return `<div class="fr-mon"><h3>${esc(frMonatLbl(k+"-01"))}</h3><span>${monate[k].length} ${monate[k].length===1?"Frist":"Fristen"}</span></div>${items}`;
+  }).join("") || `<div class="empty card" style="border-style:dashed">${I.check}<h3>Nichts in dieser Ansicht</h3><p>In diesem Filter stehen derzeit keine Fristen.</p></div>`;
+
+  const objOpts=[`<option value="">Alle Objekte</option>`].concat((S.houses||[])
+    .slice().sort((a,b)=>(a.name||"").localeCompare(b.name||""))
+    .map(h=>`<option value="${esc(h.id)}" ${objFilter===h.id?"selected":""}>${esc(h.name)}</option>`)).join("");
+
+  view.innerHTML=`<div class="crumb"><a onclick="goHome()">Objekte</a><span class="sep">/</span>Fristenkalender</div>
+    <div class="page-head">
+      <div><h2>Fristenkalender</h2><div class="lead">Alle Fälligkeiten des Bestandes in einer Zeitschiene – Wartung, gesetzliche Prüfungen, Aufzüge, Eichfristen, Ablesung, Tickets und Wiedervorlagen, dazu die gesetzlichen Stichtage mit Rechtsgrundlage und Folge.</div></div>
+      <div class="toolbar">
+        <select class="objsort" onchange="S.frObjekt=this.value;renderFristen()">${objOpts}</select>
+        <button class="btn" onclick="openGesetzListe()">${I.book} Gesetzliche Pflichten</button>
+        <button class="btn" onclick="exportFristenICS()">${I.download} In den Kalender (.ics)</button>
+        <button class="btn" onclick="exportFristenCSV()">${I.download} CSV</button>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat bad"><div class="num">${ueber.length}</div><div class="lbl">überfällig</div></div>
+      <div class="stat" style="border-left:4px solid var(--mid)"><div class="num" style="color:var(--mid)">${d30.length}</div><div class="lbl">in den nächsten 30 Tagen</div></div>
+      <div class="stat"><div class="num">${d90.length}</div><div class="lbl">in den nächsten 90 Tagen</div></div>
+      <div class="stat"><div class="num">${GESETZ_FRISTEN.length}</div><div class="lbl">gesetzliche Pflichten mit Vorlage</div></div>
+    </div>
+    <div class="tabs">
+      ${tabBtn("offen","Zu erledigen",ueber.length+d90.length)}
+      ${tabBtn("ueber","Überfällig",ueber.length)}
+      ${tabBtn("30","30 Tage",d30.length)}
+      ${tabBtn("90","90 Tage",d90.length)}
+      ${tabBtn("gesetz","Gesetzliche Stichtage",ges.length)}
+      ${tabBtn("alle","Alles",alle.length)}
+    </div>
+    ${body}
+    <p class="hint" style="margin-top:14px">Die Rechtsangaben sind eine Arbeitshilfe, Stand ${GESETZ_STAND}, und keine Rechtsberatung. Fristen und Folgen im Einzelfall bitte prüfen lassen.</p>`;
+}
+
+/* ---------- Gesetzliche Pflichten: Übersicht und Einzelvorlage ---------- */
+function openGesetzListe(){
+  const grp={};
+  GESETZ_FRISTEN.forEach(g=>{ (grp[g.gruppe]=grp[g.gruppe]||[]).push(g); });
+  const body=Object.keys(grp).map(k=>`<div class="gz-grp">${esc(k)}</div>`+grp[k].map(g=>{
+    const dat=gesetzDatum(g);
+    const s=dat?fristAus(dat,{soon:120}):null;
+    return `<div class="gz-row" onclick="openGesetz('${g.id}')">
+      <div>
+        <div class="gz-t">${esc(g.titel)}</div>
+        <div class="gz-s">${esc(g.grundlage)}</div>
+      </div>
+      <div class="gz-r">${dat?`<span class="chip ${fristClass(s.level)}">${esc(fmtShort(dat))}</span>`:`<span class="chip na">${esc(g.rhythmus||"laufend")}</span>`}</div>
+    </div>`;
+  }).join("")).join("");
+  modal(`<h3>Gesetzliche Pflichten und Stichtage</h3>
+    <p class="m">Arbeitshilfe mit Rechtsgrundlage, Folge einer Versäumnis, Vorgehen und einem vorbereiteten Schreiben. Stand ${GESETZ_STAND} – keine Rechtsberatung.</p>
+    <div class="gz-list">${body}</div>
+    <div class="modal-actions"><button class="btn primary" onclick="closeModal()">Schließen</button></div>`);
+  const m=document.getElementById("modalBg"); if(m) m.querySelector(".modal").style.maxWidth="680px";
+}
+function openGesetz(id){
+  const g=gesetzById(id); if(!g){ toast("Vorlage nicht gefunden."); return; }
+  const dat=gesetzDatum(g);
+  const s=dat?fristAus(dat,{soon:120}):null;
+  modal(`<h3>${esc(g.titel)}</h3>
+    <div class="gz-head">
+      ${dat?`<span class="chip ${fristClass(s.level)}">Stichtag ${esc(fmtShort(dat))} · ${esc(fristText(s))}</span>`:""}
+      ${g.rhythmus?`<span class="chip na">${esc(g.rhythmus)}</span>`:""}
+      <span class="chip" style="background:var(--navy-soft);color:var(--navy)">${esc(g.gruppe)}</span>
+    </div>
+    <div class="gz-blk"><b>Rechtsgrundlage</b><p>${esc(g.grundlage)}</p></div>
+    <div class="gz-blk"><b>Betrifft</b><p>${esc(g.betrifft)}</p></div>
+    <div class="gz-blk gz-folge"><b>Folge einer Versäumnis</b><p>${esc(g.folge)}</p></div>
+    <div class="gz-blk"><b>Vorgehen</b><ol>${g.schritte.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div>
+    ${gesetzZusatz(g)?`<p class="hint">${esc(gesetzZusatz(g))}</p>`:""}
+    <p class="hint">Arbeitshilfe, Stand ${GESETZ_STAND}. Keine Rechtsberatung – im Einzelfall bitte prüfen lassen.</p>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">Schließen</button>
+      ${g.vorlage?`<button class="btn primary" onclick="mailGesetz('${g.id}')">${I.mail} Schreiben erzeugen</button>`:""}
+    </div>`);
+  const m=document.getElementById("modalBg"); if(m) m.querySelector(".modal").style.maxWidth="660px";
+}
+async function mailGesetz(id){
+  const g=gesetzById(id); if(!g||!g.vorlage) return;
+  const h=(S.houses||[]).find(x=>x.id===(S.frObjekt||S.houseId));
+  const kopf = h ? `Objekt: ${objZeile(h)}\n\n` : "";
+  const body = kopf + g.vorlage.text + `\n\n${MAIL_GRUSS}`;
+  closeModal();
+  composeMail({ to:"", subject:g.vorlage.betreff, body, track:true, kind:"gesetz",
+    houseId:h?h.id:"", defaultDue:gesetzDatum(g)||"",
+    hint:"Empfänger bitte ergänzen – diese Vorlage ist nicht an eine bestimmte Firma gebunden. Der Vorgang wird in der Meldungs-Überwachung geführt." });
+}
+/* Mail-Abkürzungen aus dem Fristenkalender heraus */
+async function mailZaehlerAusFristen(zid,hid){
+  if(!S.zaehler || !S.zaehler.some(z=>z.id===zid)){
+    S.zaehler=(S._fr&&S._fr.zz||[]).filter(z=>z.houseId===hid);
+    S.ablesungen=((S._fr&&S._fr.aa)||[]).filter(a=>a.houseId===hid);
+  }
+  mailZaehler(zid);
+}
+async function openAufzugMail(id){
+  const a=((S._fr&&S._fr.auf)||S.aufzuege||[]).find(x=>x.id===id);
+  if(!a){ toast("Aufzug nicht gefunden."); return; }
+  const h=(S.houses||[]).find(x=>x.id===a.houseId);
+  const w=liftWart(a), t=liftTuev(a);
+  const body=`Sehr geehrte Damen und Herren,\n\nfür die nachstehende Aufzugsanlage bitten wir um einen Termin:\n\n`
+    +`Objekt: ${objZeile(h)}\nAnlage: ${a.name||"Aufzug"}\n`
+    +(a.fabriknr?`Fabriknummer: ${a.fabriknr}\n`:"")
+    +(a.hersteller?`Hersteller: ${a.hersteller}\n`:"")
+    +`\nWartung: nächste Fälligkeit ${w.next?fmtShort(w.next):"nicht hinterlegt"}${w.level==="overdue"?` (seit ${Math.abs(w.days)} Tagen überschritten)`:""}\n`
+    +`Wiederkehrende Prüfung: nächste Fälligkeit ${t.next?fmtShort(t.next):"nicht hinterlegt"}${t.level==="overdue"?` (seit ${Math.abs(t.days)} Tagen überschritten)`:""}\n`
+    +`\nWir bitten um einen Terminvorschlag und um Mitteilung, welche Vorbereitungen wir vor Ort treffen sollen (Zugang Triebwerksraum, Freihalten der Schachtgrube).\n\n${MAIL_GRUSS}`;
+  composeMail({ to: a.firmEmail || await firmMailAdresse(a.firm), subject:`${a.name||"Aufzug"} – Terminanfrage ${h?h.name:""}`, body,
+    track:true, kind:"aufzug", houseId:h?h.id:"", aufzugId:a.id,
+    hint:a.firm?undefined:"Tipp: Hinterlege die Wartungsfirma beim Aufzug, dann ist der Empfänger vorausgefüllt." });
+}
+
+/* ---------- Export: Kalenderdatei und CSV ---------- */
+function icsEsc(s){ return String(s||"").replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\r?\n/g,"\\n"); }
+function exportFristenICS(){
+  const rows=fristenSammeln().filter(x=>x.datum);
+  if(!rows.length){ toast("Keine Fristen zum Exportieren."); return; }
+  const stamp=new Date().toISOString().replace(/[-:]/g,"").split(".")[0]+"Z";
+  const L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Objektmanagement//Fristenkalender//DE","CALSCALE:GREGORIAN","METHOD:PUBLISH","X-WR-CALNAME:Objektmanagement – Fristen"];
+  rows.forEach((x,i)=>{
+    const d=x.datum.replace(/-/g,"");
+    const end=new Date(x.datum+"T00:00:00"); end.setDate(end.getDate()+1);
+    const de=end.toISOString().slice(0,10).replace(/-/g,"");
+    const g=x.gesetz?gesetzById(x.gesetz):null;
+    const desc=[x.objekt?"Objekt: "+x.objekt:"", x.info||"", g?"Rechtsgrundlage: "+g.grundlage:"", g?"Folge: "+g.folge:""].filter(Boolean).join("\n");
+    L.push("BEGIN:VEVENT",
+      "UID:frist-"+i+"-"+d+"@objektmanagement",
+      "DTSTAMP:"+stamp,
+      "DTSTART;VALUE=DATE:"+d,
+      "DTEND;VALUE=DATE:"+de,
+      "SUMMARY:"+icsEsc(`${FR_GRUPPEN[x.gruppe]||""}: ${x.titel}`),
+      "DESCRIPTION:"+icsEsc(desc),
+      x.objekt?"LOCATION:"+icsEsc(x.objekt):"",
+      "BEGIN:VALARM","TRIGGER:-P14D","ACTION:DISPLAY","DESCRIPTION:"+icsEsc(x.titel),"END:VALARM",
+      "END:VEVENT");
+  });
+  L.push("END:VCALENDAR");
+  const blob=new Blob([L.filter(Boolean).join("\r\n")],{type:"text/calendar;charset=utf-8"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download=`Fristen_Objektmanagement_${todayISO()}.ics`; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  toast("Kalenderdatei gespeichert – im Kalenderprogramm importieren.");
+}
+function exportFristenCSV(){
+  const rows=fristenSammeln().filter(x=>x.datum);
+  if(!rows.length){ toast("Keine Fristen zum Exportieren."); return; }
+  const q=s=>`"${String(s==null?"":s).replace(/"/g,'""')}"`;
+  const head=["Fällig am","Restzeit","Kategorie","Vorgang","Objekt","Details","Rechtsgrundlage","Folge bei Versäumnis"];
+  const lines=[head.map(q).join(";")];
+  rows.forEach(x=>{
+    const s=fristAus(x.datum);
+    const g=x.gesetz?gesetzById(x.gesetz):null;
+    lines.push([fmtShort(x.datum), fristText(s), FR_GRUPPEN[x.gruppe]||x.artLbl||"", x.titel, x.objekt, x.info||"",
+      g?g.grundlage:"", g?g.folge:""].map(q).join(";"));
+  });
+  const blob=new Blob(["\ufeff"+lines.join("\r\n")],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download=`Fristen_${todayISO()}.csv`; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  toast("CSV gespeichert.");
+}
+
 /* ---------- QR-Etiketten für den Zählerplatz ---------- */
 function zAppUrl(zid){ return location.origin + location.pathname + "#z=" + zid; }
 function zQrSvg(text){
@@ -2379,6 +2977,132 @@ function offRegisterSW(){
 }
 window.addEventListener("online", ()=>{ netRefresh(); toast("Verbindung wieder da – übertrage…"); offSync(true).then(n=>{ if(n) toast(n===1?"1 Ablesung übertragen.":`${n} Ablesungen übertragen.`); }); });
 window.addEventListener("offline", ()=>{ netRefresh(); toast("Keine Verbindung – Ablesungen werden im Gerät gespeichert."); });
+
+/* ===================== Anhänge je Rubrik =====================
+   Ein gemeinsames Bauteil für Fotos und Dokumente an Zählern,
+   Anlagen, Aufzügen und Sanierungen — statt fünf Sonderlösungen.
+   Die Anhänge liegen in derselben Dokumentenablage wie die des
+   Objekts, nur zusätzlich mit Bezug auf den Vorgang.
+   ============================================================= */
+const ANH_ARTEN={
+  zaehler:{label:"Zähler", kat:"Zähler"},
+  anlage:{label:"Anlage / Prüfpflicht", kat:"Wartung & Prüfung"},
+  aufzug:{label:"Aufzug", kat:"Aufzug"},
+  sanierung:{label:"Sanierung", kat:"Sanierung"}
+};
+function anhIstBild(d){ return /^image\//.test(d.mime||"") || /\.(jpe?g|png|webp|gif)$/i.test(d.name||""); }
+function anhFor(art,id){ return (S.dokAll||[]).filter(d=>d.refArt===art && d.refId===id); }
+async function anhLaden(houseId){
+  try{ S.dokAll=await DB.listDocuments(houseId); }catch(e){ S.dokAll=[]; }
+}
+function anhKnopf(art,id){
+  const n=anhFor(art,id).length;
+  return `<button class="btn sm" onclick="anhOeffnen('${art}','${id}')">${I.clip} Anhänge${n?` <span style="opacity:.6">${n}</span>`:""}</button>`;
+}
+function anhTitel(art,id){
+  if(art==="zaehler"){ const z=(S.zaehler||[]).find(x=>x.id===id); return z?(z.bezeichnung||z.nummer):"Zähler"; }
+  if(art==="anlage"){ const a=(S.anlagen||[]).find(x=>x.id===id); return a?a.name:"Anlage"; }
+  if(art==="aufzug"){ const a=(S.aufzuege||[]).find(x=>x.id===id)||S.aufzug; return a?a.name:"Aufzug"; }
+  if(art==="sanierung"){ const s=(S.sanierungen||[]).find(x=>x.id===id); return s?s.title:"Sanierung"; }
+  return "Vorgang";
+}
+async function anhOeffnen(art,id){
+  S._anh={art,id};
+  if(!S.dokAll) await anhLaden(S.houseId||((S.sanierungen||[]).find(x=>x.id===id)||{}).houseId);
+  anhZeichnen();
+}
+function anhZeichnen(){
+  const {art,id}=S._anh||{};
+  const meta=ANH_ARTEN[art]||{label:"Vorgang"};
+  const list=anhFor(art,id);
+  const zeilen = list.length? list.map(d=>{
+    const bild=anhIstBild(d);
+    return `<div class="col-row" style="align-items:flex-start;gap:10px">
+      ${bild
+        ? `<img data-path="${esc(d.path)}" data-img style="width:54px;height:54px;object-fit:cover;border-radius:7px;background:var(--bg2);flex:none;cursor:zoom-in">`
+        : `<div style="width:54px;height:54px;border-radius:7px;background:var(--bg2);display:grid;place-items:center;flex:none;color:var(--muted)">${I.file}</div>`}
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:13px;word-break:break-word">${esc(d.name||"(ohne Namen)")}</div>
+        <div style="font-size:12px;color:var(--muted)">${esc([d.category,d.size?Math.round(d.size/1024)+" KB":"",d.createdAt?fmtShort((d.createdAt||"").slice(0,10)):""].filter(Boolean).join(" · "))}</div>
+        ${d.note?`<div style="font-size:12px;color:var(--muted);margin-top:2px">${esc(d.note)}</div>`:""}
+      </div>
+      <button class="icon-btn" onclick="anhLoeschen('${d.id}')" title="Entfernen">${I.trash}</button>
+    </div>`;
+  }).join("") : `<p class="m">Noch keine Anhänge zu diesem ${esc(meta.label)}.</p>`;
+
+  modal(`<h3>Anhänge · ${esc(anhTitel(art,id))}</h3>
+    <p class="m">Fotos werden beim Hinzufügen automatisch verkleinert. Dateien liegen in derselben Ablage wie die Objektdokumente und erscheinen dort unter der Kategorie „${esc(meta.kat||"Sonstiges")}".</p>
+    <div class="col-list" style="max-height:320px">${zeilen}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+      <label class="btn sm">${I.cam} Foto aufnehmen
+        <input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="anhFotos(this)"></label>
+      <label class="btn sm">${I.upload} Datei wählen
+        <input type="file" multiple style="display:none" onchange="anhDateien(this)"></label>
+    </div>
+    <div class="modal-actions"><button class="btn primary" onclick="closeModal();anhFertig()">Fertig</button></div>`);
+  document.getElementById("modalBg").querySelector(".modal").style.maxWidth="560px";
+  fillThumbs(document.getElementById("modalBg"));
+}
+function anhFertig(){
+  if(S.view==="house") renderHouse();
+  else if(S.view==="aufzug") renderAufzug();
+  else if(S.view==="sanierung") renderSanList();
+}
+async function anhFotos(inp){
+  const files=[...inp.files]; inp.value=""; if(!files.length) return;
+  const {art,id}=S._anh||{};
+  const ov=geoOverlay(files.length===1?"Foto wird verkleinert und abgelegt…":"Fotos werden verkleinert und abgelegt…");
+  try{
+    for(const f of files){
+      const d=await compressFile(f,1600,0.72);
+      const path=await uploadPhoto("anh-"+id, d);
+      const rec={ id:uid(), houseId:anhHouse(art,id), unit:"", category:(ANH_ARTEN[art]||{}).kat||"Sonstiges",
+        name:f.name||("Foto "+fmtShort(todayISO())+".jpg"), path, mime:"image/jpeg",
+        size:Math.round(d.length*0.75), note:"", createdBy:S.userEmail||"",
+        refArt:art, refId:id, createdAt:new Date().toISOString() };
+      await DB.saveDocument(rec);
+      (S.dokAll=S.dokAll||[]).unshift(rec);
+    }
+    ov.remove(); anhZeichnen();
+  }catch(e){ ov.remove(); showError("Foto konnte nicht abgelegt werden", e); }
+}
+async function anhDateien(inp){
+  const files=[...inp.files]; inp.value=""; if(!files.length) return;
+  const {art,id}=S._anh||{};
+  const ov=geoOverlay("Datei wird abgelegt…");
+  try{
+    for(const f of files){
+      let path="";
+      if(/^image\//.test(f.type)){ const d=await compressFile(f,1600,0.72); path=await uploadPhoto("anh-"+id, d); }
+      else { path=await uploadDoc("anh-"+id, f); }
+      const rec={ id:uid(), houseId:anhHouse(art,id), unit:"", category:(ANH_ARTEN[art]||{}).kat||"Sonstiges",
+        name:f.name, path, mime:f.type||"application/octet-stream", size:f.size, note:"", createdBy:S.userEmail||"",
+        refArt:art, refId:id, createdAt:new Date().toISOString() };
+      await DB.saveDocument(rec);
+      (S.dokAll=S.dokAll||[]).unshift(rec);
+    }
+    ov.remove(); anhZeichnen();
+  }catch(e){ ov.remove(); showError("Datei konnte nicht abgelegt werden", e); }
+}
+async function uploadDoc(praefix, file){
+  const path=`${praefix}/${uid()}-${(file.name||"datei").replace(/[^\w.\-]+/g,"_")}`;
+  const { error }=await sb.storage.from(BUCKET).upload(path, file, {contentType:file.type||"application/octet-stream", upsert:true});
+  if(error){ console.error(error); throw error; }
+  return path;
+}
+function anhHouse(art,id){
+  if(art==="sanierung"){ const s=(S.sanierungen||[]).find(x=>x.id===id); if(s) return s.houseId; }
+  if(art==="aufzug"){ const a=(S.aufzuege||[]).find(x=>x.id===id)||S.aufzug; if(a) return a.houseId; }
+  return S.houseId||"";
+}
+function anhLoeschen(docId){
+  const d=(S.dokAll||[]).find(x=>x.id===docId); if(!d) return;
+  confirmModal("Anhang entfernen?",`„${d.name}" wird dauerhaft aus der Ablage entfernt.`,async()=>{
+    try{ await DB.deleteDocument(docId); }catch(e){}
+    S.dokAll=(S.dokAll||[]).filter(x=>x.id!==docId);
+    closeModal(); anhZeichnen();
+  });
+}
 
 /* ===================== Objekt-Tagebuch =====================
    Ein Zeitstrahl je Haus, in den alle Module einlaufen. Antwortet
@@ -2969,6 +3693,8 @@ async function exportObjektakte(){
       if(hist.length){ doc.setTextColor(120,116,140); doc.setFontSize(8);
         const hs="Historie: "+hist.slice(0,6).map(h=>fmtShort(h.date)+(h.firm?(" ("+h.firm+")"):"")).join(", ")+(hist.length>6?" …":"");
         const ls=doc.splitTextToSize(hs,PW-2*M-4); ensure(ls.length*3.6); doc.text(ls,M+2,y); y+=ls.length*3.6; }
+      const anz=anhFor("anlage",a.id).length;
+      if(anz){ doc.setTextColor(120,116,140); doc.setFontSize(8); doc.text(`${anz} Foto/Dokument${anz===1?"":"e"} hinterlegt`,M+2,y); y+=3.6; }
       y+=2.5; });
     y+=1;
 
@@ -2979,7 +3705,46 @@ async function exportObjektakte(){
         doc.text(`${a.hersteller?("Hersteller "+a.hersteller+"  ·  "):""}${a.fabriknr?("Fabriknr. "+a.fabriknr+"  ·  "):""}${a.firm||""}`,M+2,y); y+=4;
         const wc=w.level==="overdue"?bad:w.level==="soon"?mid:ink, tc=tv.level==="overdue"?bad:tv.level==="soon"?mid:ink;
         doc.setTextColor(...wc); doc.text(`Wartung nächste ${w.next?fmtShort(w.next):"–"}`,M+2,y);
-        doc.setTextColor(...tc); doc.text(`TÜV nächste ${tv.next?fmtShort(tv.next):"–"}`,M+100,y); y+=5.5; });
+        doc.setTextColor(...tc); doc.text(`TÜV nächste ${tv.next?fmtShort(tv.next):"–"}`,M+100,y); y+=4.4;
+        const anz=anhFor("aufzug",a.id).length;
+        if(anz){ doc.setTextColor(120,116,140); doc.setFontSize(8); doc.text(`${anz} Foto/Dokument${anz===1?"":"e"} hinterlegt`,M+2,y); y+=3.6; }
+        y+=1.6; });
+      y+=1; }
+
+    const zList=(S.zaehler||[]).slice().sort((a,b)=>
+      (a.art===b.art?0:(a.art==="Hauptzähler"?-1:1)) || (a.bezeichnung||"").localeCompare(b.bezeichnung||""));
+    if(zList.length){ const per=abPeriode();
+      sec("Zähler & Ablesung");
+      const offenZ=zList.filter(z=>!zPeriodeEintrag(z.id,per)).length;
+      const problZ=zList.filter(z=>{const e=zPeriodeEintrag(z.id,per); return e&&e.status&&e.status!=="abgelesen";}).length;
+      const ohneStandort=zList.filter(z=>!zStandort(z)).length;
+      const eichAb=zList.filter(z=>eichStatus(z).level==="overdue").length;
+      para(`${zList.length} Zähler · Periode ${per}: ${zList.length-offenZ} abgelesen, ${offenZ} offen${problZ?", "+problZ+" Problemfälle":""}.`, muted);
+      if(ohneStandort) para(`${ohneStandort} Zähler ohne hinterlegten Standort – diese werden vor Ort gesucht.`, mid);
+      if(eichAb) para(`${eichAb} Zähler mit abgelaufener Eichfrist – Abrechnungsposition im Streitfall angreifbar.`, bad);
+      y+=1;
+      zList.forEach(z=>{ ensure(13);
+        const e=zPeriodeEintrag(z.id,per), vor=zLetzte(z.id,per), es=eichStatus(z);
+        doc.setFont("helvetica","bold"); doc.setFontSize(9.6); doc.setTextColor(...ink);
+        doc.text(`${z.bezeichnung||"(ohne Bezeichnung)"}${z.art==="Unterzähler"?" (Unterzähler)":""}`, M+2, y);
+        const stat = e ? (e.status==="abgelesen" ? `${zNum(e.stand)} ${zEinheit(z)} · ${fmtShort(e.datum)}` : e.status) : "nicht abgelesen";
+        const sc = e ? (e.status==="abgelesen"?good:bad) : mid;
+        doc.setFont("helvetica","normal"); doc.setFontSize(8.6); doc.setTextColor(...sc);
+        doc.text(stat, PW-M, y, {align:"right"}); y+=4.3;
+        doc.setTextColor(...muted); doc.setFontSize(8.3);
+        doc.text(`${z.medium||"–"}  ·  Nr. ${z.nummer||"–"}${z.stellen?("  ·  "+z.stellen+" Stellen"):""}${z.faktor&&Number(z.faktor)!==1?("  ·  Faktor "+z.faktor):""}${z.fernauslesbar?"  ·  fernauslesbar":""}`, M+2, y); y+=4;
+        const st=zStandort(z);
+        doc.setTextColor(...(st?muted:mid));
+        doc.text(`Standort: ${st||"nicht erfasst"}`, M+2, y);
+        doc.setTextColor(...(es.level==="overdue"?bad:es.level==="soon"?mid:muted));
+        doc.text(z.eichBis?`Eichfrist ${fmtShort(z.eichBis)}`:"Eichfrist –", M+118, y); y+=4;
+        if(vor&&vor.stand!=null&&e&&e.stand!=null){ doc.setTextColor(120,116,140); doc.setFontSize(8);
+          doc.text(`Vorperiode ${fmtShort(vor.datum)}: ${zNum(vor.stand)} → Verbrauch ${zNum(Math.round((e.stand-vor.stand)*(z.faktor||1)))} ${zEinheit(z)}`, M+2, y); y+=3.8; }
+        else if(vor&&vor.stand!=null){ doc.setTextColor(120,116,140); doc.setFontSize(8);
+          doc.text(`Letzter Stand ${fmtShort(vor.datum)}: ${zNum(vor.stand)} ${zEinheit(z)}`, M+2, y); y+=3.8; }
+        const anz=anhFor("zaehler",z.id).length;
+        if(anz){ doc.setTextColor(120,116,140); doc.setFontSize(8); doc.text(`${anz} Foto${anz===1?"":"s"}/Dokument${anz===1?"":"e"} hinterlegt`, M+2, y); y+=3.8; }
+        y+=2.2; });
       y+=1; }
 
     const openTk=tickets.filter(t=>t.status!=="erledigt");
@@ -2999,7 +3764,21 @@ async function exportObjektakte(){
         doc.setFont("helvetica","normal"); doc.setFontSize(8.3); doc.setTextColor(...muted); doc.text(s.status,PW-M,y,{align:"right"}); y+=4.2;
         const zeit=`${s.start?fmtShort(s.start):"–"} – ${s.end?fmtShort(s.end):(s.endPlanned?fmtShort(s.endPlanned)+" (geplant)":"offen")}`;
         const kost=`Budget ${s.budget!==""?euro(s.budget):"–"} · Ist ${s.cost!==""?euro(s.cost):"–"}`;
-        doc.text(`${zeit}  ·  ${kost}${s.firm?("  ·  "+s.firm):""}`,M+2,y); y+=5; }); }
+        doc.text(`${zeit}  ·  ${kost}${s.firm?("  ·  "+s.firm):""}`,M+2,y); y+=5;
+        const anz=anhFor("sanierung",s.id).length;
+        if(anz){ doc.setFontSize(8); doc.setTextColor(120,116,140); doc.text(`${anz} Foto/Dokument${anz===1?"":"e"} hinterlegt`,M+2,y-0.8); y+=3.4; } }); }
+
+    const dokL=(S.dokAll||[]);
+    if(dokL.length){ y+=2; sec("Dokumente & Fotos");
+      const byCat={}; dokL.forEach(d=>{ const c=d.category||"Sonstiges"; (byCat[c]=byCat[c]||[]).push(d); });
+      para(`${dokL.length} Ablagen insgesamt, davon ${dokL.filter(d=>d.refArt).length} direkt an einem Vorgang (Zähler, Anlage, Aufzug, Sanierung).`, muted);
+      y+=1;
+      Object.keys(byCat).sort().forEach(c=>{ const l=byCat[c]; ensure(7);
+        doc.setFont("helvetica","bold"); doc.setFontSize(9); doc.setTextColor(...ink); doc.text(c,M+2,y);
+        doc.setFont("helvetica","normal"); doc.setFontSize(8.4); doc.setTextColor(...muted); doc.text(String(l.length),PW-M,y,{align:"right"}); y+=4;
+        doc.setFontSize(8); doc.setTextColor(120,116,140);
+        const namen=l.slice(0,6).map(d=>d.name||"(ohne Name)").join(", ")+(l.length>6?" …":"");
+        const ls=doc.splitTextToSize(namen,PW-2*M-6); ensure(ls.length*3.6); doc.text(ls,M+4,y); y+=ls.length*3.6+2.2; }); }
 
     footer();
     doc.save(`Objektakte_${(o.name||"Objekt").replace(/[^\w\-]+/g,"_")}_${todayISO()}.pdf`);
@@ -3401,8 +4180,8 @@ async function exportReinigungPDF(){
 /* ===================== Aufzüge ===================== */
 const MELD_STATUS=["offen","in Bearbeitung","behoben"];
 function meldClass(s){ return s==="behoben"?"good":s==="in Bearbeitung"?"mid":"bad"; }
-const liftWart = a => wartStatus({interval:a.interval, lastDate:a.lastDate});
-const liftTuev = a => wartStatus({interval:a.tuevInterval, lastDate:a.tuevLast});
+const liftWart = a => fristIntervall(a.lastDate, a.interval);
+const liftTuev = a => fristIntervall(a.tuevLast, a.tuevInterval, {keinLabel:"kein Prüfintervall"});
 
 async function openAufzuege(){
   if(!canArea("aufzuege")) return goHome();
@@ -3491,6 +4270,7 @@ function renderAufzug(){
         <button class="btn" onclick="exportAufzugPDF()">${I.pdf} PDF</button>
         <button class="btn" onclick="addAufzug('${a.id}')">${I.edit} Bearbeiten</button>
         <button class="btn" onclick="mailAufzug()">${I.mail} An Firma senden</button>
+        <button class="btn" onclick="anhOeffnen('aufzug','${a.id}')">${I.clip} Anhänge</button>
         <button class="btn primary" onclick="addMeldung()">${I.plus} Meldung erfassen</button>
       </div>
     </div>
@@ -3722,7 +4502,8 @@ function drawSanierung(){
           <div class="kv"><b>Zeitraum:</b> ${zeit} &nbsp;·&nbsp; ${kosten}</div>
           ${s.note?`<div class="kv" style="color:var(--muted)">${esc(s.note)}</div>`:""}
           <div class="seg" style="margin-top:9px">${SAN_STATUS.map(x=>`<button data-v="${x}" class="${s.status===x?'on':''}" onclick="setSanStatus('${s.id}','${x}')">${x}</button>`).join("")}
-            <button class="btn sm" style="margin-left:auto" onclick="mailSanierung('${s.id}')">${I.mail} Firma anschreiben</button>
+            <span style="margin-left:auto"></span>${anhKnopf('sanierung',s.id)}
+            <button class="btn sm" onclick="mailSanierung('${s.id}')">${I.mail} Firma anschreiben</button>
             <button class="btn sm" onclick="addSanierung('${s.id}')">${I.edit}</button>
             <button class="btn sm danger" onclick="delSanierung('${s.id}')">${I.trash}</button></div>
         </div></div>`;
@@ -4080,7 +4861,7 @@ async function tkRemovePhoto(path){
 const TK_STATUS=["offen","in Bearbeitung","erledigt"];
 const TK_BEZUG=[["objekt","Objekt"],["mieteinheit","Mieteinheit"],["aufzug","Aufzug"]];
 function tkClass(s){ return s==="erledigt"?"good":s==="in Bearbeitung"?"mid":"bad"; }
-function tkOverdue(t){ return t.status!=="erledigt" && t.dueDate && daysUntil(t.dueDate)<0; }
+function tkOverdue(t){ return t.status!=="erledigt" && fristAus(t.dueDate).level==="overdue"; }
 function bezugLbl(b){ const f=TK_BEZUG.find(x=>x[0]===b); return f?f[1]:"Objekt"; }
 function tkRef(t){
   const h=S.houses.find(x=>x.id===t.houseId);
@@ -4244,7 +5025,7 @@ function mailTicket(id){
 }
 
 /* ===================== Meldungs-Überwachung ===================== */
-function logOverdue(l){ return l.status==="offen" && l.dueDate && daysUntil(l.dueDate)<0; }
+function logOverdue(l){ return l.status==="offen" && fristAus(l.dueDate).level==="overdue"; }
 async function openMeldungen(){
   if(!(canArea("objekte")||canArea("aufzuege"))) return goHome();
   S.view="meldungen";
@@ -4500,6 +5281,7 @@ async function openMenu(){
     rows+=row("Mängelübersicht",I.alert,"openDefects()",cur==="defects");
     rows+=row("Wartungsübersicht",I.wrench,"openWartung()",cur==="wartung",cnt(al.wartung));
     rows+=row("Zählerablesung",I.grid,"openAblesung()",cur==="ablesung",cnt(al.zaehler));
+    rows+=row("Fristenkalender",I.book,"openFristen()",cur==="fristen",cnt(al.fristen));
   }
   if(canArea("tickets")) rows+=row("Tickets",I.ticket,"openTickets()",cur==="tickets",cnt(al.tickets));
   if(canArea("reinigung")) rows+=row("Hausdienstleister",I.broom,"openReinigung()",cur==="reinigung"||cur==="reinigungObj");
@@ -5313,7 +6095,7 @@ async function loadPerm(){
 }
 function canArea(a){ const p=S.perm||{}; return p.admin || !!p[a]; }
 function allowedView(v){
-  if(["house","editor","viewer","compare","defects","wartung","stammblatt","dokumente","ablesung","etiketten","erfassung"].includes(v)) return canArea("objekte");
+  if(["house","editor","viewer","compare","defects","wartung","stammblatt","dokumente","ablesung","etiketten","erfassung","fristen"].includes(v)) return canArea("objekte");
   if(["reinigung","reinigungObj"].includes(v)) return canArea("reinigung");
   if(["aufzuege","aufzug"].includes(v)) return canArea("aufzuege");
   if(v==="sanierung") return canArea("sanierung");
