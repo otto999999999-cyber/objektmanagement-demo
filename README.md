@@ -72,7 +72,14 @@ Modul für die jährliche Ablesung der Allgemein- und Unterzähler zur Betriebsk
 - **Plausibilitätsprüfung** direkt bei der Eingabe: Rücklauf, mehr Stellen als das Zählwerk hat,
   sowie auffällig hoher oder niedriger Verbrauch gegenüber der Vorperiode. Fängt genau die
   Zahlendreher ab, die sonst in der Abrechnung landen.
-- **Historie** je Zähler mit Verbrauch je Periode (Wandlerfaktor eingerechnet)
+- **Zählerstand per Foto** (im Ablesedialog): Foto des Zählwerks, daraus werden Stand, Zählernummer
+  und – wo vorhanden – der OBIS-Code gelesen. Weicht die erkannte Zählernummer von der hinterlegten ab,
+  wird gewarnt (falscher Zähler im Schrank). Der Wert wird **nur auf Bestätigung** übernommen, danach
+  läuft die Plausibilitätsprüfung wie bei der Handeingabe darüber. Das Foto bleibt als **Belegfoto** an
+  der Ablesung und ist in der Historie sichtbar. Ist kein Stand lesbar, sagt die Anwendung warum
+  (Spiegelung, Unschärfe) statt zu raten. Voraussetzung ist der KI-Schlüssel aus Abschnitt 2; ohne ihn
+  wird das Foto nur als Beleg abgelegt.
+- **Historie** je Zähler mit Verbrauch je Periode (Wandlerfaktor eingerechnet), mit Belegfoto
 - **Eichfrist-Warnung** – Orientierung: elektronische Stromzähler 8 Jahre, Ferraris-Zähler 16,
   Kaltwasserzähler 6 Jahre, Warmwasser- und Wärmezähler 5 Jahre
 
@@ -117,7 +124,7 @@ Modul für die jährliche Ablesung der Allgemein- und Unterzähler zur Betriebsk
 
 Über **Menü → Benutzer & Bereiche** lässt sich der Bereich **Zähler** gezielt für einen
 Ablesedienstleister freischalten – dann liest dieser direkt in die Plattform ein, statt auf Papier,
-und sieht dabei nichts außer den Zählern (Abschnitt 15).
+und sieht dabei nichts außer den Zählern (Abschnitt 16).
 
 ---
 
@@ -320,7 +327,36 @@ Frist/Risiko, mit dem Hinweis auf fehlende Angaben statt erfundener.
 
 ---
 
-## 14. Stammdaten aus SAP einlesen
+## 14. Rechnungen erfassen und prüfen
+
+**Menü → Rechnungen.** Beleg als Foto oder PDF wählen, die Kopfdaten werden ausgelesen und zur Prüfung
+vorgelegt: Lieferant, Rechnungsnummer, Datum, Netto/USt/Brutto, Leistungszeitraum, Kostenart und die
+Zuordnung zum Objekt (über Anschrift oder Objektnummer aus den Stammdaten).
+
+Was die Anwendung dabei selbst prüft:
+
+- **Rechenprobe**: Netto + Umsatzsteuer gegen den Bruttobetrag; Abweichungen werden benannt, eine
+  fehlende Umsatzsteuer wird ausgerechnet und der Steuersatz genannt.
+- **Umlagefähigkeit** als Vorschlag am Katalog des **§ 2 BetrKV** entlang: Heizung, Wasser, Aufzug,
+  Reinigung, Gartenpflege, Allgemeinstrom, Versicherung, Wartung und gesetzliche Prüfung sind
+  umlagefähig — Instandsetzung, Modernisierung und Verwaltung trägt der Eigentümer. Genau diese
+  Unterscheidung entscheidet später über den Widerspruch gegen die Betriebskostenabrechnung.
+- **Lieferant im Adressbuch** wird erkannt und angezeigt.
+
+Danach läuft der Beleg durch **zu prüfen → freigegeben → gebucht**, oder er wird **strittig** gesetzt.
+Dazu gibt es ein vorbereitetes Schreiben an den Lieferanten, das die Zahlung zurückstellt und
+begründet, warum daraus kein Verzug entsteht.
+
+Die Liste zeigt je Ansicht die Summe und den umlagefähigen Anteil; der **CSV-Export** ist für die
+Buchhaltung gebaut (mit Objektnummer, Leistungszeitraum und Umlagekennzeichen). Im
+**Eigentümerbericht** erscheinen die Belege mit Summe, umlagefähigem Anteil und den strittigen Fällen.
+
+> Übernommen wird nichts von allein: Erkennen ersetzt das Eintippen, nicht das Prüfen. Die Einordnung
+> zur Umlagefähigkeit ist eine Arbeitshilfe und keine Rechtsberatung.
+
+---
+
+## 15. Stammdaten aus SAP einlesen
 
 **Menü → Stammdaten einlesen (SAP).** Objekte und Einheiten kommen aus dem Bestandssystem statt aus
 Handarbeit:
@@ -339,7 +375,7 @@ verdoppeln.
 
 ---
 
-## 15. Bereiche und Rollen
+## 16. Bereiche und Rollen
 
 Die Anwendung schaltet Bereiche je Konto frei: **Objekte, Zähler, Reinigung, Aufzüge, Sanierung,
 Tickets, Admin**. Der Bereich **Zähler** ist der für einen **Ablesedienstleister**: er sieht die
@@ -356,7 +392,7 @@ Die Bereiche je Benutzer werden unter **Menü → Benutzer & Bereiche** gesetzt.
 
 ---
 
-## 16. Objekt-Tagebuch
+## 17. Objekt-Tagebuch
 
 Reiter *Tagebuch* je Objekt: der Verlauf eines Hauses über **alle Bereiche hinweg** in einer
 Zeitschiene, nach Jahren gruppiert und neueste Einträge zuerst.
@@ -375,7 +411,7 @@ Tickets, Mängel und das Adressbuch.
 
 ---
 
-## 17. „Firma anschreiben" — überall dort, wo eine Firma zuständig ist
+## 18. „Firma anschreiben" — überall dort, wo eine Firma zuständig ist
 
 Aus jedem Vorgang lässt sich direkt eine E-Mail an die zuständige Firma erzeugen. Der Text wird
 aus den Daten des Vorgangs vorbefüllt, der **Empfänger automatisch aus dem Adressbuch** aufgelöst,
@@ -397,6 +433,7 @@ und der Vorgang landet auf Wunsch in der Meldungs-Überwachung.
 | **Sanierungen** | Mängelanzeige unter laufender Gewährleistung an die Baufirma |
 | **CO₂-Rechner** | Anforderung der CO₂-Angaben beim Brennstofflieferanten |
 | **Posteingang** | Antwortentwurf auf eine eingehende Nachricht, nach Art des Vorgangs |
+| **Rechnungen** | Rückfrage oder Beanstandung zu einer Rechnung, mit Zahlungsvorbehalt |
 
 Der Empfänger wird über den Firmennamen im Adressbuch gesucht — beim Ableseauftrag zusätzlich
 darüber, wer in der Vorperiode tatsächlich abgelesen hat. Ist nichts hinterlegt, bleibt das Feld
@@ -404,7 +441,7 @@ leer und ein Hinweis nennt die Stelle, an der die Adresse ergänzt werden sollte
 
 ---
 
-## 18. Hinweise
+## 19. Hinweise
 
 - **Reine Demo:** Eingaben/Änderungen sind **nicht dauerhaft** – nach dem Neuladen der Seite
   stehen wieder die ursprünglichen Testdaten bereit. Ausnahme: offline erfasste Ablesungen bleiben
@@ -415,11 +452,11 @@ leer und ein Hinweis nennt die Stelle, an der die Adresse ergänzt werden sollte
 - **Rechte-Demo:** Unter **Menü → Benutzer & Bereiche** sind vier Beispielkonten hinterlegt
   (`admin@demo.de`, `hausmeister@demo.de`, `reinigung@demo.de`, `ablesedienst@demo.de`), um die
   bereichsweise Freischaltung von Mitarbeitern und Dienstleistern zu zeigen. Die Sicht eines Kontos
-  lässt sich über **Ansicht testen als …** direkt vorführen (Abschnitt 15).
+  lässt sich über **Ansicht testen als …** direkt vorführen (Abschnitt 16).
 
 ---
 
-## 19. Vom Demo zum echten Portal
+## 20. Vom Demo zum echten Portal
 
 Diese Demo nutzt eine eingebettete Testdatenschicht anstelle eines Servers. Für den
 produktiven Mehrbenutzerbetrieb (Login + zentrale Datenbank in Frankfurt, bereichsbasierte

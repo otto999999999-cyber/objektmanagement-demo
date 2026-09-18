@@ -223,6 +223,25 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       {id:"a11", zaehler_id:"z10", house_id:"h5", datum:monthsAgo(12), stand:64180, ableser:"Ablesedienst Beispiel", quelle:"vor Ort", status:"abgelesen", note:"", created_at:NOW}
     ],
 
+    belege: [
+      {id:"b1", house_id:"h1", ref_art:"anlage", ref_id:"a1", lieferant:"Wärmedienst Alpha GmbH", nummer:"RE-2026-4471",
+       datum:daysAgo(12), netto:412.50, ust:78.38, brutto:490.88, leistung_von:daysAgo(40), leistung_bis:daysAgo(40),
+       kostenart:"Wartung Heizung", umlagefaehig:"ja", status:"freigegeben", note:"Jahreswartung, Vertrag WN-2021-45",
+       pfad:"", created_at:NOW},
+      {id:"b2", house_id:"h1", ref_art:"ticket", ref_id:"", lieferant:"Rohrdienst Beispiel", nummer:"2026-0881",
+       datum:daysAgo(6), netto:268.00, ust:50.92, brutto:318.92, leistung_von:daysAgo(7), leistung_bis:daysAgo(7),
+       kostenart:"Reparatur Sanitär", umlagefaehig:"nein", status:"zu pruefen", note:"Notdiensteinsatz Steigstrang, Instandsetzung",
+       pfad:"", created_at:NOW},
+      {id:"b3", house_id:"h3", ref_art:"aufzug", ref_id:"az1", lieferant:"Aufzugservice Beispiel", nummer:"AS-26-1190",
+       datum:daysAgo(3), netto:1180.00, ust:224.20, brutto:1404.20, leistung_von:daysAgo(10), leistung_bis:daysAgo(10),
+       kostenart:"Aufzug – Wartung", umlagefaehig:"ja", status:"strittig", note:"Zwei Anfahrten abgerechnet, nur eine dokumentiert",
+       pfad:"", created_at:NOW},
+      {id:"b4", house_id:"h4", ref_art:"", ref_id:"", lieferant:"Grünpflege Beispiel GbR", nummer:"GP-2026-77",
+       datum:daysAgo(20), netto:890.00, ust:169.10, brutto:1059.10, leistung_von:daysAgo(50), leistung_bis:daysAgo(20),
+       kostenart:"Gartenpflege", umlagefaehig:"ja", status:"freigegeben", note:"Turnus Frühjahr",
+       pfad:"", created_at:NOW}
+    ],
+
     app_users: [
       {email:"admin@demo.de",       objekte:true,  zaehler:true,  reinigung:true,  aufzuege:true,  sanierung:true,  tickets:true,  admin:true},
       {email:"hausmeister@demo.de", objekte:true,  zaehler:true,  reinigung:false, aufzuege:true,  sanierung:false, tickets:true,  admin:false},
@@ -746,6 +765,11 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   .erf-fuss{margin-top:10px;font-size:10.5px;color:#4A5266;line-height:1.5}
   @media print{ .erf-tab{font-size:9.5px} .erf-tab tr{page-break-inside:avoid} }
 
+  /* ---- Zählerstand per Foto ---- */
+  .zf-hint{border-left:3px solid var(--good);padding:8px 11px;background:rgba(0,0,0,.03);border-radius:6px;
+    font-size:12.5px;line-height:1.5;margin-top:8px}
+  .zf-vorschau{display:flex;gap:10px;align-items:flex-start;margin-top:8px}
+  .zf-vorschau img{width:120px;height:90px;object-fit:cover;border-radius:8px;border:1px solid var(--line2)}
   /* ---- Posteingang ---- */
   .po-zeile{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px}
   .po-zeile>span{color:var(--muted)}
@@ -974,6 +998,23 @@ const DB = {
     const { error } = await sb.from('documents').upsert(row); if(error){ console.error(error); throw error; }
   },
   async deleteDocument(id){ const { error }=await sb.from('documents').delete().eq('id',id); if(error) console.error(error); },
+  async listBelege(){
+    const { data, error } = await sb.from('belege').select('*').order('datum',{ascending:false});
+    if(error){ console.error(error); return []; }
+    return (data||[]).map(normBeleg);
+  },
+  async saveBeleg(b){
+    const row={ id:b.id, house_id:b.houseId||null, ref_art:b.refArt||null, ref_id:b.refId||null,
+      lieferant:b.lieferant||null, nummer:b.nummer||null, datum:b.datum||null,
+      netto:(b.netto===""||b.netto==null)?null:Number(b.netto), ust:(b.ust===""||b.ust==null)?null:Number(b.ust),
+      brutto:(b.brutto===""||b.brutto==null)?null:Number(b.brutto),
+      leistung_von:b.von||null, leistung_bis:b.bis||null, kostenart:b.kostenart||null,
+      umlagefaehig:b.umlagefaehig||null, status:b.status||'zu pruefen', note:b.note||null,
+      pfad:b.pfad||null, created_at:b.createdAt||new Date().toISOString() };
+    const { error } = await sb.from('belege').upsert(row);
+    if(error){ console.error(error); throw error; }
+  },
+  async deleteBeleg(id){ const { error }=await sb.from('belege').delete().eq('id',id); if(error) console.error(error); },
   async listKontakte(){
     const { data, error } = await sb.from('kontakte').select('*').order('name',{ascending:true});
     if(error){ console.error(error); return []; }
@@ -1077,7 +1118,7 @@ const DB = {
   async saveAblesung(a){
     const row={ id:a.id, zaehler_id:a.zaehlerId, house_id:a.houseId||null, datum:a.datum||null,
       stand:(a.stand===""||a.stand==null)?null:Number(a.stand), ableser:a.ableser||null,
-      quelle:a.quelle||null, status:a.status||null, note:a.note||null, created_at:new Date().toISOString() };
+      quelle:a.quelle||null, status:a.status||null, note:a.note||null, beleg:a.beleg||null, created_at:new Date().toISOString() };
     const { error } = await sb.from('ablesungen').upsert(row);
     if(error){ console.error(error); throw error; }
   },
@@ -1192,7 +1233,16 @@ function normAblesung(d){
   if(!d) return null;
   return { id:d.id, zaehlerId:d.zaehler_id, houseId:d.house_id||"", datum:d.datum||"",
     stand:(d.stand==null?null:Number(d.stand)), ableser:d.ableser||"", quelle:d.quelle||"vor Ort",
-    status:d.status||"abgelesen", note:d.note||"" };
+    status:d.status||"abgelesen", note:d.note||"", beleg:d.beleg||"" };
+}
+function normBeleg(d){
+  if(!d) return null;
+  return { id:d.id, houseId:d.house_id||"", refArt:d.ref_art||"", refId:d.ref_id||"",
+    lieferant:d.lieferant||"", nummer:d.nummer||"", datum:d.datum||"",
+    netto:d.netto==null?"":Number(d.netto), ust:d.ust==null?"":Number(d.ust), brutto:d.brutto==null?"":Number(d.brutto),
+    von:d.leistung_von||"", bis:d.leistung_bis||"", kostenart:d.kostenart||"",
+    umlagefaehig:d.umlagefaehig||"unklar", status:d.status||"zu pruefen", note:d.note||"",
+    pfad:d.pfad||"", createdAt:d.created_at||"" };
 }
 function normNachweis(n){
   if(!n) return null;
@@ -1501,6 +1551,7 @@ function render(){
   if(S.view==="karte") return renderKarte();
   if(S.view==="vorhernachher") return renderVorherNachher();
   if(S.view==="post") return renderPost();
+  if(S.view==="belege") return renderBelege();
   if(S.view==="melden") return renderMelden();
   if(S.view==="aushang") return renderAushang();
   if(S.view==="etiketten") return renderEtiketten();
@@ -2228,6 +2279,7 @@ function delZaehler(id){
 /* ---------- Ablesung ---------- */
 function ableseModal(zid){
   const z=(S.zaehler||[]).find(x=>x.id===zid); if(!z) return;
+  S._abFoto=null;
   const prev=zLetzte(zid);
   const ort=zStandort(z);
   const sel=(opts,val)=>opts.map(o=>`<option value="${esc(o)}" ${val===o?"selected":""}>${esc(o)}</option>`).join("");
@@ -2237,6 +2289,12 @@ function ableseModal(zid){
     <div class="field"><label>Status</label><select id="abStatus" onchange="zToggleStand()">${sel(ABLESE_STATUS,"abgelesen")}</select></div>
     <div class="field" id="abStandBox"><label>Zählerstand${zEinheit(z)?` (${esc(zEinheit(z))})`:""}</label>
       <input id="abStand" type="number" step="0.001" inputmode="decimal" placeholder="${prev?"letzter Stand: "+zNum(prev.stand):"Zählerstand"}" oninput="zPruefeStand('${zid}')">
+      <div style="margin-top:8px">
+        <label class="btn sm"><input type="file" accept="image/*" capture="environment" style="display:none" onchange="zFoto(this,'${zid}')">${I.cam} Zählerstand per Foto</label>
+        <span class="hint" style="display:block;margin-top:6px">Zählwerk gerade von vorn, ohne Spiegelung. Das Foto bleibt als Beleg an der Ablesung.</span>
+      </div>
+      <div id="abFotoBox"></div>
+      <div id="abFotoInfo"></div>
       <div id="abPruef" style="margin-top:8px"></div></div>
     <div class="field"><label>Ablesedatum</label><input id="abDatum" type="date" value="${todayISO()}" onchange="zPruefeStand('${zid}')"></div>
     <div class="field"><label>Abgelesen von</label><input id="abAbleser" placeholder="Name oder Firma" value="${esc(S.userEmail||"")}"></div>
@@ -2246,6 +2304,98 @@ function ableseModal(zid){
     <button class="btn primary" onclick="saveAblesungForm('${zid}')">Speichern</button></div>`);
   setTimeout(()=>document.getElementById("abStand")?.focus(),50);
 }
+
+/* ---------- Zählerstand per Foto ----------
+   Foto des Zählwerks statt Abschrift: die Bildanalyse liest Stand und Zählernummer,
+   die Plausibilitätsprüfung läuft unverändert darüber, und das Foto bleibt als Beleg
+   an der Ablesung. Übernommen wird nichts ohne Bestätigung – erkannt ist nicht geprüft.
+   Ohne KI-Schlüssel wird das Foto trotzdem als Belegfoto gespeichert. */
+async function zFoto(input, zid){
+  const f=(input.files||[])[0]; input.value="";
+  if(!f) return;
+  const z=(S.zaehler||[]).find(x=>x.id===zid); if(!z) return;
+  let dataURL;
+  try{ dataURL=await compressFile(f,1600,0.8); }
+  catch(e){ showError("Foto konnte nicht verarbeitet werden", e); return; }
+  S._abFoto=dataURL;
+  zFotoAnzeigen();
+  if(!(typeof window.AIVerfuegbar==="function" && window.AIVerfuegbar())){
+    const box=document.getElementById("abFotoInfo");
+    if(box) box.innerHTML=`<div class="zf-hint">Das Foto ist als <b>Belegfoto</b> übernommen. Für das automatische
+      Auslesen des Zählerstands ist der KI-Schlüssel nötig – rechts unten im KI-Assistenten unter „Einstellungen".
+      Bis dahin bitte den Stand eintippen.</div>`;
+    return;
+  }
+  const ov=geoOverlay("Zählerstand wird aus dem Foto gelesen…");
+  try{
+    const sys="Du liest Zählerstände von Fotos deutscher Verbrauchszähler. Antworte AUSSCHLIESSLICH mit einem "
+      +"JSON-Objekt, ohne Fließtext und ohne Codeblock, nach diesem Muster: "
+      +'{"stand": 12345.6 oder null, "nummer": "Zählernummer oder leer", "einheit": "kWh|m3|leer", '
+      +'"obis": "OBIS-Code oder leer", "vertrauen": "hoch|mittel|niedrig", "hinweis": "kurzer Satz"}. '
+      +"Regeln: Nur die Vorkommastellen des Zählwerks plus die roten oder abgesetzten Nachkommastellen, keine Tarif- "
+      +"oder Prüfzahlen. Bei mechanischen Rollenzählwerken die rot umrandeten Stellen als Nachkomma lesen. "
+      +"Wenn das Zählwerk nicht eindeutig lesbar ist: stand=null, vertrauen=niedrig und im Hinweis sagen, was fehlt "
+      +"(z. B. Unschärfe, Spiegelung, angeschnitten). Niemals raten.";
+    const txt=`Erwartet wird ein ${z.medium||"Zähler"} (${z.art||""}).`
+      +(z.nummer?` Hinterlegte Zählernummer: ${z.nummer}.`:"")
+      +(z.stellen?` Das Zählwerk hat ${z.stellen} Vorkommastellen.`:"")
+      +(zEinheit(z)?` Einheit: ${zEinheit(z)}.`:"")
+      +` Lies den aktuellen Zählerstand vom Foto.`;
+    const antwort=await window.AIAnhang(sys, txt, {art:"bild", dataURL}, 400);
+    ov.remove();
+    let d=null;
+    try{ d=JSON.parse((antwort||"").replace(/^```(json)?|```$/g,"").trim()); }catch(e){ d=null; }
+    if(!d){ zFotoMeldung(`Die Antwort war nicht auswertbar. Bitte den Stand eintippen.<br><span style="color:var(--muted)">${esc((antwort||"").slice(0,180))}</span>`, "mid"); return; }
+    zFotoErgebnis(z, d);
+  }catch(e){
+    ov.remove();
+    zFotoMeldung("Das Foto konnte nicht ausgelesen werden: "+esc(e.message||String(e))+". Bitte den Stand eintippen.", "bad");
+  }
+}
+function zFotoAnzeigen(){
+  const box=document.getElementById("abFotoBox"); if(!box) return;
+  box.innerHTML = S._abFoto
+    ? `<div class="zf-vorschau"><img src="${S._abFoto}" alt="Belegfoto">
+         <button class="btn sm ghost" onclick="S._abFoto=null;zFotoAnzeigen()">Foto entfernen</button></div>`
+    : "";
+}
+function zFotoMeldung(html, level){
+  const box=document.getElementById("abFotoInfo"); if(!box) return;
+  const col = level==="bad"?"var(--bad)":level==="mid"?"var(--mid)":"var(--good)";
+  box.innerHTML=`<div class="zf-hint" style="border-left-color:${col}">${html}</div>`;
+}
+function zFotoErgebnis(z, d){
+  const stand=(d.stand===null||d.stand===undefined||d.stand==="")?null:Number(d.stand);
+  const nummerAbweichung = d.nummer && z.nummer &&
+    String(d.nummer).replace(/\s/g,"").toLowerCase() !== String(z.nummer).replace(/\s/g,"").toLowerCase();
+  const vert=(d.vertrauen||"").toLowerCase();
+  let html="";
+  if(stand==null){
+    html=`<b>Kein Stand erkannt.</b> ${esc(d.hinweis||"Das Zählwerk war nicht eindeutig lesbar.")}
+      <br>Bitte näher, gerade von vorn und ohne Spiegelung fotografieren – oder den Stand eintippen.`;
+    zFotoMeldung(html,"mid");
+    return;
+  }
+  html=`<b>Erkannt: ${esc(zNum(stand))}${zEinheit(z)?" "+esc(zEinheit(z)):""}</b>`
+    +` <span class="chip ${vert==="hoch"?"good":vert==="mittel"?"mid":"bad"}">Vertrauen ${esc(d.vertrauen||"unklar")}</span>`
+    +(d.nummer?`<br>Zählernummer im Bild: ${esc(d.nummer)}${nummerAbweichung?` <span style="color:var(--bad)"><b>weicht von der hinterlegten Nummer ab (${esc(z.nummer)})</b> – falscher Zähler?</span>`:" (stimmt überein)"}`:"")
+    +(d.obis?`<br>OBIS: ${esc(d.obis)}`:"")
+    +(d.hinweis?`<br><span style="color:var(--muted)">${esc(d.hinweis)}</span>`:"")
+    +`<div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap">
+        <button class="btn sm primary" onclick="zFotoUebernehmen(${stand},'${esc(z.id)}')">Wert übernehmen</button>
+        <button class="btn sm ghost" onclick="zFotoMeldung('Nicht übernommen – bitte den Stand eintippen.','mid')">Verwerfen</button>
+      </div>
+      <div style="font-size:11.5px;color:var(--muted);margin-top:6px">Erkannt ist nicht geprüft: bitte mit dem Zählwerk vergleichen, bevor gespeichert wird.</div>`;
+  zFotoMeldung(html, vert==="hoch"?"good":"mid");
+}
+function zFotoUebernehmen(stand, zid){
+  const inp=document.getElementById("abStand");
+  if(inp){ inp.value=String(stand); zPruefeStand(zid); }
+  const st=document.getElementById("abStatus");
+  if(st && st.value!=="abgelesen"){ st.value="abgelesen"; zToggleStand(); }
+  zFotoMeldung(`Wert <b>${esc(zNum(stand))}</b> übernommen – die Plausibilitätsprüfung steht darunter. Das Foto wird als Beleg gespeichert.`, "good");
+}
+
 function zToggleStand(){
   const st=document.getElementById("abStatus").value;
   const box=document.getElementById("abStandBox");
@@ -2284,6 +2434,10 @@ async function saveAblesungForm(zid){
     ableser:document.getElementById("abAbleser").value.trim(),
     quelle:document.getElementById("abQuelle").value,
     status, note:document.getElementById("abNote").value.trim() };
+  if(S._abFoto){
+    try{ const pf=await uploadPhoto("abl-"+a.id, S._abFoto); if(pf) a.beleg=pf; }catch(e){ console.error(e); }
+    S._abFoto=null;
+  }
   let wartend=false;
   if(!istOnline()){
     offPush(a); wartend=true;                     // kein Netz: im Gerät zwischenspeichern
@@ -2314,8 +2468,9 @@ function openZHist(zid){
       }
       const bad=a.status!=="abgelesen";
       return `<div class="col-row" style="align-items:flex-start">
+        ${a.beleg?`<img class="thumb" data-path="${esc(a.beleg)}" style="width:54px;height:42px;flex:none;cursor:zoom-in" onclick="lightbox('${esc(a.beleg)}')" title="Belegfoto der Ablesung">`:""}
         <div style="flex:1">
-          <div style="font-weight:600;font-size:13.5px">${esc(fmtShort(a.datum))} · ${bad?`<span style="color:var(--bad)">${esc(a.status)}</span>`:`${zNum(a.stand)} ${esc(zEinheit(z))}`}${a.pending?` <span class="chip warte">wartet</span>`:""}</div>
+          <div style="font-weight:600;font-size:13.5px">${esc(fmtShort(a.datum))} · ${bad?`<span style="color:var(--bad)">${esc(a.status)}</span>`:`${zNum(a.stand)} ${esc(zEinheit(z))}`}${a.pending?` <span class="chip warte">wartet</span>`:""}${a.beleg?` <span class="chip good">Belegfoto</span>`:""}</div>
           <div style="font-size:12px;color:var(--muted)">${esc(a.ableser||"–")} · ${esc(a.quelle)}${esc(verbrauch)}${a.note?` · ${esc(a.note)}`:""}</div>
         </div>
         <button class="btn sm danger" onclick="delAblesung('${a.id}','${zid}')">${I.trash}</button>
@@ -2327,6 +2482,7 @@ function openZHist(zid){
     ${rows}
     <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Schließen</button>
     <button class="btn primary" onclick="closeModal();ableseModal('${zid}')">${I.pen} Neue Ablesung</button></div>`);
+  const mb=document.getElementById("modalBg"); if(mb) fillThumbs(mb);
 }
 function delAblesung(id,zid){
   confirmModal("Ablesung löschen?","Der Eintrag wird dauerhaft aus der Historie entfernt.",async()=>{
@@ -3066,6 +3222,367 @@ function co2OutHTML(){
 
 
 
+
+
+/* ===================== Rechnungserfassung =====================
+   Beleg als Foto oder PDF hinein, Kopfdaten heraus: Lieferant, Rechnungsnummer,
+   Datum, Netto/USt/Brutto, Leistungszeitraum, Objekt und Kostenart. Die Zuordnung
+   zum Objekt und zum Vorgang wird vorgeschlagen, ebenso eine Einschätzung zur
+   Umlagefähigkeit nach der Betriebskostenverordnung.
+   Übernommen wird nichts ohne Bestätigung; Freigabe und Prüfvermerk bleiben beim
+   Menschen. Ohne KI-Schlüssel lässt sich jeder Beleg von Hand erfassen.
+------------------------------------------------------------ */
+const BELEG_STATUS=[["zu pruefen","zu prüfen"],["freigegeben","freigegeben"],["strittig","strittig"],["gebucht","gebucht"]];
+function belegStatusLbl(k){ const f=BELEG_STATUS.find(x=>x[0]===k); return f?f[1]:k; }
+function belegStatusCls(k){ return k==="freigegeben"?"good":k==="strittig"?"bad":k==="gebucht"?"na":"mid"; }
+/* Arbeitshilfe, keine Rechtsberatung: umlagefähige Betriebskosten nach § 2 BetrKV
+   gegenüber Instandhaltung/Instandsetzung und Verwaltung, die der Eigentümer trägt. */
+const BETRKV_UMLAGE=[
+  /* Diese Regel steht zuerst: bei Instandsetzung entscheidet sich ja/nein, nicht nur die Bezeichnung */
+  {muster:/reparatur|instandsetzung|instandhaltung|sanierung|austausch|erneuer|ersatz|schaden|notdienst|st(ö|oe)rungsbeseitigung/i,
+   art:"Instandhaltung / Instandsetzung – trägt der Eigentümer", umlage:"nein"},
+  {muster:/verwaltung|verwalterhonorar|hausverwaltung|kontof(ü|ue)hrung/i, art:"Verwaltungskosten – trägt der Eigentümer", umlage:"nein"},
+  {muster:/modernisierung/i, art:"Modernisierung (§ 559 BGB, keine Betriebskosten)", umlage:"nein"},
+  {muster:/grundsteuer/i,                       art:"Grundsteuer (§ 2 Nr. 1 BetrKV)", umlage:"ja"},
+  {muster:/wasser|abwasser|kanal|entw(ä|ae)sser/i, art:"Wasser / Entwässerung (§ 2 Nr. 2, 3)", umlage:"ja"},
+  {muster:/heiz|brennstoff|gas|fernw(ä|ae)rme|(ö|oe)l/i, art:"Heizung / Brennstoff (§ 2 Nr. 4)", umlage:"ja"},
+  {muster:/aufzug/i,                            art:"Aufzug – Betrieb und Wartung (§ 2 Nr. 7)", umlage:"ja"},
+  {muster:/stra(ß|ss)enreinigung|m(ü|ue)ll|abfall/i, art:"Straßenreinigung / Müllbeseitigung (§ 2 Nr. 8)", umlage:"ja"},
+  {muster:/geb(ä|ae)udereinigung|hausreinigung|treppenhausreinigung|sch(ä|ae)dling/i, art:"Gebäudereinigung (§ 2 Nr. 9)", umlage:"ja"},
+  {muster:/gartenpflege|gr(ü|ue)npflege|winterdienst|baumpflege/i, art:"Gartenpflege (§ 2 Nr. 10)", umlage:"ja"},
+  {muster:/allgemeinstrom|beleuchtung/i,        art:"Beleuchtung / Allgemeinstrom (§ 2 Nr. 11)", umlage:"ja"},
+  {muster:/schornsteinfeger|kehr/i,             art:"Schornsteinreinigung (§ 2 Nr. 12)", umlage:"ja"},
+  {muster:/versicherung/i,                      art:"Sach- und Haftpflichtversicherung (§ 2 Nr. 13)", umlage:"ja"},
+  {muster:/hausmeister|hauswart/i,              art:"Hauswart (§ 2 Nr. 14, ohne Instandhaltungsanteil)", umlage:"teilweise"},
+  {muster:/rauchwarnmelder|rauchmelder/i,       art:"Rauchwarnmelder – Wartung/Miete (sonstige Betriebskosten)", umlage:"ja"},
+  {muster:/legionell|trinkwasser/i,             art:"Trinkwasserprüfung (sonstige Betriebskosten)", umlage:"ja"},
+  {muster:/wartung|pr(ü|ue)fung|dguv|blitzschutz|feuerl(ö|oe)scher/i, art:"Wartung / gesetzliche Prüfung", umlage:"ja"}
+];
+function betrkvTreffer(text){
+  const t=String(text||"");
+  for(const r of BETRKV_UMLAGE){ if(r.muster.test(t)) return r; }
+  return null;
+}
+/* Name des verknüpften Vorgangs, soweit geladen */
+function belegVorgangName(art,id){
+  const fr=S._fr||{};
+  const suche=(liste,feld)=>{ const t=(liste||[]).find(x=>x.id===id); return t?(t[feld]||"")
+    :""; };
+  if(art==="anlage")    return suche(fr.anl||S.anlagen,"name");
+  if(art==="aufzug")    return suche(fr.auf||S.aufzuege,"name");
+  if(art==="sanierung") return suche(fr.san||S.sanierungen,"title");
+  if(art==="ticket")    return suche(fr.tk||S.tickets,"title");
+  if(art==="zaehler")   return suche(fr.zz||S.zaehler,"bezeichnung");
+  return "";
+}
+function belegNum(v){ return (v===""||v==null||isNaN(Number(v)))? "–" : Number(v).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €"; }
+
+async function openBelege(){
+  if(!canArea("objekte")) return goHome();
+  S.view="belege";
+  view.innerHTML=`<div class="crumb"><a onclick="goHome()">Objekte</a><span class="sep">/</span>Rechnungen</div>
+    <div class="page-head"><div><h2>Rechnungen</h2><div class="lead">Lade Belege…</div></div></div>`;
+  try{ S.belege=await DB.listBelege(); }catch(e){ S.belege=[]; }
+  if(!S.kontakte){ try{ S.kontakte=await DB.listKontakte(); }catch(e){ S.kontakte=[]; } }
+  S.belegFilter=S.belegFilter||"zu pruefen";
+  renderBelege();
+}
+function renderBelege(){
+  const alle=(S.belege||[]).slice().sort((a,b)=>(b.datum||"").localeCompare(a.datum||""));
+  const f=S.belegFilter||"zu pruefen";
+  const haus={}; (S.houses||[]).forEach(h=>haus[h.id]=h);
+  const zahl=k=>alle.filter(b=>b.status===k).length;
+  const rows = (f==="alle"? alle : alle.filter(b=>b.status===f));
+  const summe=rows.reduce((n,b)=>n+(Number(b.brutto)||0),0);
+  const umlageSumme=rows.filter(b=>b.umlagefaehig==="ja").reduce((n,b)=>n+(Number(b.brutto)||0),0);
+  const tab=(k,l,n)=>`<button class="tab ${f===k?'on':''}" onclick="S.belegFilter='${k}';renderBelege()">${l} <span class="tabn">${n}</span></button>`;
+  const body = rows.length ? rows.map(b=>{
+    const h=haus[b.houseId];
+    const uCls=b.umlagefaehig==="ja"?"good":b.umlagefaehig==="nein"?"bad":"na";
+    const uLbl=b.umlagefaehig==="ja"?"umlagefähig":b.umlagefaehig==="nein"?"nicht umlagefähig":b.umlagefaehig==="teilweise"?"teilweise umlagefähig":"Umlagefähigkeit offen";
+    return `<div class="def card" style="border-left-color:var(--${belegStatusCls(b.status)})">
+      <div class="body">
+        <div class="area">${esc(b.lieferant||"(ohne Lieferant)")}
+          <span class="chip ${belegStatusCls(b.status)}">${esc(belegStatusLbl(b.status))}</span>
+          <span class="chip ${uCls}">${esc(uLbl)}</span></div>
+        <div class="kv"><b>${esc(belegNum(b.brutto))}</b> brutto · netto ${esc(belegNum(b.netto))} · USt ${esc(belegNum(b.ust))}</div>
+        <div class="kv"><b>Objekt:</b> ${h?esc(h.name):"– nicht zugeordnet –"} &nbsp;·&nbsp; <b>Rechnung:</b> ${esc(b.nummer||"–")} vom ${esc(b.datum?fmtShort(b.datum):"–")}</div>
+        <div class="kv"><b>Kostenart:</b> ${esc(b.kostenart||"–")}${b.von?` &nbsp;·&nbsp; <b>Leistung:</b> ${esc(fmtShort(b.von))}${b.bis&&b.bis!==b.von?"–"+esc(fmtShort(b.bis)):""}`:""}</div>
+        ${b.refArt?`<div class="kv" style="color:var(--muted)"><b>Vorgang:</b> ${esc((ANH_ARTEN[b.refArt]||{label:b.refArt}).label)}${b.refId?` · ${esc(belegVorgangName(b.refArt,b.refId))}`:""}</div>`:""}
+        ${b.note?`<div class="kv" style="color:var(--muted)">${esc(b.note)}</div>`:""}
+        <div style="display:flex;gap:7px;margin-top:9px;flex-wrap:wrap">
+          ${b.status!=="freigegeben"?`<button class="btn sm" onclick="belegStatus('${b.id}','freigegeben')">${I.check} Freigeben</button>`:""}
+          ${b.status!=="strittig"?`<button class="btn sm" onclick="belegStatus('${b.id}','strittig')">Strittig</button>`:""}
+          ${b.status==="freigegeben"?`<button class="btn sm" onclick="belegStatus('${b.id}','gebucht')">Als gebucht markieren</button>`:""}
+          <button class="btn sm" onclick="belegBearbeiten('${b.id}')">${I.edit} Bearbeiten</button>
+          <button class="btn sm" onclick="mailBelegRueckfrage('${b.id}')">${I.mail} Rückfrage an Lieferanten</button>
+          ${b.pfad?`<button class="btn sm" onclick="lightbox('${esc(b.pfad)}')">Beleg ansehen</button>`:""}
+          <button class="btn sm danger" onclick="belegLoeschen('${b.id}')">${I.trash}</button>
+        </div>
+      </div></div>`;
+  }).join("") : `<div class="empty card" style="border-style:dashed">${I.file}<h3>Nichts in dieser Ansicht</h3>
+      <p>In diesem Filter liegt kein Beleg.</p></div>`;
+  view.innerHTML=`<div class="crumb"><a onclick="goHome()">Objekte</a><span class="sep">/</span>Rechnungen</div>
+    <div class="page-head">
+      <div><h2>Rechnungen</h2><div class="lead">Beleg als Foto oder PDF erfassen – Kopfdaten, Objektzuordnung und eine Einschätzung zur Umlagefähigkeit werden vorgeschlagen, geprüft und freigegeben wird von Hand.</div></div>
+      <div class="toolbar">
+        <button class="btn" onclick="exportBelegeCSV()">${I.download} CSV für die Buchhaltung</button>
+        <button class="btn primary" onclick="belegErfassen()">${I.plus} Beleg erfassen</button>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat" style="border-left:4px solid var(--mid)"><div class="num" style="color:var(--mid)">${zahl("zu pruefen")}</div><div class="lbl">zu prüfen</div></div>
+      <div class="stat bad"><div class="num">${zahl("strittig")}</div><div class="lbl">strittig</div></div>
+      <div class="stat"><div class="num" style="font-size:22px;padding-top:6px">${esc(belegNum(summe))}</div><div class="lbl">Summe in dieser Ansicht</div></div>
+      <div class="stat"><div class="num" style="font-size:22px;padding-top:6px">${esc(belegNum(umlageSumme))}</div><div class="lbl">davon umlagefähig</div></div>
+    </div>
+    <div class="tabs">
+      ${tab("zu pruefen","Zu prüfen",zahl("zu pruefen"))}
+      ${tab("freigegeben","Freigegeben",zahl("freigegeben"))}
+      ${tab("strittig","Strittig",zahl("strittig"))}
+      ${tab("gebucht","Gebucht",zahl("gebucht"))}
+      ${tab("alle","Alle",alle.length)}
+    </div>
+    ${body}
+    <p class="hint" style="margin-top:14px">Die Einschätzung zur Umlagefähigkeit orientiert sich am Katalog des § 2 BetrKV
+      und ist eine Arbeitshilfe, keine Rechtsberatung. Instandhaltung und Verwaltung trägt der Eigentümer.</p>`;
+}
+/* ---------- Erfassen ---------- */
+function belegErfassen(){
+  const kiDa=(typeof window.AIVerfuegbar==="function") && window.AIVerfuegbar();
+  S._beleg={};
+  modal(`<h3>Beleg erfassen</h3>
+    <p class="m">Foto der Rechnung oder PDF wählen. ${kiDa
+      ? "Die Kopfdaten werden ausgelesen und zur Prüfung vorgelegt – übernommen wird nichts von allein."
+      : "<b>Ohne KI-Schlüssel</b> wird der Beleg nur abgelegt; die Felder sind dann von Hand zu füllen. Der Schlüssel lässt sich im KI-Assistenten eintragen."}</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+      <label class="btn sm">${I.cam} Foto der Rechnung
+        <input type="file" accept="image/*" capture="environment" style="display:none" onchange="belegDatei(this,'bild')"></label>
+      <label class="btn sm">${I.upload||I.file} PDF oder Bilddatei
+        <input type="file" accept="application/pdf,image/*" style="display:none" onchange="belegDatei(this,'datei')"></label>
+      <button class="btn sm ghost" onclick="belegFormular({})">Ohne Beleg von Hand</button>
+    </div>
+    <div id="belegDrop"></div>
+    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Abbrechen</button></div>`);
+  const m=document.getElementById("modalBg"); if(m) m.querySelector(".modal").style.maxWidth="620px";
+}
+async function belegDatei(input, modus){
+  const f=(input.files||[])[0]; input.value="";
+  if(!f) return;
+  const istPdf = f.type==="application/pdf" || /\.pdf$/i.test(f.name||"");
+  if(f.size > 8*1024*1024){ toast("Die Datei ist größer als 8 MB – bitte kleiner scannen."); return; }
+  const drop=document.getElementById("belegDrop");
+  if(drop) drop.innerHTML=`<div class="zf-hint">Datei <b>${esc(f.name||"Beleg")}</b> wird vorbereitet…</div>`;
+  let dataURL;
+  try{
+    if(istPdf){
+      dataURL=await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(String(r.result)); r.onerror=rej; r.readAsDataURL(f); });
+    } else {
+      dataURL=await compressFile(f,1800,0.82);
+    }
+  }catch(e){ showError("Datei konnte nicht gelesen werden", e); return; }
+  S._beleg={dataURL, istPdf, name:f.name||""};
+  if(!(typeof window.AIVerfuegbar==="function" && window.AIVerfuegbar())){
+    belegFormular({}, true);
+    return;
+  }
+  if(drop) drop.innerHTML=`<div class="zf-hint">Der Beleg wird gelesen…</div>`;
+  const ov=geoOverlay("Rechnung wird ausgelesen…");
+  try{
+    const objekte=(S.houses||[]).map(h=>`${h.name}${h.address?" ("+h.address+")":""}${(h.stammdaten&&h.stammdaten.objektnr)?" [Objektnr "+h.stammdaten.objektnr+"]":""}`).join("; ");
+    const sys="Du erfasst Eingangsrechnungen einer deutschen Hausverwaltung. Antworte AUSSCHLIESSLICH mit einem JSON-Objekt, "
+      +"ohne Fließtext und ohne Codeblock, nach diesem Muster: "
+      +'{"lieferant":"","nummer":"","datum":"JJJJ-MM-TT","netto":0,"ust":0,"brutto":0,'
+      +'"leistung_von":"JJJJ-MM-TT","leistung_bis":"JJJJ-MM-TT","kostenart":"kurz, z. B. Wartung Heizung",'
+      +'"objekt":"Name des Objekts aus der Liste oder leer","leistungstext":"ein Satz, was abgerechnet wurde",'
+      +'"vertrauen":"hoch|mittel|niedrig","hinweis":"kurzer Satz, z. B. Betrag unklar oder Skonto vermerkt"}. '
+      +"Regeln: Beträge als Zahl mit Punkt als Dezimaltrennzeichen, ohne Währungszeichen. Wenn ein Wert nicht im Beleg steht, "
+      +"leer bzw. 0 lassen und im Hinweis benennen. Rechne nichts hoch und schätze nichts. Prüfe, ob netto + USt = brutto ist, "
+      +"und weise im Hinweis darauf hin, wenn nicht.";
+    const txt=`Erfasse die Kopfdaten dieser Rechnung. Vorhandene Objekte der Verwaltung: ${objekte||"keine"}.`
+      +` Ordne dem Objekt nur zu, wenn Anschrift oder Objektnummer im Beleg dafür sprechen.`;
+    const antwort=await window.AIAnhang(sys, txt, {art:istPdf?"pdf":"bild", dataURL}, 900);
+    ov.remove();
+    let d=null;
+    try{ d=JSON.parse((antwort||"").replace(/^```(json)?|```$/g,"").trim()); }catch(e){ d=null; }
+    if(!d){ belegFormular({}, true, "Die Antwort war nicht auswertbar – bitte die Felder von Hand füllen."); return; }
+    belegFormular(d);
+  }catch(e){
+    ov.remove();
+    belegFormular({}, true, "Auslesen fehlgeschlagen: "+(e.message||e));
+  }
+}
+/* Objekt aus dem Vorschlag auflösen */
+function belegObjekt(name){
+  if(!name) return "";
+  const n=String(name).toLowerCase();
+  const t=(S.houses||[]).find(h=>(h.name||"").toLowerCase()===n)
+       || (S.houses||[]).find(h=>n.indexOf((h.name||"").toLowerCase())>=0)
+       || (S.houses||[]).find(h=>(h.name||"").toLowerCase().indexOf(n)>=0);
+  return t?t.id:"";
+}
+function belegFormular(d, ohneKi, meldung){
+  d=d||{};
+  const hid=belegObjekt(d.objekt);
+  const netto=Number(d.netto)||"", ust=Number(d.ust)||"", brutto=Number(d.brutto)||"";
+  const rechenfehler = netto && ust && brutto && Math.abs((Number(netto)+Number(ust))-Number(brutto))>0.02;
+  const treffer=betrkvTreffer([d.kostenart,d.leistungstext,d.lieferant].filter(Boolean).join(" "));
+  const kontakt=(S.kontakte||[]).find(k=>d.lieferant && (k.name||"").toLowerCase().includes(String(d.lieferant).toLowerCase().slice(0,12)));
+  const opts=[`<option value="">– nicht zugeordnet –</option>`].concat((S.houses||[])
+    .map(h=>`<option value="${esc(h.id)}" ${hid===h.id?"selected":""}>${esc(h.name)}</option>`)).join("");
+  const vert=(d.vertrauen||"").toLowerCase();
+  modal(`<h3>Beleg prüfen und übernehmen</h3>
+    ${meldung?`<div class="zf-hint" style="border-left-color:var(--mid)">${esc(meldung)}</div>`:""}
+    ${(!ohneKi && d.lieferant)?`<p class="m">Ausgelesen mit Vertrauen <b>${esc(d.vertrauen||"unklar")}</b>${d.hinweis?` · ${esc(d.hinweis)}`:""}.
+      Bitte die Felder gegen den Beleg prüfen – erkannt ist nicht geprüft.</p>`:""}
+    ${rechenfehler?`<div class="zf-hint" style="border-left-color:var(--bad)"><b>Rechenprüfung:</b> Netto und Umsatzsteuer ergeben nicht den Bruttobetrag. Bitte den Beleg gegenlesen.</div>`:""}
+    <div class="field"><label>Lieferant</label><input id="blLief" value="${esc(d.lieferant||"")}" placeholder="Firma">
+      ${kontakt?`<span class="hint">Im Adressbuch: ${esc(kontakt.name)}${kontakt.gewerk?" · "+esc(kontakt.gewerk):""}</span>`:""}</div>
+    <div class="field"><label>Rechnungsnummer</label><input id="blNr" value="${esc(d.nummer||"")}"></div>
+    <div class="field"><label>Rechnungsdatum</label><input id="blDatum" type="date" value="${esc(d.datum||todayISO())}"></div>
+    <div class="col-row" style="gap:8px;padding:0;border:none">
+      <div class="field" style="flex:1"><label>Netto (€)</label><input id="blNetto" type="number" step="0.01" value="${esc(String(netto))}" oninput="belegRechnen()"></div>
+      <div class="field" style="flex:1"><label>USt (€)</label><input id="blUst" type="number" step="0.01" value="${esc(String(ust))}" oninput="belegRechnen()"></div>
+      <div class="field" style="flex:1"><label>Brutto (€)</label><input id="blBrutto" type="number" step="0.01" value="${esc(String(brutto))}" oninput="belegRechnen()"></div>
+    </div>
+    <div id="blRechen"></div>
+    <div class="field"><label>Objekt</label><select id="blHouse">${opts}</select>
+      ${(d.objekt&&!hid)?`<span class="hint">Im Beleg steht „${esc(d.objekt)}" – dazu gibt es kein Objekt im Bestand.</span>`:""}</div>
+    <div class="field"><label>Kostenart</label><input id="blArt" value="${esc(d.kostenart||"")}" placeholder="z. B. Wartung Heizung" oninput="belegUmlage()"></div>
+    <div class="col-row" style="gap:8px;padding:0;border:none">
+      <div class="field" style="flex:1"><label>Leistung von</label><input id="blVon" type="date" value="${esc(d.leistung_von||"")}"></div>
+      <div class="field" style="flex:1"><label>bis</label><input id="blBis" type="date" value="${esc(d.leistung_bis||"")}"></div>
+    </div>
+    <div class="field"><label>Umlagefähig auf die Mieter</label>
+      <select id="blUmlage">${[["ja","ja"],["nein","nein – Eigentümer trägt"],["teilweise","teilweise"],["unklar","noch offen"]]
+        .map(([v,l])=>`<option value="${v}" ${(treffer?treffer.umlage:"unklar")===v?"selected":""}>${l}</option>`).join("")}</select>
+      <div id="blUmlageHint">${treffer?`<span class="hint">Einordnung: ${esc(treffer.art)} – Arbeitshilfe nach § 2 BetrKV, bitte prüfen.</span>`:`<span class="hint">Keine Einordnung erkannt – bitte selbst setzen.</span>`}</div></div>
+    <div class="field"><label>Bemerkung</label><input id="blNote" value="${esc(d.leistungstext||"")}"></div>
+    <div class="field"><label>Status</label><select id="blStatus">${BELEG_STATUS.map(([v,l])=>`<option value="${v}">${l}</option>`).join("")}</select></div>
+    <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Abbrechen</button>
+    <button class="btn primary" onclick="belegSpeichern()">Übernehmen</button></div>`);
+  const m=document.getElementById("modalBg"); if(m) m.querySelector(".modal").style.maxWidth="640px";
+  belegRechnen();
+}
+function belegRechnen(){
+  const n=Number(document.getElementById("blNetto").value||0), u=Number(document.getElementById("blUst").value||0),
+        b=Number(document.getElementById("blBrutto").value||0);
+  const box=document.getElementById("blRechen"); if(!box) return;
+  if(!n && !b){ box.innerHTML=""; return; }
+  if(n && u && b && Math.abs((n+u)-b)>0.02){
+    box.innerHTML=`<div class="zf-hint" style="border-left-color:var(--bad)">Netto + USt = ${belegNum(n+u)}, im Feld Brutto steht ${belegNum(b)}. Bitte prüfen.</div>`;
+  } else if(n && b && !u){
+    box.innerHTML=`<div class="zf-hint" style="border-left-color:var(--mid)">Umsatzsteuer fehlt – rechnerisch ${belegNum(b-n)} (${((b/n-1)*100).toFixed(1).replace(".",",")} %).</div>`;
+  } else {
+    box.innerHTML=`<div class="zf-hint">Rechnerisch stimmig.</div>`;
+  }
+}
+function belegUmlage(){
+  const art=document.getElementById("blArt").value||"";
+  const t=betrkvTreffer(art);
+  const sel=document.getElementById("blUmlage"), hint=document.getElementById("blUmlageHint");
+  if(t){ if(sel) sel.value=t.umlage; if(hint) hint.innerHTML=`<span class="hint">Einordnung: ${esc(t.art)} – Arbeitshilfe nach § 2 BetrKV, bitte prüfen.</span>`; }
+  else if(hint) hint.innerHTML=`<span class="hint">Keine Einordnung erkannt – bitte selbst setzen.</span>`;
+}
+async function belegSpeichern(){
+  const lief=(document.getElementById("blLief").value||"").trim();
+  if(!lief){ toast("Bitte den Lieferanten angeben."); return; }
+  const b={ id:(S._belegId||uid()), houseId:document.getElementById("blHouse").value||"",
+    refArt:"", refId:"",
+    lieferant:lief, nummer:(document.getElementById("blNr").value||"").trim(),
+    datum:document.getElementById("blDatum").value||todayISO(),
+    netto:document.getElementById("blNetto").value, ust:document.getElementById("blUst").value,
+    brutto:document.getElementById("blBrutto").value,
+    von:document.getElementById("blVon").value||"", bis:document.getElementById("blBis").value||"",
+    kostenart:(document.getElementById("blArt").value||"").trim(),
+    umlagefaehig:document.getElementById("blUmlage").value,
+    status:document.getElementById("blStatus").value,
+    note:(document.getElementById("blNote").value||"").trim(),
+    pfad:"", createdAt:new Date().toISOString() };
+  const vorhanden=(S.belege||[]).find(x=>x.id===b.id);
+  if(vorhanden) b.pfad=vorhanden.pfad||"";
+  /* Beleg selbst ablegen: Bild ins Bildarchiv, PDF in die Dokumentenablage des Objekts */
+  if(S._beleg && S._beleg.dataURL){
+    try{
+      if(S._beleg.istPdf && b.houseId){
+        const dok={ id:uid(), houseId:b.houseId, unit:"", category:"Rechnungen",
+          name:(S._beleg.name||`Rechnung_${b.nummer||todayISO()}.pdf`), path:"", mime:"application/pdf", size:0,
+          note:`${lief}${b.brutto?" · "+belegNum(b.brutto):""}`, createdBy:S.userEmail||"", refArt:"beleg", refId:b.id,
+          createdAt:new Date().toISOString() };
+        try{ await DB.saveDocument(dok); }catch(e){}
+      } else {
+        const pf=await uploadPhoto("beleg-"+b.id, S._beleg.dataURL);
+        if(pf) b.pfad=pf;
+      }
+    }catch(e){ console.error(e); }
+  }
+  try{ await DB.saveBeleg(b); }catch(e){ showError("Beleg konnte nicht gespeichert werden", e); return; }
+  S.belege=S.belege||[];
+  const pos=S.belege.findIndex(x=>x.id===b.id);
+  if(pos>=0) S.belege[pos]=b; else S.belege.unshift(b);
+  S._beleg=null; S._belegId=null;
+  closeModal();
+  toast(vorhanden?"Beleg aktualisiert.":"Beleg übernommen.");
+  if(S.view==="belege") renderBelege();
+}
+function belegBearbeiten(id){
+  const b=(S.belege||[]).find(x=>x.id===id); if(!b) return;
+  S._belegId=id; S._beleg=null;
+  belegFormular({ lieferant:b.lieferant, nummer:b.nummer, datum:b.datum, netto:b.netto, ust:b.ust, brutto:b.brutto,
+    leistung_von:b.von, leistung_bis:b.bis, kostenart:b.kostenart,
+    objekt:((S.houses||[]).find(h=>h.id===b.houseId)||{}).name||"", leistungstext:b.note }, true);
+  setTimeout(()=>{ const u=document.getElementById("blUmlage"), st=document.getElementById("blStatus");
+    if(u) u.value=b.umlagefaehig||"unklar"; if(st) st.value=b.status||"zu pruefen"; },40);
+}
+async function belegStatus(id,status){
+  const b=(S.belege||[]).find(x=>x.id===id); if(!b) return;
+  b.status=status;
+  try{ await DB.saveBeleg(b); }catch(e){ return showError("Status konnte nicht gespeichert werden", e); }
+  renderBelege();
+}
+function belegLoeschen(id){
+  confirmModal("Beleg löschen?","Der Beleg wird dauerhaft entfernt.",async()=>{
+    try{ await DB.deleteBeleg(id); }catch(e){}
+    S.belege=(S.belege||[]).filter(x=>x.id!==id);
+    renderBelege();
+  });
+}
+async function mailBelegRueckfrage(id){
+  const b=(S.belege||[]).find(x=>x.id===id); if(!b) return;
+  const h=(S.houses||[]).find(x=>x.id===b.houseId);
+  const body=`Sehr geehrte Damen und Herren,\n\nzu Ihrer Rechnung haben wir eine Rückfrage:\n\n`
+    +`Rechnungsnummer: ${b.nummer||"–"}\nRechnungsdatum: ${b.datum?fmtShort(b.datum):"–"}\n`
+    +`Betrag: ${belegNum(b.brutto)} brutto\n`
+    +(h?`Objekt: ${objZeile(h)}\n`:"")
+    +(b.kostenart?`Leistung: ${b.kostenart}\n`:"")
+    +`\n${b.status==="strittig"?(b.note?`Unsere Beanstandung: ${b.note}\n`:"Unsere Beanstandung: [bitte ergänzen]\n"):"Unsere Rückfrage: [bitte ergänzen]\n"}`
+    +`\nWir bitten um Klärung bzw. um eine berichtigte Rechnung. Die Zahlung stellen wir bis dahin zurück; `
+    +`ein Zahlungsverzug entsteht daraus nicht, da die Rechnung insoweit nicht prüffähig ist.\n\n${MAIL_GRUSS}`;
+  composeMail({ to: await firmMailAdresse(b.lieferant), subject:`Rückfrage zu Rechnung ${b.nummer||""}${h?" – "+h.name:""}`,
+    body, track:true, kind:"beleg", houseId:b.houseId||"", defaultDue:addMonthsISO(todayISO(),1),
+    hint:b.lieferant?undefined:"Tipp: Lieferant im Adressbuch hinterlegen, dann ist der Empfänger vorausgefüllt." });
+}
+function exportBelegeCSV(){
+  const rows=(S.belege||[]).slice().sort((a,b)=>(a.datum||"").localeCompare(b.datum||""));
+  if(!rows.length){ toast("Keine Belege zum Exportieren."); return; }
+  const haus={}; (S.houses||[]).forEach(h=>haus[h.id]=h);
+  const q=s=>`"${String(s==null?"":s).replace(/"/g,'""')}"`;
+  const zahl=v=>(v===""||v==null)?"":String(Number(v).toFixed(2)).replace(".",",");
+  const head=["Rechnungsdatum","Lieferant","Rechnungsnummer","Objekt","Objektnummer","Kostenart","Netto","USt","Brutto",
+    "Leistung von","Leistung bis","umlagefähig","Status","Bemerkung"];
+  const lines=[head.map(q).join(";")];
+  rows.forEach(b=>{
+    const h=haus[b.houseId]||{};
+    lines.push([b.datum?fmtShort(b.datum):"", b.lieferant, b.nummer, h.name||"", (h.stammdaten&&h.stammdaten.objektnr)||"",
+      b.kostenart, zahl(b.netto), zahl(b.ust), zahl(b.brutto), b.von?fmtShort(b.von):"", b.bis?fmtShort(b.bis):"",
+      b.umlagefaehig, belegStatusLbl(b.status), b.note].map(q).join(";"));
+  });
+  const blob=new Blob(["﻿"+lines.join("\r\n")],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download=`Rechnungen_${todayISO()}.csv`; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  toast("CSV gespeichert.");
+}
 
 /* ===================== Posteingang =====================
    Eine eingehende Nachricht wird eingefügt oder aus dem Beispielstapel gewählt.
@@ -5464,6 +5981,30 @@ async function exportEigentuemerbericht(opt){
       y+=1;
     }
 
+    /* ---- Rechnungen ---- */
+    let belege=[];
+    try{ belege=(await DB.listBelege()).filter(b=>hIds.indexOf(b.houseId)>=0); }catch(e){}
+    if(belege.length){
+      sec("Rechnungen");
+      const sum=k=>belege.filter(b=>k==="alle"||b.umlagefaehig===k).reduce((n,b)=>n+(Number(b.brutto)||0),0);
+      const offen=belege.filter(b=>b.status==="zu pruefen").length, strittig=belege.filter(b=>b.status==="strittig").length;
+      para(`${belege.length} Beleg${belege.length===1?"":"e"} über ${euro(sum("alle"))} brutto — davon ${euro(sum("ja"))} umlagefähig und ${euro(sum("nein"))} zulasten des Eigentümers.`
+        + (offen?` ${offen} noch ungeprüft.`:"")
+        + (strittig?` ${strittig} strittig.`:""), strittig?bad:muted);
+      y+=1;
+      belege.slice(0,14).forEach(b=>{
+        ensure(8);
+        doc.setFont("helvetica","bold"); doc.setFontSize(9); doc.setTextColor(...ink);
+        doc.text(`${b.lieferant||"(ohne Lieferant)"}${b.kostenart?" – "+b.kostenart:""}`, M+2, y);
+        doc.setFont("helvetica","normal"); doc.setFontSize(8.4);
+        doc.setTextColor(...(b.status==="strittig"?bad:b.status==="zu pruefen"?mid:muted));
+        doc.text(`${(Number(b.brutto)||0).toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})} €`, PW-M, y, {align:"right"}); y+=4.2;
+        doc.setTextColor(...muted); doc.setFontSize(8.2);
+        doc.text(`${b.datum?fmtShort(b.datum):"–"}${b.nummer?"  ·  Nr. "+b.nummer:""}  ·  ${b.umlagefaehig==="ja"?"umlagefähig":b.umlagefaehig==="nein"?"nicht umlagefähig":"Umlagefähigkeit offen"}  ·  ${b.status==="zu pruefen"?"zu prüfen":b.status}`, M+2, y); y+=5;
+      });
+      y+=1;
+    }
+
     /* ---- Ablesung ---- */
     if(zaehler.length){
       sec("Zähler und Ablesung");
@@ -7149,6 +7690,7 @@ async function openMenu(){
     rows+=row("CO₂-Kostenaufteilung",I.chart||I.grid,"openCO2()",cur==="co2");
   }
   if(canArea("tickets")||canArea("objekte")) rows+=row("Posteingang",I.mail,"openPost()",cur==="post");
+  if(canArea("objekte")) rows+=row("Rechnungen",I.file,"openBelege()",cur==="belege");
   if(canArea("tickets")) rows+=row("Tickets",I.ticket,"openTickets()",cur==="tickets",cnt(al.tickets));
   if(canArea("reinigung")) rows+=row("Hausdienstleister",I.broom,"openReinigung()",cur==="reinigung"||cur==="reinigungObj");
   if(canArea("aufzuege")) rows+=row("Aufzüge",I.lift,"openAufzuege()",cur==="aufzuege"||cur==="aufzug",cnt(al.aufzug));
@@ -7967,7 +8509,7 @@ function canArea(a){ const p=S.perm||{}; return p.admin || !!p[a]; }
 function allowedView(v){
   if(["ablesung","etiketten","erfassung"].includes(v)) return canArea("zaehler")||canArea("objekte");
   if(v==="house") return canArea("objekte")||canArea("zaehler");
-  if(["editor","viewer","compare","defects","wartung","stammblatt","dokumente","fristen","aushang","co2","karte","vorhernachher"].includes(v)) return canArea("objekte");
+  if(["editor","viewer","compare","defects","wartung","stammblatt","dokumente","fristen","aushang","co2","karte","vorhernachher","belege"].includes(v)) return canArea("objekte");
   if(["reinigung","reinigungObj"].includes(v)) return canArea("reinigung");
   if(["aufzuege","aufzug"].includes(v)) return canArea("aufzuege");
   if(v==="sanierung") return canArea("sanierung");
@@ -8162,6 +8704,31 @@ window.addEventListener("beforeunload",()=>{ if(S.insp) persistInsp(); });
     return ((data&&data.content)||[]).filter(function(b){return b.type==="text";}).map(function(b){return b.text;}).join("\n").trim();
   };
   window.AIPanelOeffnen=function(){ var f=document.getElementById("aiFab"); if(f) f.click(); };
+  /* Mit Anhang: Foto (Bildanalyse) oder PDF – fuer Zaehlerfotos und Belege */
+  window.AIAnhang=async function(system, userText, anhang, maxTokens){
+    var key=gk(); if(!key) throw new Error("kein API-Key hinterlegt");
+    var inhalt=[];
+    if(anhang && anhang.dataURL){
+      var teile=String(anhang.dataURL).split(",");
+      var kopf=teile[0]||"", daten=teile[1]||"";
+      var typ=(kopf.match(/data:([^;]+)/)||[])[1]||"image/jpeg";
+      if(anhang.art==="pdf" || typ==="application/pdf"){
+        inhalt.push({ type:"document", source:{ type:"base64", media_type:"application/pdf", data:daten } });
+      } else {
+        inhalt.push({ type:"image", source:{ type:"base64", media_type:typ, data:daten } });
+      }
+    }
+    inhalt.push({ type:"text", text:userText });
+    var res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{ "content-type":"application/json", "x-api-key":key, "anthropic-version":"2023-06-01", "anthropic-dangerous-direct-browser-access":"true" },
+      body:JSON.stringify({ model:gm()||DEF_MODEL, max_tokens:maxTokens||900, system:system,
+        messages:[{role:"user",content:inhalt}] })
+    });
+    var data=await res.json();
+    if(data && data.error) throw new Error(data.error.message||("API "+res.status));
+    return ((data&&data.content)||[]).filter(function(b){return b.type==="text";}).map(function(b){return b.text;}).join("\n").trim();
+  };
 
   window.AISend=async function(){
     if(busy) return;
